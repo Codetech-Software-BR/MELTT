@@ -1,0 +1,5 @@
+# PACKAGES AND DEPENDECIES
+node_modules
+# VARIABLE ENVIROMENTS
+.env
+.env.local
