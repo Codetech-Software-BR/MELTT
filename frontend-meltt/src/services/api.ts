@@ -13,6 +13,8 @@ const getBaseURL = (serviceType: string): string => {
   }
 };
 
+let isBlingRefreshing = false;
+let blingRefreshSubscribers: ((token: string) => void)[] = [];
 const createApiInstance = (serviceType: string): AxiosInstance => {
   const api = axios.create({
     baseURL: getBaseURL(serviceType),
@@ -24,33 +26,90 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
 
   api.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem("@meltt-user-token");
-      if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
+      const melttToken = localStorage.getItem("@meltt-user-token");
+      const blingToken = localStorage.getItem("bling-access-token");
+
+      // Se for uma requisição para o Bling, usa o token do Bling
+      if (config.url?.includes("bling.com.br")) {
+        if (blingToken) {
+          config.headers["Authorization"] = `Bearer ${blingToken}`;
+        }
+      } else {
+        // Senão, usa o token da aplicação
+        if (melttToken) {
+          config.headers["Authorization"] = `Bearer ${melttToken}`;
+        }
       }
+
       return config;
     },
-    (error) => {
-      return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
   );
 
+  // Interceptador de respostas para renovar tokens se necessário
   api.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      if (error.response?.status === 401) {
-        toast.error("Sessão expirada, faça login novamente.");
-        setTimeout(() => {
-          window.location.href = "/login";
-        }, 2000)
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      // Se for erro 401 para o Bling
+      if (error.response?.status === 401 && originalRequest.url.includes("bling.com.br")) {
+        if (!originalRequest._retry) {
+          originalRequest._retry = true;
+
+          if (!isBlingRefreshing) {
+            isBlingRefreshing = true;
+
+            try {
+              const newToken = await refreshBlingAccessToken();
+              localStorage.setItem("bling-access-token", newToken);
+              isBlingRefreshing = false;
+
+              // Refaz as requisições pendentes
+              blingRefreshSubscribers.forEach((callback) => callback(newToken));
+              blingRefreshSubscribers = [];
+
+              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+              return api(originalRequest);
+            } catch (refreshError) {
+              isBlingRefreshing = false;
+              toast.error("Sessão do Bling expirada. Faça login novamente.");
+              localStorage.removeItem("bling-access-token");
+              localStorage.removeItem("bling-refresh-token");
+              return Promise.reject(refreshError);
+            }
+          }
+
+          // Se já estiver renovando, aguarda a atualização do token
+          return new Promise((resolve) => {
+            blingRefreshSubscribers.push((token: string) => {
+              originalRequest.headers["Authorization"] = `Bearer ${token}`;
+              resolve(api(originalRequest));
+            });
+          });
+        }
       }
+
       return Promise.reject(error);
     }
   );
 
   return api;
+};
+
+const refreshBlingAccessToken = async (): Promise<string> => {
+  try {
+    const refreshToken = localStorage.getItem("bling-refresh-token");
+    if (!refreshToken) throw new Error("No Bling refresh token available");
+
+    const response = await axios.post(`https://bling.com.br/api/refresh-token`, {
+      refresh_token: refreshToken,
+    });
+
+    return response.data.access_token;
+  } catch (error) {
+    throw new Error("Failed to refresh Bling token");
+  }
 };
 
 export const apiRequest = async (

@@ -8,6 +8,7 @@ import { getToken } from "../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../components/customDrawer";
 import toast from "react-hot-toast";
+import { redirectToBlingAuth } from "../../utils/functions";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
@@ -26,10 +27,6 @@ const SplashScreen = () => {
     }, 2000);
   }, []);
 
-  const redirectToBlingAuth = () => {
-    window.location.href =
-      "https://www.bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=7e9a74126bb1db1435568436cc17923fad5b8179&state=6e14415ca9f181c61558de850ddbd948";
-  };
 
   useEffect(() => {
     if (decoded?.tipo === "ADMIN") {

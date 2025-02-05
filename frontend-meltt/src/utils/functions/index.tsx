@@ -1,4 +1,3 @@
-
 export function parseResultado(resultado: string): any {
   const parser = new DOMParser();
   const doc = parser.parseFromString(resultado, "text/html");
@@ -35,12 +34,22 @@ export const handleDownload = (fileUrl: string, fileName: string) => {
   document.body.removeChild(link);
 };
 
-export const somarGruposFuncExecutiva = (dados: any, propriedades: string[]) => {
+export const somarGruposFuncExecutiva = (
+  dados: any,
+  propriedades: string[]
+) => {
   return propriedades.reduce((soma, prop) => soma + (dados[prop] || 0), 0);
 };
 
-export const downloadArquivo = (nomeArquivo:string, tipoMime:any, base64Data:any) => {
-  const blob = new Blob([Uint8Array.from(atob(base64Data), c => c.charCodeAt(0))], { type: tipoMime });
+export const downloadArquivo = (
+  nomeArquivo: string,
+  tipoMime: any,
+  base64Data: any
+) => {
+  const blob = new Blob(
+    [Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0))],
+    { type: tipoMime }
+  );
   const url = URL.createObjectURL(blob);
 
   const a = document.createElement("a");
@@ -52,4 +61,9 @@ export const downloadArquivo = (nomeArquivo:string, tipoMime:any, base64Data:any
 
   // Revogar o URL para liberar memória
   URL.revokeObjectURL(url);
+};
+
+export const redirectToBlingAuth = () => {
+  window.location.href =
+    "https://www.bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=7e9a74126bb1db1435568436cc17923fad5b8179&state=bc09091c1ad9b85420276dbae4f660ab";
 };

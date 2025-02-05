@@ -150,7 +150,7 @@ const TurmasPageNew = () => {
                       </Typography>
                     </Stack>
                     <FormControl fullWidth>
-                      <InputLabel id="faculdade">Faculdade</InputLabel>
+                      <InputLabel id="faculdade" sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
                       <Select
                         name="faculdade"
                         color="primary"
@@ -181,7 +181,7 @@ const TurmasPageNew = () => {
                         placeholder="Qual o nome da sua turma ?"
                       />
                       <FormControl fullWidth>
-                        <InputLabel id="ano_formatura">
+                        <InputLabel id="ano_formatura" sx={{ p: 0.5, bgcolor: "#fff" }}>
                           Ano de Formatura
                         </InputLabel>
                         <Select

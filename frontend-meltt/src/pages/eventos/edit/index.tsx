@@ -66,35 +66,43 @@ const EventosPageEdit = () => {
 
   const onSubmitEvento = async (values: any) => {
     setLoadingEvento(true);
-  
+
     if (imageFile) {
       const reader = new FileReader();
-  
+
       reader.readAsDataURL(imageFile); // Converte a imagem em Base64
-  
+
       reader.onload = async () => {
         const base64Image = reader.result; // Obtém a string Base64 da imagem
-  
+
         const formData = new FormData();
-  
+
         formData.append("foto_evento", base64Image as string); // Adiciona a imagem como Base64
-  
+
         // Adiciona os outros campos do formulário ao FormData
         for (const key in values) {
           if (values.hasOwnProperty(key)) {
             formData.append(key, values[key]);
           }
         }
-  
+
         try {
           if (id) {
-            const response = await apiPutData("academic", `/eventos/${id}`, formData);
+            const response = await apiPutData(
+              "academic",
+              `/eventos/${id}`,
+              formData
+            );
             if (response.result?.nome) {
               toast.success("Evento atualizado com sucesso");
               navigate("/eventos");
             }
           } else {
-            const response = await apiPostData("academic", "/eventos", formData);
+            const response = await apiPostData(
+              "academic",
+              "/eventos",
+              formData
+            );
             if (response.id) {
               toast.success("Evento salvo com sucesso");
               navigate("/eventos");
@@ -104,17 +112,16 @@ const EventosPageEdit = () => {
           toast.error("Erro ao salvar evento");
         }
       };
-  
+
       reader.onerror = () => {
         toast.error("Erro ao processar imagem");
       };
     } else {
       toast.error("Por favor, selecione uma imagem para o evento");
     }
-  
+
     setLoadingEvento(false);
   };
-  
 
   return (
     <Stack width={"100%"} height={"100%"} gap={10}>
@@ -235,11 +242,21 @@ const EventosPageEdit = () => {
                   <TextField
                     fullWidth
                     focused
-                    label="Descrição"
+                    label="Descreva seu evento"
                     name="descricao_evento"
                     size="small"
                     placeholder="descreva o evento, local, data, horário, etc."
                     value={values.descricao_evento}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    fullWidth
+                    focused
+                    label="Organizador do evento"
+                    name="organizador"
+                    size="small"
+                    placeholder=""
+                    value={values.organizador}
                     onChange={handleChange}
                   />
                   <Stack width={"80%"} direction={"row"} gap={2}>

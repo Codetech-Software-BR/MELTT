@@ -43,6 +43,8 @@ interface Props {
   children: React.ReactNode;
   openModalChangePassword: any;
   setOpenModalRegisterTeacher: any;
+  openProfileImage: any;
+  setOpenProfileImage: any;
 }
 
 export default function CustomDrawer(props: Props) {
@@ -76,6 +78,8 @@ export default function CustomDrawer(props: Props) {
   const handleClosePopoverNotifications = () => {
     setAnchorElNotifications(null);
   };
+
+  console.log('openProfileImage', props.openProfileImage)
 
   const openPopoverSettings = Boolean(anchorElSettings);
   const openPopoverNotifications = Boolean(anchorElNotifications);
@@ -357,7 +361,7 @@ export default function CustomDrawer(props: Props) {
                 </Box>
               </Popover>
             </Stack>
-            <Stack direction={"row"} gap={1}>
+            <Stack direction={"row"} alignItems={'center'} gap={1}>
               <Stack direction={"column"} gap={0.5}>
                 <Typography
                   variant="body2"
@@ -385,7 +389,8 @@ export default function CustomDrawer(props: Props) {
                 variant="rounded"
                 src="https://media.licdn.com/dms/image/v2/C4D0BAQGHK2vhhHiVfQ/company-logo_200_200/company-logo_200_200/0/1678893040439/meltt_formaturas_logo?e=2147483647&v=beta&t=HbKS2BEqaCTDQL4JYmNDwzxD0OH-tS1wNYau8TDjrjw"
                 alt="das"
-                sx={{ width: 50, height: 50 }}
+                onClick={() => props.setOpenProfileImage(true)}
+                sx={{ width: 50, height: 50, cursor:'pointer' }}
               />
             </Stack>
           </Stack>

@@ -14,3 +14,20 @@ export const getToken = () => {
 export const removeToken = () => {
   localStorage.removeItem("@meltt-user-token");
 }
+
+export const setBlingAccessToken = (token: string) => {
+  localStorage.setItem("bling-access-token", token);
+};
+
+export const getBlingAccessToken = () => {
+  const access_token = localStorage.getItem("bling-access-token");
+  if (access_token) {
+    return access_token;
+  } else {
+    return null;
+  }
+};
+
+export const setBlingRefreshToken = (token: string) => {
+  localStorage.setItem("bling-refresh-token", token);
+};

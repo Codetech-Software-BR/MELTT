@@ -25,13 +25,11 @@ import DashboardAlunosPage from "../pages/dashboards";
 import DashboardFornecedoresPage from "../pages/dashboards/fornecedores";
 import DashboardTurmasPage from "../pages/dashboards/turmas";
 import ViewPagamentoPage from "../pages/pagamentos/view";
-import FaculdadesPage from "../pages/faculdades";
-import FaculdadesPageEdit from "../pages/faculdades/edit";
 import AlunosPageView from "../pages/alunos/view";
-import EventosEditPage from "../pages/eventos/edit";
 import EventosPageEdit from "../pages/eventos/edit";
 import ContratosPage from "../pages/contratos";
 import ContratosEnvioPage from "../pages/contratos-envio";
+import SplashGetBlingInfo from "../pages/splash/blingInfo";
 
 export const router = createBrowserRouter([
   {
@@ -61,6 +59,10 @@ export const router = createBrowserRouter([
   {
     path: "/splash",
     element: <SplashScreen />,
+  },
+  {
+    path: "/splash-bling-info/:id?",
+    element: <SplashGetBlingInfo />,
   },
   {
     path: "/",

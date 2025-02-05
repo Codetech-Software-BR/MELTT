@@ -1,5 +1,6 @@
 import {
   Button,
+  Chip,
   Divider,
   FormControl,
   IconButton,
@@ -7,6 +8,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  SelectChangeEvent,
   Slide,
   Stack,
   TableCell,
@@ -14,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import BasicTable from "../../components/table";
-import { useCallback, useEffect, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiGetData } from "../../services/api";
 import { contratosColumns } from "./columns";
@@ -32,6 +34,8 @@ import { SlMagnifier } from "react-icons/sl";
 import toast from "react-hot-toast";
 import { LoadingButton } from "@mui/lab";
 import { FaFileSignature } from "react-icons/fa6";
+import { MdError } from "react-icons/md";
+import { PDFDocument } from "pdf-lib";
 
 const ContratosEnvioPage = () => {
   const { id } = useParams();
@@ -45,6 +49,13 @@ const ContratosEnvioPage = () => {
   const [loadingSendFile, setLoadingSendFile] = useState(false);
 
   const [listContratos, setListContratos] = useState<any[]>([]);
+  interface Associacao {
+    id: string;
+    nome: string;
+  }
+
+  const [associacao, setAssociacao] = useState<Associacao | null>(null);
+  const [listAssociacoes, setListAssociacoes] = useState<any[]>([]);
   const [file, setFile] = useState<File | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -67,39 +78,54 @@ const ContratosEnvioPage = () => {
     onDrop,
     accept: {
       "application/pdf": [".pdf"],
-      "image/jpeg": [".jpg"],
-      "image/png": [".png"],
     },
   });
 
-  const fetchConteudos = () => {
+  const handleChangeAssociacao = (event: any) => {
+    setAssociacao(event.target.value);
+  };
+
+  const fetchAssociacoes = async () => {
     setLoading(true);
-    if (decoded?.tipo === "PROFESSOR") {
-      apiGetData("academic", `/s3/get-conteudos/${decoded.id}`).then((res) =>
-        setListContratos(res.files)
-      );
-    } else {
-      apiGetData("academic", "s3/get-conteudos").then((res) =>
-        setListContratos(res.files)
-      );
-    }
+    const response = await apiGetData(
+      "authentication",
+      `/users/getByTipo?tipo=ASSOCIACAO`
+    );
+    console.log("RESULT", response);
+    setListAssociacoes(response.result);
+    setLoading(false);
+  };
+
+  const fetchContratos = async () => {
+    setLoading(true);
+    const response = await apiGetData("academic", `/contratos`);
+    console.log("RESULT", response);
+    setListContratos(response);
     setLoading(false);
   };
 
   const dataRow = (row: any) => {
     return (
       <TableRow
-        key={row.url}
+        key={row.id}
         sx={{
           "&:last-child td, &:last-child th": { border: 0 },
           " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
         }}
       >
         <TableCell component="th" scope="row" sx={{ fontFamily: "Poppins" }}>
-          {format(row.LastModified, "dd/MM/yyyy")}
+          {format(row.data_criacao, "dd/MM/yyyy HH:mm")}
         </TableCell>
         <TableCell component="th" scope="row" sx={{ fontFamily: "Poppins" }}>
-          {row.Name}
+          <Chip
+            variant="filled"
+            color={row.assinado == 0 ? "error" : "success"}
+            label={row.assinado == 0 ? "Não foi assinado" : "Já foi assinado"}
+            icon={row.assinado == 0 ? <MdError /> : <FaFileSignature />}
+          />
+        </TableCell>
+        <TableCell component="th" scope="row" sx={{ fontFamily: "Poppins" }}>
+          {row.associacao}
         </TableCell>
       </TableRow>
     );
@@ -113,43 +139,120 @@ const ContratosEnvioPage = () => {
       setLoadingSendFile(false);
       return;
     }
+    try {
+      const fileArrayBuffer = await file.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(fileArrayBuffer);
 
-    const formData = new FormData();
-    formData.append("pdf", file);
-    if (id) {
-      formData.append("id_turma", id.toString());
-    }
-    if (decoded && decoded.id) {
-      formData.append("id_aluno", decoded.id.toString());
-    }
+      pdfDoc.setTitle("");
+      pdfDoc.setAuthor("");
+      pdfDoc.setSubject("");
+      pdfDoc.setKeywords([]);
 
-    const responseSendFile = await fetch(
-      `${import.meta.env.VITE_ACADEMIC_API_URL}/turmas/arquivos/upload`,
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      }
-    );
-    const responseData = await responseSendFile.json();
-    if (!responseData.arquivoId) {
-      toast.error("Erro ao enviar arquivo");
-      setLoadingSendFile(false);
-      return;
-    }
-    if (responseData.arquivoId) {
+      const compressedPdfBytes = await pdfDoc.save();
+      const base64File = `data:application/pdf;base64,${btoa(
+        String.fromCharCode(...new Uint8Array(compressedPdfBytes))
+      )}`;
+
+      console.log("BASE64", base64File);
+
+      let dataObj = {
+        user_id: associacao?.id,
+        assinado: 0,
+        associacao: associacao?.nome,
+        contrato_pdf: base64File,
+      };
+
+      // const responseSaveContrato = await fetch(
+      //   `${import.meta.env.VITE_ACADEMIC_API_URL}/contratos`,
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       Authorization: `Bearer ${token}`,
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify(dataObj),
+      //   }
+      // );
+
+      // const responseData = await responseSaveContrato.json();
+      // if (!responseData.id) {
+      //   toast.error("Arquivo muito grande ou erro ao enviar contrato");
+      //   setLoadingSendFile(false);
+      //   return;
+      // }
+
       toast.success("Contrato Enviado com Sucesso");
-      // fetchArquivos();
+      await fetchContratos();
       setLoadingSendFile(false);
       setOpenModal(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erro ao processar o arquivo PDF");
+      setLoadingSendFile(false);
     }
   };
+  // const onSubmitFile = async () => {
+  //   setLoadingSendFile(true);
+
+  //   if (!file) {
+  //     toast.error("Selecione um arquivo para enviar");
+  //     setLoadingSendFile(false);
+  //     return;
+  //   }
+
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+
+  //   reader.onloadend = async () => {
+  //     const base64File = reader.result;
+
+  //     let dataObj = {
+  //       user_id: associacao?.id,
+  //       assinado: 0,
+  //       associacao: associacao?.nome,
+  //       contrato_pdf: base64File,
+  //     };
+
+  //     try {
+  //       const responseSaveContrato = await fetch(
+  //         `${import.meta.env.VITE_ACADEMIC_API_URL}/contratos`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(dataObj),
+  //         }
+  //       );
+
+  //       const responseData = await responseSaveContrato.json();
+  //       if (!responseData.id) {
+  //         toast.error("Arquivo muito grande ou erro ao enviar contrato:");
+  //         setLoadingSendFile(false);
+  //         return;
+  //       }
+
+  //       toast.success("Contrato Enviado com Sucesso");
+  //       await fetchContratos();
+  //       setLoadingSendFile(false);
+  //       setOpenModal(false);
+  //     } catch (error) {
+  //       console.error("Arquivo muito grande ou erro ao enviar contrato:", error);
+  //       toast.error("Arquivo muito grande ou erro ao enviar contrato:");
+  //       setLoadingSendFile(false);
+  //     }
+  //   };
+
+  //   reader.onerror = (error) => {
+  //     toast.error("Erro ao ler o arquivo");
+  //     setLoadingSendFile(false);
+  //   };
+  // };
 
   useEffect(() => {
+    fetchContratos();
     setOnLoad(true);
-    fetchConteudos();
   }, []);
 
   return (
@@ -160,7 +263,10 @@ const ContratosEnvioPage = () => {
           color="secondary"
           variant="contained"
           endIcon={<FaFileSignature />}
-          onClick={() => setOpenModal(true)}
+          onClick={async () => {
+            await fetchAssociacoes();
+            setOpenModal(true);
+          }}
           sx={{ fontFamily: "Poppins" }}
         >
           Enviar Contrato para Assinatura
@@ -313,19 +419,20 @@ const ContratosEnvioPage = () => {
             )}
           </div>
           <FormControl fullWidth sx={{ mt: 2 }}>
-            <InputLabel>Associação que assinará o arquivo:</InputLabel>
-            <Select
-              fullWidth
-              name="associacao"
-              // disabled={loadingFaculdades}
-              size="small"
-              // value={values.faculdade}
-              // onChange={handleChange}
-            >
-              {/* {faculdades.map((faculdade: any) => ( */}
-              <MenuItem value={"faculdade.id"}>1</MenuItem>
-              {/* ))} */}
-            </Select>
+            <InputLabel sx={{ p: 0.3, bgcolor: "#fff" }}>
+              Associação que assinará o arquivo:
+            </InputLabel>
+            {listAssociacoes?.map((item) => (
+              <Select
+                fullWidth
+                name="associacao"
+                size="small"
+                value={associacao}
+                onChange={handleChangeAssociacao}
+              >
+                <MenuItem value={item}>{item?.nome}</MenuItem>
+              </Select>
+            ))}
           </FormControl>
         </Stack>
       </CustomModal>

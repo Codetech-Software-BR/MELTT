@@ -205,7 +205,7 @@ const AlunosPageEdit = () => {
                   </Stack>
                   <Stack width={"100%"} direction={"row"} gap={2}>
                     <FormControl fullWidth>
-                      <InputLabel>Faculdade</InputLabel>
+                      <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
                       <Select
                         fullWidth
                         name="faculdade"
@@ -222,7 +222,7 @@ const AlunosPageEdit = () => {
                       </Select>
                     </FormControl>
                     <FormControl fullWidth>
-                      <InputLabel>Turma</InputLabel>
+                      <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Turma</InputLabel>
                       <Select
                         fullWidth
                         name="turma_id"
@@ -239,7 +239,7 @@ const AlunosPageEdit = () => {
                   </Stack>
                   <Stack width={"40%"}>
                     <FormControl fullWidth>
-                      <InputLabel>Formatura foi paga integralmente?</InputLabel>
+                      <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Formatura foi paga integralmente?</InputLabel>
                       <Select
                         fullWidth
                         name="formatura_paga"

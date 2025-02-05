@@ -1,10 +1,35 @@
 import { LoadingButton } from "@mui/lab";
 import { Button, Paper, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import { FaSignature } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { apiGetData } from "../../services/api";
+import { getToken } from "../../utils/token";
+import { jwtDecode } from "jwt-decode";
+import { CustomJwtPayload } from "../../components/customDrawer";
+import toast from "react-hot-toast";
 
 const ContratosPage = () => {
   const navigate = useNavigate();
+  const token = getToken();
+  const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
+  const [contratos, setContrato] = useState();
+
+  const fetchContrato = async () => {
+    try {
+      const result = await apiGetData("academic", `/contratos/associacao/${decoded?.id}`)
+      setContrato(result);
+    } catch (error) {
+      toast.error("Erro ao buscar contrato");
+    }
+  }
+
+  useEffect(() => {
+    fetchContrato();
+  }, [])
+
+  console.log(contratos);
+
   return (
     <Stack
       direction={"column"}
