@@ -120,7 +120,7 @@ const PreContratoPage = () => {
   return (
     <Stack width={"calc(100% - 28px)"}>
       <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} my={2}>
-        <h2 className="text-2xl text-default font-extrabold">Gerenciamento de Contratos</h2>
+        <h2 className="text-2xl text-default font-extrabold">Controle de Pré-Contrato com Formandos</h2>
         <Button
           color="secondary"
           variant="contained"
