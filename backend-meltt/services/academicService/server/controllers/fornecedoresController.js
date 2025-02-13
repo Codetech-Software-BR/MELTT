@@ -1,13 +1,15 @@
-const db = require("../db")
+import db from "../db.js";
 
-exports.getAllFornecedores = (req, res) => {
+class FornecedoresController {
+
+getAllFornecedores(req, res) {
   db.query("SELECT * FROM fornecedores", (err, results) => {
     if (err) return res.status(500).json(err);
     res.status(200).json(results);
   });
 };
 
-exports.getFornecedoresById = (req, res) => {
+getFornecedoresById(req, res) {
   const id = req.params.id;
   db.query("SELECT * FROM fornecedores WHERE id = ?", [id], (err, result) => {
     if (err) return res.status(500).json(err);
@@ -15,7 +17,7 @@ exports.getFornecedoresById = (req, res) => {
   });
 };
 
-exports.createFornecedores = (req, res) => {
+createFornecedores(req, res) {
   const {
     nome,
     tipo_servico,
@@ -45,7 +47,7 @@ exports.createFornecedores = (req, res) => {
   );
 };
 
-exports.updateFornecedores = (req, res) => {
+updateFornecedores(req, res) {
   const id = req.params.id;
   const {
     nome,
@@ -78,10 +80,14 @@ exports.updateFornecedores = (req, res) => {
   );
 };
 
-exports.deleteFornecedores = (req, res) => {
+deleteFornecedores(req, res) {
   const id = req.params.id;
   db.query("DELETE FROM fornecedores WHERE id = ?", [id], (err) => {
     if (err) return res.status(500).json(err);
     res.status(200).json({ message: "Fornecedores deletada com sucesso!" });
   });
 };
+
+}
+
+export default new FornecedoresController();
