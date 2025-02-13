@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-const { createUser, findUserByEmail, verifyPassword, generateToken } = require('../../models/user');
-const authMiddleware = require('../../../academicService/src/middlewares/authMiddleware');
+const { createUser, findUserByEmail, verifyPassword, generateToken } = require('../models/user');
+const authMiddleware = require('../middlewares/auth');
 const connection = require('../db');
 
 router.post('/register', async (req, res) => {
-  const { email, senha, tipo } = req.body;
+  const { aluno_id, email, senha, tipo } = req.body;
   console.log('req.body', req.body)
-  if(!email || !senha || !tipo) {
-    return res.status(400).json({ error: 'Nome, CPF, E-mail e Senha são obrigatórios' });
+  if(!aluno_id |!email || !senha || !tipo) {
+    return res.status(400).json({ error: 'Nome, E-mail, Senha e Tipo são obrigatórios' });
   }
 
   const user = await findUserByEmail(email);
@@ -18,7 +18,7 @@ router.post('/register', async (req, res) => {
   }
   
   try {
-    const user = await createUser({ email, senha, tipo });
+    const user = await createUser({ aluno_id, email, senha, tipo });
     res.status(201).json({ user, message: "Usuário gerado com sucesso!" });
   } catch (error) {
     res.status(500).json({ error: 'Houve um erro realizar seu cadastro. Tente novamente mais tarde' });
@@ -106,25 +106,6 @@ router.post('/reset-password/', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Erro ao resetar senha' });
   }
 });
-
-// router.post('/reset-password', async (req, res) => {
-//   const { email, newPassword } = req.body;
-
-//   try {
-//     const user = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
-//     if (user.length === 0) {
-//       return res.status(404).json({ error: 'Usuário não encontrado' });
-//     }
-
-//     const hashedPassword = await bcrypt.hash(newPassword, 10);
-//     await db.query('UPDATE usuarios SET senha = ? WHERE id = ?', [hashedPassword, user[0].id]);
-
-//     res.json({ message: 'Senha alterada com sucesso' });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ error: 'Falha ao redefinir a senha' });
-//   }
-// });
 
 router.delete('/:id', authMiddleware, async (req, res) => {
   const id = req.params.id;

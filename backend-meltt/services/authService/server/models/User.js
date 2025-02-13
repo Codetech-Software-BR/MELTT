@@ -2,14 +2,14 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const db = require("../db"); // Importa a conexão com o banco de dados
 
-async function createUser({ nome, email, documento, senha, tipo, aluno_id }) {
+async function createUser({ aluno_id, email, senha, tipo }) {
   const hashedPassword = await bcrypt.hash(senha, 10);
   console.log(hashedPassword);
   return new Promise((resolve, reject) => {
     const query =
-      "INSERT INTO usuarios (nome, email, documento, senha, tipo) VALUES (?, ?, ?, ?)";
-    db.query(query, [nome, email, documento, hashedPassword, tipo], (err, results) => {
-      console.log('ERRO NA QUERY', err);
+      "INSERT INTO usuarios (aluno_id, email, senha, tipo) VALUES (?, ?, ?, ?)";
+    db.query(query, [aluno_id, email, hashedPassword, tipo], (err, results) => {
+      console.log('err', err);
       console.log('results', results);
       if (err) return reject(err);
 
@@ -28,16 +28,6 @@ async function findUserByEmail(email) {
   });
 }
 
-async function findAlunoByDocument(document) {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM alunos WHERE documento = ?";
-    db.query(query, [document], (err, results) => {
-      if (err) return reject(err);
-      resolve(results[0]);
-    });
-  });
-}
-
 async function verifyPassword(storedPassword, password) {
   return bcrypt.compare(password, storedPassword);
 }
@@ -50,4 +40,4 @@ function generateToken(user) {
   );
 }
 
-module.exports = { createUser, findUserByEmail, findAlunoByDocument, verifyPassword, generateToken };
+module.exports = { createUser, findUserByEmail, verifyPassword, generateToken };
