@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogActions,
   Typography,
+  Paper,
 } from "@mui/material";
 import { IoMdAdd } from "react-icons/io";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
@@ -82,7 +83,14 @@ const PreContratoPage = () => {
   };
 
   const addNewCard = () => {
-    if (!newCard.content.trim() || !newCard.createdBy || !newCard.studentName || !newCard.agreedValue || !newCard.packageInterest) return;
+    if (
+      !newCard.content.trim() ||
+      !newCard.createdBy ||
+      !newCard.studentName ||
+      !newCard.agreedValue ||
+      !newCard.packageInterest
+    )
+      return;
 
     const newCardData: Item = {
       id: Date.now().toString(),
@@ -117,6 +125,14 @@ const PreContratoPage = () => {
     });
   };
 
+  // Função para calcular o valor total dos pré-contratos
+  const getTotalAgreedValue = () => {
+    return Object.values(columns)
+      .flatMap((column) => column.items)
+      .reduce((total, item) => total + parseFloat(item.agreedValue || "0"), 0)
+      .toFixed(2); // Total com 2 casas decimais
+  };
+
   return (
     <Stack width={"calc(100% - 28px)"}>
       <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} my={2}>
@@ -131,6 +147,7 @@ const PreContratoPage = () => {
           Adicionar Card
         </Button>
       </Stack>
+
       <DragDropContext onDragEnd={onDragEnd}>
         <Stack direction={"row"} spacing={2}>
           {Object.entries(columns).map(([columnId, column]) => (
@@ -147,7 +164,9 @@ const PreContratoPage = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography variant="body1" fontFamily={'Poppins'} color="primary" fontWeight={600}>{column.name}</Typography>
+                  <Typography variant="body1" fontFamily={"Poppins"} color="primary" fontWeight={600}>
+                    {column.name}
+                  </Typography>
                   {column.items.map((item, index) => (
                     <Draggable key={item.id} draggableId={item.id} index={index}>
                       {(provided) => (
@@ -158,9 +177,9 @@ const PreContratoPage = () => {
                           sx={{ marginBottom: 2, padding: 1 }}
                         >
                           <CardContent>
-                            <Stack direction={'column'} gap={2}>
-                              <Stack direction={'column'} gap={1}>
-                                <Typography variant="caption" color="textSecondary" fontFamily={'Poppins'}>
+                            <Stack direction={"column"} gap={2}>
+                              <Stack direction={"column"} gap={1}>
+                                <Typography variant="caption" color="textSecondary" fontFamily={"Poppins"}>
                                   Criado em: {item.createdAt}
                                 </Typography>
                               </Stack>
@@ -168,10 +187,9 @@ const PreContratoPage = () => {
                               <TextField size="small" label="Aluno" value={item.studentName} fullWidth disabled />
                               <TextField size="small" label="Valor Acordado" value={item.agreedValue} fullWidth disabled />
                               <TextField size="small" label="Pacote de Formatura" value={item.packageInterest} fullWidth disabled />
-                              <Button color="error" size="small" variant="contained" onClick={() => removeCard(columnId, item.id)} sx={{fontFamily:'poppins'}}>
+                              <Button color="error" size="small" variant="contained" onClick={() => removeCard(columnId, item.id)} sx={{ fontFamily: "poppins" }}>
                                 Remover
                               </Button>
-
                             </Stack>
                           </CardContent>
                         </Card>
@@ -185,6 +203,36 @@ const PreContratoPage = () => {
           ))}
         </Stack>
       </DragDropContext>
+
+      <Stack mt={4}>
+        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+          <Typography variant="h6" color="primary" fontWeight={600} fontFamily={'Poppins'}>Lista de Pré-Contratos</Typography>
+          <Stack direction={'column'} alignItems={'center'}>
+            <Typography variant="body2" color="textSecondary" fontFamily={'Poppins'}>Valor Total de Pré-Contrato</Typography>
+            <Typography variant="body2" color="success" fontWeight={600} fontFamily={'Poppins'}>{getTotalAgreedValue()}</Typography>
+          </Stack>
+        </Stack>
+        <Stack spacing={2} mt={2}>
+          {Object.values(columns)
+            .flatMap((column) => column.items)
+            .map((item) => (
+              <Card key={item.id} sx={{ padding: 2 }}>
+                <Stack direction="column" gap={1}>
+                  <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
+                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Aluno: <strong>{item.studentName}</strong></Typography>
+                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Criado por:<strong>{item.createdBy}</strong></Typography>
+                  </Stack>
+                  <Stack direction={'row'} alignItems={'center'} gap={4}>
+                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Valor Acordado: <strong>R${item.agreedValue}</strong></Typography>
+                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Pacote de Formatura: <strong>{item.packageInterest}</strong></Typography>
+                  </Stack>
+                  <Typography variant="caption" color="textSecondary" fontFamily={'Poppins'}>Criado em: {item.createdAt}</Typography>
+                </Stack>
+              </Card>
+            ))}
+        </Stack>
+      </Stack>
+
       <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
         <DialogTitle>Adicionar Novo Card</DialogTitle>
         <DialogContent>
