@@ -16,12 +16,12 @@ exports.getEventosById = (req, res) => {
 };
 
 exports.createEventos = (req, res) => {
-  const { nome_evento, descricao_evento, valor_ingresso, foto_evento } = req.body;
+  const { nome_evento, descricao_evento, valor_ingresso, foto_evento, token } = req.body;
   const query =
-    "INSERT INTO eventos (nome_evento, descricao_evento, valor_ingresso, foto_evento ) VALUES (?, ?, ?, ?)";
+    "INSERT INTO eventos (nome_evento, descricao_evento, valor_ingresso, foto_evento, token ) VALUES (?, ?, ?, ?)";
   db.query(
     query,
-    [nome_evento, descricao_evento, valor_ingresso, foto_evento],
+    [nome_evento, descricao_evento, valor_ingresso, foto_evento, token],
     (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(201).json({ id: result.insertId, ...req.body });

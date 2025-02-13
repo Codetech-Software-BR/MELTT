@@ -22,9 +22,11 @@ exports.createFornecedores = (req, res) => {
     status,
     telefone,
     valor_cotado,
+    cnpj,
+    responsavel
   } = req.body;
   const query =
-    "INSERT INTO fornecedores (nome, tipo_servico, status, telefone, valor_cotado) VALUES (?, ?, ?, ?, ?)";
+    "INSERT INTO fornecedores (nome, tipo_servico, status, telefone, valor_cotado, cnpj, responsavel) VALUES (?, ?, ?, ?, ?, ?, ?)";
   db.query(
     query,
     [
@@ -33,6 +35,8 @@ exports.createFornecedores = (req, res) => {
       status,
       telefone,
       valor_cotado,
+      cnpj,
+      responsavel
     ],
     (err, result) => {
       if (err) return res.status(500).json(err);
@@ -49,9 +53,11 @@ exports.updateFornecedores = (req, res) => {
     status,
     telefone,
     valor_cotado,
+    cnpj,
+    responsavel
   } = req.body;
   const query =
-    "UPDATE fornecedores SET nome = ?, tipo_servico = ?, status = ?, telefone = ?, valor_cotado = ? WHERE id = ?";
+    "UPDATE fornecedores SET nome = ?, tipo_servico = ?, status = ?, telefone = ?, valor_cotado = ?, cnpj = ?, responsavel = ? WHERE id = ?";
 
   db.query(
     query,
@@ -61,6 +67,8 @@ exports.updateFornecedores = (req, res) => {
       status,
       telefone,
       valor_cotado,
+      cnpj,
+      responsavel,
       id,
     ],
     (err) => {
