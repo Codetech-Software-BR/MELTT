@@ -3,22 +3,24 @@ import { FaChartSimple, FaFileSignature, FaGraduationCap, FaMoneyBill1Wave, FaUs
 import { FaCircle, FaHardHat } from "react-icons/fa";
 import { MateriaType } from "../../types";
 import { BiSolidParty, BiSupport } from "react-icons/bi";
+import { IoContract } from "react-icons/io5";
+import { MdBookmarkAdded } from "react-icons/md";
 
 export const menuListAdmin = [
   {
-    title: "Dashboards",
-    route: "/dashboard",
-    subRoutes: [
-      { title: "Fornecedores", route: "/dashboard/fornecedor", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Alunos", route: "/dashboard/alunos", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Turmas", route: "/dashboard/turma", icon: <FaCircle size={8} className="text-white" /> },
-    ],
-    icon: <FaChartSimple size={22} />,
+    title: "Pré-Contratos",
+    route: '/pre-contratos',
+    icon: <IoContract />
   },
   {
     title: "Turmas",
     route: "/turmas",
-    icon: <FaGraduationCap size={22}  />,
+    icon: <FaGraduationCap size={22} />,
+  },
+  {
+    title: "Adesões",
+    route: "/adesoes",
+    icon: <MdBookmarkAdded size={22} />,
   },
   // {
   //   title: "Alunos",
@@ -26,25 +28,35 @@ export const menuListAdmin = [
   //   icon: <FaUsers size={22}  />,
   // },
   {
-    title: "Fornecedores",
+    title: "Contratos e eventos",
     route: "/fornecedores",
     icon: <FaHardHat size={22} />,
   },
   {
-    title: "Pagamentos",
-    route: "/pagamentos",
-    icon: <FaMoneyBill1Wave size={22} />,
+    title: "Relatórios",
+    route: "/dashboard",
+    subRoutes: [
+      { title: "Fornecedores", route: "/dashboard/fornecedor", icon: <FaCircle size={8} className="text-white" /> },
+      { title: "Turmas", route: "/dashboard/turma", icon: <FaCircle size={8} className="text-white" /> },
+      { title: "Adesão", route: "/dashboard/adesao", icon: <FaCircle size={8} className="text-white" /> },
+    ],
+    icon: <FaChartSimple size={22} />,
   },
-  {
-    title: "Eventos",
-    route: "/eventos",
-    icon: <BiSolidParty size={22} />,
-  },
-  {
-    title: "Contratos",
-    route: "/contratos-envio",
-    icon: <FaFileSignature size={22} />,
-  },
+  // {
+  //   title: "Pagamentos",
+  //   route: "/pagamentos",
+  //   icon: <FaMoneyBill1Wave size={22} />,
+  // },
+  // {
+  //   title: "Eventos",
+  //   route: "/eventos",
+  //   icon: <BiSolidParty size={22} />,
+  // },
+  // {
+  //   title: "Contratos",
+  //   route: "/contratos-envio",
+  //   icon: <FaFileSignature size={22} />,
+  // },
 ];
 
 export const menuListAssociacao = [
@@ -62,11 +74,11 @@ export const menuListAssociacao = [
 
 
 export const menuListAluno = [
-  {
-    title: "Turma",
-    route: "/turmas",
-    icon: <FaGraduationCap size={22}/>,
-  },
+  // {
+  //   title: "Turma",
+  //   route: "/turmas",
+  //   icon: <FaGraduationCap size={22} />,
+  // },
   {
     title: "Pagamentos",
     route: "/pagamentos",
@@ -75,13 +87,13 @@ export const menuListAluno = [
   {
     title: "Eventos",
     route: "/eventos",
-    icon: <LuPartyPopper size={22}/>,
+    icon: <LuPartyPopper size={22} />,
   },
-  {
-    title: "Suporte",
-    route: "/suporte",
-    icon: <BiSupport size={22} />,
-  },
+  // {
+  //   title: "Suporte",
+  //   route: "/suporte",
+  //   icon: <BiSupport size={22} />,
+  // },
 ];
 
 
@@ -93,33 +105,6 @@ export const listStudentsDrawerNavigation = [
   { key: "atividades", label: "Atividades" },
 ];
 
-export const listDeficitsGeral = [
-  {
-    key: "deficit_controle_inibitorio",
-    value: "deficit_controle_inibitorio",
-    label: "Controle Inibitório",
-  },
-  {
-    key: "deficit_memoria_trabalho",
-    value: "deficit_memoria_trabalho",
-    label: "Memória de Trabalho",
-  },
-  {
-    key: "deficit_flex_cognitiva",
-    value: "deficit_flex_cognitiva",
-    label: "Flexibilidade Cognitiva",
-  },
-];
-
-export const listTipoAprendizado = [
-  { key: "visao", value: "visao", label: "através da Visão" },
-  { key: "fazendo", value: "fazendo", label: "através da Prática" },
-  {
-    key: "instrucoes_verbais",
-    value: "instrucoes_verbais",
-    label: "através de Instruções Verbais",
-  },
-];
 
 export const UFList = [
   { key: 'AC', value: 'AC', label: 'Acre' },
@@ -150,57 +135,6 @@ export const UFList = [
   { key: 'SE', value: 'SE', label: 'Sergipe' },
   { key: 'TO', value: 'TO', label: 'Tocantins' }
 ]
-
-export const schoolMateriasList: MateriaType[] = [
-  {title: 'Português', value: 'portugues'},
-  {title: 'Matemática', value: 'matematica'},
-  {title: 'Física', value: 'fisica'},
-  {title: 'Química', value: 'quimica'},
-  {title: 'Biologia', value: 'biologia'},
-  {title: 'História', value: 'historia'},
-  {title: 'Geografia', value: 'geografia'},
-  {title: 'Inglês', value: 'ingles'},
-  {title: 'Espanhol', value: 'espanhol'},
-  {title: 'Artes', value: 'artes'},
-  {title: 'Educação Física', value: 'educacao_fisica'},
-  {title: 'Filosofia', value: 'filosofia'},
-  {title: 'Sociologia', value: 'sociologia'},
-  {title: 'Ensino Religioso', value: 'ensino_religioso'},
-  {title: 'Informática', value: 'informatica'},
-  {title: 'Empreendedorismo', value: 'empreendedorismo'},
-  {title: 'Música', value: 'musica'},
-  {title: 'Teatro', value: 'teatro'},
-  {title: 'Dança', value: 'danca'},
-  {title: 'Canto', value: 'canto'},
-  {title: 'Violão', value: 'violao'},
-  {title: 'Piano', value: 'piano'},
-  {title: 'Violino', value: 'violino'},
-]
-
-export const selectOptionsEducacaoBasic = [
-  { label: "Educação Infantil", value: "EDUCACAO_INFANTIL" },
-  {
-    label: "Ensino Fundamental - Anos Iniciais",
-    value: "ENSINO_FUNDAMENTAL_ANOS_INICIAIS",
-  },
-  {
-    label: "Ensino Fundamental - Anos Finais",
-    value: "ENSINO_FUNDAMENTAL_ANOS_FINAIS",
-  },
-  { label: "Ensino Médio", value: "ENSINO_MEDIO" },
-]
-
-export const selectOptionsTurno = [
-  {
-    label: "Manhã",
-    value: "MANHA",
-  },
-  {
-    label: "Tarde",
-    value: "TARDE",
-  },
-]
-
 
 export const profileAvatarImages = [
   {

@@ -8,7 +8,6 @@ import LoginPage from "../pages/login";
 import EsqueciMinhaSenhaPage from "../pages/esqueci-minha-senha";
 import NovaSenhaPage from "../pages/nova-senha";
 import SenhaAlteradaSucessoPage from "../pages/senha-alterada-sucesso";
-import ArquivosPage from "../pages/contratos-envio";
 import SupportPage from "../pages/support";
 import SplashScreen from "../pages/splash";
 import TurmasPage from "../pages/turmas";

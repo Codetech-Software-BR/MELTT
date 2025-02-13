@@ -160,7 +160,7 @@ const LoginPage = () => {
                 >
                   Entrar
                 </LoadingButton>
-                <Divider
+                {/* <Divider
                   variant="middle"
                   sx={{
                     "&::before, &::after": {
@@ -179,7 +179,7 @@ const LoginPage = () => {
                   onClick={() => navigate("/cadastro")}
                 >
                   Me Cadastrar (aluno)
-                </Button>
+                </Button> */}
               </Stack>
             </Stack>
           )}
