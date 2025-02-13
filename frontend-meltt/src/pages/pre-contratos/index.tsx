@@ -206,9 +206,9 @@ const PreContratoPage = () => {
 
       <Stack mt={4}>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography variant="h6" color="primary" fontWeight={600} fontFamily={'Poppins'}>Lista de Pré-Contratos</Typography>
+          <Typography variant="h6" color="primary" fontWeight={600} fontFamily={'Poppins'}>Lista de Pré-Contratos:</Typography>
           <Stack direction={'column'} alignItems={'center'}>
-            <Typography variant="body2" color="textSecondary" fontFamily={'Poppins'}>Valor Total de Pré-Contrato</Typography>
+            <Typography variant="body2" color="textSecondary" fontFamily={'Poppins'}>Valor Total</Typography>
             <Typography variant="body2" color="success" fontWeight={600} fontFamily={'Poppins'}>{getTotalAgreedValue()}</Typography>
           </Stack>
         </Stack>
