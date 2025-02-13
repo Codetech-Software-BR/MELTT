@@ -158,14 +158,14 @@ const ContratosEventosPage = () => {
   const getColumnBackgroundColor = (columnId: string) => {
     switch (columnId) {
       case "em-atraso":
-        return "rgba(255, 99, 71, 0.3)"; // Tom pastel de vermelho
+        return "rgba(255, 99, 71, 0.3)";
       case "em-andamento":
       case "em-negociacao":
-        return "rgba(255, 255, 0, 0.3)"; // Tom pastel de amarelo
+        return "rgba(255, 255, 0, 0.3)";
       case "realizado":
-        return "rgba(144, 238, 144, 0.3)"; // Tom pastel de verde
+        return "rgba(144, 238, 144, 0.3)";
       default:
-        return "#e4e4e4"; // Cor padrão
+        return "#e4e4e4";
     }
   };
 
@@ -240,7 +240,7 @@ const ContratosEventosPage = () => {
                         sx={{
                           width: 300,
                           minHeight: 350,
-                          background: getColumnBackgroundColor(columnId), // Cor de fundo baseada no estado
+                          background: getColumnBackgroundColor(columnId),
                           padding: 2,
                           borderRadius: 2,
                         }}
