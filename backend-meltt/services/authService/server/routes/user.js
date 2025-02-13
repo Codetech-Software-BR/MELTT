@@ -1,10 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const bcrypt = require("bcryptjs");
-const { createUser, findUserByEmail, verifyPassword, generateToken } = require('../models/user');
-const authMiddleware = require('../middlewares/auth');
-const connection = require('../db');
+// Bibliotecas
+import express from 'express';
+import bcrypt from "bcryptjs";
 
+// Modulos
+import { createUser, findUserByEmail, verifyPassword, generateToken } from '../models/User';
+import authMiddleware from '../middlewares/auth';
+import connection from '../db';
+
+// Instâncias
+const router = express.Router();
+
+// Rotas
 router.post('/register', async (req, res) => {
   const { aluno_id, email, senha, tipo } = req.body;
   console.log('req.body', req.body)
@@ -126,4 +132,4 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 });
 
 
-module.exports = router;
+export default router;

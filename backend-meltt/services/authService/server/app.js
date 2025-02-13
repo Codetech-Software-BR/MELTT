@@ -1,13 +1,13 @@
-const express = require("express");
-const cors = require("cors");
-const connection = require("./db");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const authMiddleware = require("./middlewares/auth");
-const bodyParser = require("body-parser");
-const axios = require("axios");
-
-require("dotenv").config();
+// Bibliotecas
+import express from "express";
+import cors from "cors";
+import connection from "./db.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import authMiddleware from "./middlewares/auth/index.js";
+import bodyParser from "body-parser";
+import axios from "axios";
+import "dotenv/config";
 
 const app = express();
 app.use(bodyParser.json());

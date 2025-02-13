@@ -1,21 +1,21 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const connection = require("./db");
-const axios = require('axios')
-const multer = require("multer");
-const authMiddleware = require("./middlewares/auth");
-const db = require("./db");
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import connection from "./db.js";
+import axios from 'axios'
+import multer from "multer";
+import authMiddleware from "./middlewares/auth/index.js";
+import db from "./db.js";
 
-const alunoController = require("./controllers/alunoController");
-const turmaController = require("./controllers/turmaController");
-const fornecedoresController = require("./controllers/fornecedoresController");
-const faculdadeController = require("./controllers/faculdadeController");
-const topicosController = require("./controllers/topicosController");
-const respostasController = require("./controllers/respostasController");
-const eventosController = require("./controllers/eventosController");
-const contratosController = require("./controllers/contratosController");
-require("dotenv").config();
+import alunoController from "./controllers/alunoController.js";
+import turmaController from "./controllers/turmaController.js";
+import fornecedoresController from "./controllers/fornecedoresController.js";
+import faculdadeController from "./controllers/faculdadeController.js";
+import topicosController from "./controllers/topicosController.js";
+import respostasController from "./controllers/respostasController.js";
+import eventosController from "./controllers/eventosController.js";
+import contratosController from "./controllers/contratosController.js";
+import "dotenv/config";
 
 const app = express();
 app.use(bodyParser.json());
