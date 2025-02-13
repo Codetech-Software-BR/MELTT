@@ -29,6 +29,8 @@ import EventosPageEdit from "../pages/eventos/edit";
 import ContratosPage from "../pages/contratos";
 import ContratosEnvioPage from "../pages/contratos-envio";
 import SplashGetBlingInfo from "../pages/splash/blingInfo";
+import PreContratoPage from "../pages/pre-contratos";
+import AdesoesPage from "../pages/adesoes";
 
 export const router = createBrowserRouter([
   {
@@ -170,6 +172,14 @@ export const router = createBrowserRouter([
       {
         path: "/eventos/edit/:id?",
         element: <EventosPageEdit/>,
+      },
+      {
+        path: "/adesoes",
+        element: <AdesoesPage/>
+      },
+      {
+        path: "/pre-contratos",
+        element: <PreContratoPage/>,
       },
       {
         path: "/contratos",
