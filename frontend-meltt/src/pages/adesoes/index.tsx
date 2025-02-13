@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import { Paper, Typography, Chip, Grid, Button, Modal, Box, TextField, Dialog, DialogTitle, DialogActions } from '@mui/material';
 
-const initialAdesoes = [
+interface Adesao {
+    id: number;
+    nomeAluno: string;
+    dataAdesao: string | null;
+    turma: string;
+    valor: string;
+    status: string;
+    descricao: string;
+}
+
+const initialAdesoes: Adesao[] = [
     {
         id: 1,
         nomeAluno: 'João Silva',
@@ -22,7 +32,7 @@ const initialAdesoes = [
     }
 ];
 
-const getStatusColor = (status) => {
+const getStatusColor = (status: string) => {
     switch (status) {
         case 'Aderida':
             return 'success';
@@ -35,14 +45,14 @@ const getStatusColor = (status) => {
     }
 };
 
-const AdesoesPage = () => {
-    const [adesoes, setAdesoes] = useState(initialAdesoes);
-    const [open, setOpen] = useState(false);
-    const [openDelete, setOpenDelete] = useState(false);
-    const [editingAdesao, setEditingAdesao] = useState(null);
-    const [deleteId, setDeleteId] = useState(null);
+const AdesoesPage: React.FC = () => {
+    const [adesoes, setAdesoes] = useState<Adesao[]>(initialAdesoes);
+    const [open, setOpen] = useState<boolean>(false);
+    const [openDelete, setOpenDelete] = useState<boolean>(false);
+    const [editingAdesao, setEditingAdesao] = useState<Adesao | null>(null);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
 
-    const handleOpen = (adesao = null) => {
+    const handleOpen = (adesao: Adesao | null = null) => {
         setEditingAdesao(adesao);
         setOpen(true);
     };
@@ -52,17 +62,17 @@ const AdesoesPage = () => {
         setEditingAdesao(null);
     };
 
-    const handleSave = (event) => {
+    const handleSave = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        const newAdesao = {
+        const newAdesao: Adesao = {
             id: editingAdesao ? editingAdesao.id : adesoes.length + 1,
-            nomeAluno: formData.get('nomeAluno'),
-            dataAdesao: formData.get('dataAdesao') || null,
-            turma: formData.get('turma'),
-            valor: formData.get('valor'),
-            status: formData.get('status'),
-            descricao: formData.get('descricao') || ''
+            nomeAluno: formData.get('nomeAluno') as string,
+            dataAdesao: formData.get('dataAdesao') as string || null,
+            turma: formData.get('turma') as string,
+            valor: formData.get('valor') as string,
+            status: formData.get('status') as string,
+            descricao: formData.get('descricao') as string || ''
         };
 
         if (editingAdesao) {
@@ -73,7 +83,7 @@ const AdesoesPage = () => {
         handleClose();
     };
 
-    const handleDeleteConfirmation = (id) => {
+    const handleDeleteConfirmation = (id: number) => {
         setDeleteId(id);
         setOpenDelete(true);
     };

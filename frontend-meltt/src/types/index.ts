@@ -59,3 +59,32 @@ export type Resposta = {
   resposta: string;
   data_criacao: any;
 };
+
+
+export interface Evento {
+  id: string;
+  titulo: string;
+  descricao: string;
+  data: string;
+  tipo: "reuniao" | "degustacao" | "cotacao" | "outro";
+  participantes: string[];
+  local: string;
+}
+
+export interface Fornecedor {
+  id: string;
+  nome: string;
+  contato: string;
+  produtos: string[];
+  valorPedido: number;
+  personalizados: string[];
+}
+
+export interface Contrato {
+  id: string;
+  titulo: string;
+  descricao: string;
+  eventos: Evento[];
+  fornecedores: Fornecedor[];
+  status: "pendente" | "em_andamento" | "concluido";
+}

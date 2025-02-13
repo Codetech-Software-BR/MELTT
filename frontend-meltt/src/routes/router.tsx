@@ -31,6 +31,7 @@ import ContratosEnvioPage from "../pages/contratos-envio";
 import SplashGetBlingInfo from "../pages/splash/blingInfo";
 import PreContratoPage from "../pages/pre-contratos";
 import AdesoesPage from "../pages/adesoes";
+import ContratosEventosPage from "../pages/contratos-eventos";
 
 export const router = createBrowserRouter([
   {
@@ -151,8 +152,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/fornecedores",
-        element: <FornecedoresPage/>
+        element: <ContratosEventosPage/>
       },
+      // {
+      //   path: "/fornecedores",
+      //   element: <FornecedoresPage/>
+      // },
       {
         path: "/fornecedor/edit/:id?",
         element: <FornecedoresEditPage/>
