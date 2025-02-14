@@ -155,7 +155,6 @@ export default function CustomDrawer(props: Props) {
                   </ListItemIcon>
                   <Typography
                     sx={{
-                      fontFamily: "Poppins",
                       ...(location.pathname === item.route ||
                       routeSelected === item.route ||
                       routeSelected.includes(item.route)
@@ -186,7 +185,6 @@ export default function CustomDrawer(props: Props) {
                           <Typography
                             sx={{
                               ml: 4,
-                              fontFamily: "Poppins",
                               fontSize: 14,
                               ...(location.pathname === subItem.route ||
                               routeSelected === subItem.route
@@ -248,7 +246,6 @@ export default function CustomDrawer(props: Props) {
               component="div"
               sx={{
                 ml: 27,
-                fontFamily: "Poppins",
                 textTransform: "capitalize",
                 fontWeight: 600,
                 flexGrow: 1,
@@ -262,7 +259,6 @@ export default function CustomDrawer(props: Props) {
               component="div"
               sx={{
                 ml: 27.5,
-                fontFamily: "Poppins",
                 textTransform: "capitalize",
                 fontWeight: 300,
                 flexGrow: 1,
@@ -300,13 +296,11 @@ export default function CustomDrawer(props: Props) {
                               primary={notificacao.mensagem}
                               secondary={format(notificacao.criada_em, 'dd/MM/yyyy')}
                               primaryTypographyProps={{
-                                fontFamily: "Poppins",
                                 fontSize: 12,
                                 fontWeight: 600,
                                 color: "primary"
                               }}
                               secondaryTypographyProps={{
-                                fontFamily: "Poppins",
                                 fontSize: 10,
                                 color: "secondary"
                               }}
@@ -318,7 +312,7 @@ export default function CustomDrawer(props: Props) {
                     ) : (
                       <small
                         className="text-xs"
-                        style={{ fontFamily: "Poppins" }}
+                        style={{ }}
                       >
                         😥 nenhuma notificação disponível
                       </small>
@@ -351,7 +345,6 @@ export default function CustomDrawer(props: Props) {
                         <ListItemText
                           primary="Alterar Minha Senha"
                           primaryTypographyProps={{
-                            fontFamily: "Poppins",
                             fontSize: 14,
                           }}
                         />
@@ -366,21 +359,21 @@ export default function CustomDrawer(props: Props) {
                 <Typography
                   variant="body2"
                   fontWeight={600}
-                  sx={{ color: "#111", fontFamily: "Poppins" }}
+                  sx={{ color: "#111", }}
                 >
                   {decoded?.nome}
                 </Typography>
                 <Typography
                   variant="caption"
                   mt={-1}
-                  sx={{ color: "#bbb", fontFamily: "Poppins" }}
+                  sx={{ color: "#bbb", }}
                 >
                   {decoded?.email}
                 </Typography>
                 <Typography
                   variant="caption"
                   mt={-1}
-                  sx={{ color: "#bbb", fontFamily: "Poppins" }}
+                  sx={{ color: "#bbb", }}
                 >
                   {decoded?.tipo}
                 </Typography>

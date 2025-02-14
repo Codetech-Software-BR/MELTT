@@ -67,7 +67,6 @@ const SplashScreen = () => {
               color="textSecondary"
               fontWeight={"light"}
               variant="subtitle2"
-              fontFamily={"Poppins"}
             >
               <b>Gestão de Formaturas</b>, de maneira simples e eficiente.
             </Typography>
