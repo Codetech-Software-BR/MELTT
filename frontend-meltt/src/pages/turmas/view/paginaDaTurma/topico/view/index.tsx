@@ -120,7 +120,6 @@ const TopicoViewPage = () => {
           <Typography
             color="primary"
             variant="h6"
-            fontFamily={"Poppins"}
             fontWeight={600}
           >
             Título:{""}
@@ -133,7 +132,6 @@ const TopicoViewPage = () => {
           <Typography
             color="primary"
             variant="body1"
-            fontFamily={"Poppins"}
             fontWeight={400}
           >
             {loadingTopicos ? (
@@ -196,7 +194,6 @@ const TopicoViewPage = () => {
                       )}`}
                       secondaryTypographyProps={{
                         fontSize: "12px",
-                        fontFamily: "Poppins",
                       }}
                     />
                   </ListItemButton>

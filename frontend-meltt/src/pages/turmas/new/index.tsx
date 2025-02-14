@@ -185,7 +185,6 @@ const TurmasPageNew = () => {
                     <Stack direction={"column"}>
                       <Typography
                         color="primary"
-                        fontFamily={"Poppins"}
                         fontWeight={600}
                       >
                         Cadastrar Nova Turma (NOVA ASSOCIAÇÃO)
@@ -193,7 +192,6 @@ const TurmasPageNew = () => {
                       <Typography
                         variant="caption"
                         color="primary"
-                        fontFamily={"Poppins"}
                       >
                         preencha as informações abaixo.
                       </Typography>
@@ -349,7 +347,7 @@ const TurmasPageNew = () => {
                       )}
                     </div>
                     <Stack spacing={3} bgcolor={"#f9f9f9"} p={2} borderRadius={2}>
-                      <Typography variant="body1" color="primary" fontFamily={'Poppins'}>
+                      <Typography variant="body1" color="primary">
                         Planos de Formatura
                       </Typography>
                       <Stack direction="row" spacing={2}>
@@ -383,9 +381,9 @@ const TurmasPageNew = () => {
                         {plans.map((plano, index) => (
                           <Card key={index} variant="outlined">
                             <CardContent>
-                              <Typography variant="body1" sx={{ fontFamily: 'Poppins', fontWeight: 600 }}>{plano.nome}</Typography>
-                              <Typography variant="body2" sx={{ fontFamily: 'Poppins' }}>Inclusos: {plano.inclusos}</Typography>
-                              <Typography variant="body2" sx={{ fontFamily: 'Poppins' }}>Valor: R$ {plano.valor}</Typography>
+                              <Typography variant="body1" sx={{ fontWeight: 600 }}>{plano.nome}</Typography>
+                              <Typography variant="body2">Inclusos: {plano.inclusos}</Typography>
+                              <Typography variant="body2">Valor: R$ {plano.valor}</Typography>
                             </CardContent>
                             <CardActions>
                               <IconButton size="small" color="error" onClick={() => removerPlano(index)}>

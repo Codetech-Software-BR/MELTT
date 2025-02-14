@@ -96,7 +96,6 @@ const AlunosPageView = () => {
         <Paper
           elevation={0}
           style={{
-            fontFamily: "Poppins",
             position: "relative",
             padding: "12px",
             height: "calc(100vh - 132px)",
@@ -116,11 +115,10 @@ const AlunosPageView = () => {
               <form className="h-[100%] flex flex-col justify-between">
                 <Stack padding={2} gap={2} width={"100%"}>
                   <Stack direction={"column"}>
-                    <Typography fontFamily={"Poppins"} fontWeight={600}>
+                    <Typography fontWeight={600}>
                       Dados do Aluno
                     </Typography>
                     <Typography
-                      fontFamily={"Poppins"}
                       variant="caption"
                       color="textSecondary"
                     >

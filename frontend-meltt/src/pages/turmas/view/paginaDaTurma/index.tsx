@@ -185,7 +185,6 @@ const PaginaDaTurmaPage = () => {
             <Typography
               color="primary"
               variant="h6"
-              fontFamily={"Poppins"}
               fontWeight={600}
             >
               Página da Turma -{" "}
@@ -211,7 +210,6 @@ const PaginaDaTurmaPage = () => {
                   <Typography
                     color="primary"
                     variant="body2"
-                    fontFamily={"Poppins"}
                   ></Typography>
                   {decoded?.tipo === "ADMIN" && (
                     <Button
@@ -264,13 +262,11 @@ const PaginaDaTurmaPage = () => {
                             secondary={`Descrição: ${item.descricao}`}
                             primaryTypographyProps={{
                               color: "primary",
-                              fontFamily: "Poppins",
                               fontSize: "14px",
                               fontWeight: 600,
                             }}
                             secondaryTypographyProps={{
                               fontSize: "12px",
-                              fontFamily: "Poppins",
                             }}
                           />
                         </ListItemButton>
@@ -297,7 +293,6 @@ const PaginaDaTurmaPage = () => {
                   <Typography
                     color="primary"
                     variant="body2"
-                    fontFamily={"Poppins"}
                   ></Typography>
                   {decoded?.tipo === "ADMIN" ? (
                     <Button
@@ -367,7 +362,6 @@ const PaginaDaTurmaPage = () => {
                             secondary={item.tipo_mime}
                             primaryTypographyProps={{
                               color: "primary",
-                              fontFamily: "Poppins",
                               fontSize: "14px",
                             }}
                             secondaryTypographyProps={{
