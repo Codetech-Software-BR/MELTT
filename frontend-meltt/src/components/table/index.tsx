@@ -28,7 +28,7 @@ export default function BasicTable({
         <TableHead sx={{ bgcolor: "#EFEBFB", padding: 0}}>
           <TableRow>
             {columns.map((column: TableColumnsType) => (
-              <TableCell sx={{ fontFamily:"Poppins" }}>{column.label}</TableCell>
+              <TableCell key={column.key} sx={{ fontFamily:"Poppins" }}>{column.label}</TableCell>
             ))}
           </TableRow>
         </TableHead>
