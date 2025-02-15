@@ -50,7 +50,7 @@ const TurmasPage = () => {
       const response = await apiGetData("academic", "/turmas");
       setTurmas(response);
     } catch (error) {
-      toast.error("Erro ao buscar alunos");
+      toast.error("Erro ao buscar turmas");
     }
 
     setLoading(false);
@@ -109,13 +109,13 @@ const TurmasPage = () => {
                 <FaEye color="#2d1c63" size={22} />
               </IconButton>
             </Tooltip>
-            {decoded?.tipo === "ADMIN" && (
+            {/* {decoded?.tipo === "ADMIN" && (
               <Tooltip title="Deletar Turma" arrow>
                 <IconButton onClick={() => onClickDelete(row)}>
                   <FaTrashAlt size={20} className="text-red-600" />
                 </IconButton>
               </Tooltip>
-            )}
+            )} */}
           </Stack>
         </TableCell>
       </TableRow>
