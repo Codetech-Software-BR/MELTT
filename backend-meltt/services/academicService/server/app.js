@@ -15,6 +15,7 @@ import faculdadeController from "./controllers/faculdadeController.js";
 import topicosController from "./controllers/topicosController.js";
 import respostasController from "./controllers/respostasController.js";
 import eventosController from "./controllers/eventosController.js";
+import preContratoController from "./controllers/preContratoController.js";
 import contratosController from "./controllers/contratosController.js";
 
 // Configurações
@@ -127,6 +128,13 @@ app.get("/api/eventos/:id", authMiddleware, eventosController.getEventosById);
 app.post("/api/eventos", authMiddleware, eventosController.createEventos);
 app.put("/api/eventos/:id", authMiddleware, eventosController.updateEventos);
 app.delete("/api/eventos/:id", authMiddleware, eventosController.deleteEventos);
+
+// Pré Contratos
+app.get("/api/pre-contrato", authMiddleware, preContratoController.getAllPreContratos);
+app.get("/api/pre-contrato/:id", authMiddleware, preContratoController.getPreContratoById);
+app.post("/api/pre-contrato", authMiddleware, preContratoController.createPreContrato);
+app.put("/api/pre-contrato/:id", authMiddleware, preContratoController.updatePreContrato);
+app.delete("/api/pre-contrato/:id", authMiddleware, preContratoController.deletePreContrato);
 
 // Contratos
 app.get("/api/contratos", authMiddleware, contratosController.getAllContratos);
