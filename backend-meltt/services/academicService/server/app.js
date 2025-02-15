@@ -22,7 +22,7 @@ import contratosController from "./controllers/contratosController.js";
 import "dotenv/config";
 
 const app = express();
-const corsOptions = { origin: "localhost:9001/", credentials: true };
+const corsOptions = { origin: "*", credentials: true };
 const upload = multer({ storage: multer.memoryStorage() });
 
 // const JWT_SECRET = process.env.JWT_SECRET;
@@ -147,7 +147,6 @@ app.delete("/api/contratos/:id", authMiddleware, contratosController.deleteContr
 // Notificações
 app.get("/api/notificacoes", authMiddleware, (req, res) => {
   const { id } = req.user;
-  console.log("id usuário", id);
   const query =
     "SELECT * FROM notificacoes WHERE usuario_id = ? ORDER BY criada_em DESC";
   db.query(query, [id], (err, result) => {
