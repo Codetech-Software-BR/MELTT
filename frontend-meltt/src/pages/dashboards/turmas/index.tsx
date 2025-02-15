@@ -182,14 +182,12 @@ const DashboardTurmasPage = () => {
                       color="primary"
                       variant="body1"
                       fontWeight={600}
-                      fontFamily={"Poppins"}
                     >
                       Detalhamento dos pagamentos
                     </Typography>
                     {/* <Typography
                     color="textSecondary"
                     variant="subtitle2"
-                    fontFamily={"Poppins"}
                     sx={{mr: 2}}
                   >
                     total de atividades: {listAtividades?.length}
@@ -258,14 +256,12 @@ const DashboardTurmasPage = () => {
                       color="primary"
                       variant="body1"
                       fontWeight={600}
-                      fontFamily={"Poppins"}
                     >
                       Turmas Cadastradas
                     </Typography>
                     {/* <Typography
                     color="textSecondary"
                     variant="subtitle2"
-                    fontFamily={"Poppins"}
                     sx={{mr: 2}}
                   >
                     total de alunos: {listStudents?.length}

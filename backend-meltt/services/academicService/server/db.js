@@ -1,5 +1,5 @@
-const dotenv = require('dotenv');
-const mysql = require('mysql2');
+import dotenv from 'dotenv';
+import mysql from 'mysql2';
 
 const envFile = process.env.NODE_ENV === 'production' ? '.env' : '.env.local';
 dotenv.config({ path: envFile });
@@ -29,4 +29,4 @@ connection.connect(err => {
   console.log('Connected to the database.');
 });
 
-module.exports = connection;
+export default connection;

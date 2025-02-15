@@ -1,13 +1,15 @@
-const db = require("../db");
+import db from "../db.js";
 
-exports.getAllFaculdade = (req, res) => {
+class FaculdadeController {
+
+ getAllFaculdade(req, res) {
   db.query("SELECT * FROM faculdades", (err, results) => {
     if (err) return res.status(500).json(err);
     res.status(200).json(results);
   });
 };
 
-exports.getFaculdadeById = (req, res) => {
+ getFaculdadeById(req, res) {
   const id = req.params.id;
   db.query("SELECT * FROM faculdades WHERE id = ?", [id], (err, result) => {
     if (err) return res.status(500).json(err);
@@ -15,7 +17,7 @@ exports.getFaculdadeById = (req, res) => {
   });
 };
 
-exports.createFaculdade = (req, res) => {
+ createFaculdade(req, res) {
   const {
     nome,
     endereco,
@@ -37,7 +39,7 @@ exports.createFaculdade = (req, res) => {
   );
 };
 
-exports.updateFaculdade = (req, res) => {
+ updateFaculdade(req, res) {
   const id = req.params.id;
   const {
     nome,
@@ -62,10 +64,14 @@ exports.updateFaculdade = (req, res) => {
   );
 };
 
-exports.deleteFaculdade = (req, res) => {
+ deleteFaculdade(req, res) {
   const id = req.params.id;
   db.query("DELETE FROM faculdades WHERE id = ?", [id], (err) => {
     if (err) return res.status(500).json(err);
     res.status(200).json({ message: "Faculdade deletada com sucesso!" });
   });
 };
+
+}
+
+export default new FaculdadeController();

@@ -124,7 +124,7 @@ const FornecedoresEditPage = () => {
                       <Typography
                         color="primary"
                         fontWeight={600}
-                        sx={{ fontFamily: "Poppins", fontSize: 18 }}
+                        sx={{ fontSize: 18 }}
                       >
                         Dados do Fornecedor
                       </Typography>

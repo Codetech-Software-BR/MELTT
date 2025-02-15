@@ -101,21 +101,21 @@ const AdesoesPage: React.FC = () => {
             {adesoes.map((adesao) => (
                 <Grid item xs={12} sm={6} md={4} key={adesao.id}>
                     <Paper elevation={3} sx={{ padding: 2, borderRadius: 2, backgroundColor: '#f5f5f5' }}>
-                        <Typography variant="h6" fontFamily="Poppins">
+                        <Typography variant="h6">
                             {adesao.nomeAluno}
                         </Typography>
-                        <Typography variant="body2" fontFamily="Poppins">
+                        <Typography variant="body2">
                             <strong>Turma:</strong> {adesao.turma}
                         </Typography>
-                        <Typography variant="body2" fontFamily="Poppins">
+                        <Typography variant="body2">
                             <strong>Valor:</strong> {adesao.valor}
                         </Typography>
-                        <Typography variant="body2" fontFamily="Poppins">
+                        <Typography variant="body2">
                             <strong>Data de Adesão:</strong> {adesao.dataAdesao || 'Ainda não aderida'}
                         </Typography>
                         <Chip label={adesao.status} color={getStatusColor(adesao.status)} sx={{ mt: 1 }} />
                         {adesao.descricao && (
-                            <Typography variant="body2" fontFamily="Poppins" sx={{ mt: 1 }}>
+                            <Typography variant="body2" sx={{ mt: 1 }}>
                                 <strong>Descrição:</strong> {adesao.descricao}
                             </Typography>
                         )}
@@ -126,7 +126,7 @@ const AdesoesPage: React.FC = () => {
             ))}
             <Modal open={open} onClose={handleClose}>
                 <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 400, bgcolor: 'background.paper', p: 4, borderRadius: 2 }}>
-                    <Typography variant="body1" color='primary' fontFamily="Poppins" fontWeight={600}>{editingAdesao ? 'Editar Adesão' : 'Nova Adesão'}</Typography>
+                    <Typography variant="body1" color='primary' fontWeight={600}>{editingAdesao ? 'Editar Adesão' : 'Nova Adesão'}</Typography>
                     <form onSubmit={handleSave}>
                         <TextField fullWidth margin="dense" label="Nome do Aluno" name="nomeAluno" defaultValue={editingAdesao?.nomeAluno || ''} required />
                         <TextField fullWidth margin="dense" label="Turma" name="turma" defaultValue={editingAdesao?.turma || ''} required />

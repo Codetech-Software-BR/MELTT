@@ -74,7 +74,6 @@ const SplashGetBlingInfo = () => {
               color="textSecondary"
               fontWeight={"light"}
               variant="subtitle2"
-              fontFamily={"Poppins"}
             >
               <b>
                 {showTryAgain

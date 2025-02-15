@@ -173,14 +173,12 @@ const DashboardFornecedoresPage = () => {
                       color="primary"
                       variant="body1"
                       fontWeight={600}
-                      fontFamily={"Poppins"}
                     >
                       Detalhamentos dos pagamentos
                     </Typography>
                     {/* <Typography
                     color="textSecondary"
                     variant="subtitle2"
-                    fontFamily={"Poppins"}
                     sx={{mr: 2}}
                   >
                     total de atividades: {listAtividades?.length}
@@ -250,14 +248,12 @@ const DashboardFornecedoresPage = () => {
                       color="primary"
                       variant="body1"
                       fontWeight={600}
-                      fontFamily={"Poppins"}
                     >
                       Fornecedores Cadastrados
                     </Typography>
                     <Typography
                       color="textSecondary"
                       variant="subtitle2"
-                      fontFamily={"Poppins"}
                       sx={{ mr: 2 }}
                     >
                       total de fornecedores: {listFornecedores?.length}

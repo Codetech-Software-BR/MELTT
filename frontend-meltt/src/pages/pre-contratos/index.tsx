@@ -170,7 +170,7 @@ const PreContratoPage = () => {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography variant="body1" fontFamily={"Poppins"} color="primary" fontWeight={600}>
+                  <Typography variant="body1" color="primary" fontWeight={600}>
                     {column.name}
                   </Typography>
                   {column.items.map((item, index) => (
@@ -185,7 +185,7 @@ const PreContratoPage = () => {
                           <CardContent>
                             <Stack direction={"column"} gap={2}>
                               <Stack direction={"column"} gap={1}>
-                                <Typography variant="caption" color="textSecondary" fontFamily={"Poppins"}>
+                                <Typography variant="caption" color="textSecondary">
                                   Criado em: {item.createdAt}
                                 </Typography>
                               </Stack>
@@ -225,14 +225,14 @@ const PreContratoPage = () => {
               <Card key={item.id} sx={{ padding: 2 }}>
                 <Stack direction="column" gap={1}>
                   <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Aluno: <strong>{item.studentName}</strong></Typography>
-                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Criado por:<strong>{item.createdBy}</strong></Typography>
+                    <Typography variant="body2" color="primary">Aluno: <strong>{item.studentName}</strong></Typography>
+                    <Typography variant="body2" color="primary">Criado por:<strong>{item.createdBy}</strong></Typography>
                   </Stack>
                   <Stack direction={'row'} alignItems={'center'} gap={4}>
-                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Valor Acordado: <strong>R${item.agreedValue}</strong></Typography>
-                    <Typography variant="body2" color="primary" fontFamily={'Poppins'}>Pacote de Formatura: <strong>{item.packageInterest}</strong></Typography>
+                    <Typography variant="body2" color="primary">Valor Acordado: <strong>R${item.agreedValue}</strong></Typography>
+                    <Typography variant="body2" color="primary">Pacote de Formatura: <strong>{item.packageInterest}</strong></Typography>
                   </Stack>
-                  <Typography variant="caption" color="textSecondary" fontFamily={'Poppins'}>Criado em: {item.createdAt}</Typography>
+                  <Typography variant="caption" color="textSecondary">Criado em: {item.createdAt}</Typography>
                 </Stack>
               </Card>
             ))}

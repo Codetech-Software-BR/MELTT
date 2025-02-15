@@ -7,12 +7,11 @@ const BoxDashboardValues = ({ title }: { title: string }) => {
         color="primary"
         variant="body1"
         fontWeight={600}
-        fontFamily={"Poppins"}
       >
         {title}
       </Typography>
       <Box borderRadius={"20px"} color={"white"}>
-        <Typography color="secondary" variant="h5" fontWeight={600} fontFamily={'Poppins'}>
+        <Typography color="secondary" variant="h5" fontWeight={600}>
           R$0,00
         </Typography>
       </Box>

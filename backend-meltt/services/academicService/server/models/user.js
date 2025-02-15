@@ -1,6 +1,9 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const db = require("../db"); // Importa a conexão com o banco de dados
+// Bibliotecas
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+// Modulos
+import db from "../db";
 
 async function createUser({ aluno_id, email, senha, tipo }) {
   const hashedPassword = await bcrypt.hash(senha, 10);
@@ -40,4 +43,4 @@ function generateToken(user) {
   );
 }
 
-module.exports = { createUser, findUserByEmail, verifyPassword, generateToken };
+export default { createUser, findUserByEmail, verifyPassword, generateToken };

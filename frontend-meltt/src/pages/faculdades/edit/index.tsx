@@ -110,11 +110,10 @@ const FaculdadesPageEdit = () => {
               >
                 <Stack padding={2} gap={2} width={"100%"}>
                   <Stack direction={"column"}>
-                    <Typography fontFamily={"Poppins"} fontWeight={600}>
+                    <Typography fontWeight={600}>
                       Dados da Faculdade
                     </Typography>
                     <Typography
-                      fontFamily={"Poppins"}
                       variant="caption"
                       color="textSecondary"
                     >
