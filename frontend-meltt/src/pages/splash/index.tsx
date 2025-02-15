@@ -30,23 +30,23 @@ const SplashScreen = () => {
 
   useEffect(() => {
     if (decoded?.tipo === "ADMIN") {
-      // toast.error("Faça Login no Bling primeiro para acessar a plataforma");
-      // setTimeout(() => {
-      //   redirectToBlingAuth();
-      //   const queryParams = new URLSearchParams(window.location.search);
-      //   const code = queryParams.get("code");
-      //   console.log('CODE', code)
+      toast.error("Faça Login no Bling primeiro para acessar a plataforma");
+      setTimeout(() => {
+        redirectToBlingAuth();
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get("code");
+        console.log('CODE', code)
 
-      //   if (code) {
-      //     apiPostData("academic", "/external/bling/oauth", { code })
-      //       .then((response) => {
-      //         console.log("Tokens recebidos:", response.data);
-      //       })
-      //       .catch((error) => {
-      //         console.error("Erro ao enviar código para o backend:", error);
-      //       });
-      //   }
-      // }, 1000);
+        if (code) {
+          apiPostData("academic", "/external/bling/oauth", { code })
+            .then((response) => {
+              console.log("Tokens recebidos:", response.data);
+            })
+            .catch((error) => {
+              console.error("Erro ao enviar código para o backend:", error);
+            });
+        }
+      }, 1000);
     }
   }, [window.location.search]);
 

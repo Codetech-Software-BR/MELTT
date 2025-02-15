@@ -22,11 +22,11 @@ export const menuListAdmin = [
     route: "/adesoes",
     icon: <MdBookmarkAdded size={22} />,
   },
-  // {
-  //   title: "Alunos",
-  //   route: "/alunos",
-  //   icon: <FaUsers size={22}  />,
-  // },
+  {
+    title: "Alunos",
+    route: "/alunos",
+    icon: <FaUsers size={22}  />,
+  },
   {
     title: "Contratos e eventos",
     route: "/fornecedores",
