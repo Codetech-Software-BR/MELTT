@@ -10,7 +10,6 @@ import {
   DialogContent,
   DialogActions,
   Typography,
-  Paper,
 } from "@mui/material";
 import { IoMdAdd } from "react-icons/io";
 import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
@@ -19,6 +18,7 @@ type Item = {
   id: string;
   content: string;
   createdBy: string;
+  contactedBy: string;
   studentName: string;
   agreedValue: string;
   packageInterest: string;
@@ -43,8 +43,12 @@ const initialColumns: Columns = {
     name: "Em Contato",
     items: [],
   },
-  "concluido": {
-    name: "Concluído",
+  "pagamento-pendente": {
+    name: "Pagamento Pendente",
+    items: [],
+  },
+  "pagamento-efetuado": {
+    name: "Pagamento Efetuado",
     items: [],
   },
 };
@@ -55,6 +59,7 @@ const PreContratoPage = () => {
   const [newCard, setNewCard] = useState<Omit<Item, "id" | "createdAt">>({
     content: "",
     createdBy: "",
+    contactedBy: "",
     studentName: "",
     agreedValue: "",
     packageInterest: "",
@@ -109,6 +114,7 @@ const PreContratoPage = () => {
     setNewCard({
       content: "",
       createdBy: "",
+      contactedBy: "",
       studentName: "",
       agreedValue: "",
       packageInterest: "",
@@ -130,7 +136,7 @@ const PreContratoPage = () => {
     return Object.values(columns)
       .flatMap((column) => column.items)
       .reduce((total, item) => total + parseFloat(item.agreedValue || "0"), 0)
-      .toFixed(2); // Total com 2 casas decimais
+      .toFixed(2);
   };
 
   return (
@@ -186,7 +192,6 @@ const PreContratoPage = () => {
                               <TextField size="small" label="Criado por" value={item.createdBy} fullWidth disabled />
                               <TextField size="small" label="Aluno" value={item.studentName} fullWidth disabled />
                               <TextField size="small" label="Valor Acordado" value={item.agreedValue} fullWidth disabled />
-                              <TextField size="small" label="Pacote de Formatura" value={item.packageInterest} fullWidth disabled />
                               <Button color="error" size="small" variant="contained" onClick={() => removeCard(columnId, item.id)} sx={{ fontFamily: "poppins" }}>
                                 Remover
                               </Button>
@@ -204,12 +209,13 @@ const PreContratoPage = () => {
         </Stack>
       </DragDropContext>
 
+      {/* LISTA DE PRÉ CONTRATO */}
       <Stack mt={4}>
         <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'}>
-          <Typography variant="h6" color="primary" fontWeight={600} fontFamily={'Poppins'}>Lista de Pré-Contratos:</Typography>
+          <Typography variant="body1" color="primary" fontWeight={600} fontFamily={'Poppins'}>Lista de Pré-Contratos:</Typography>
           <Stack direction={'column'} alignItems={'center'}>
             <Typography variant="body2" color="textSecondary" fontFamily={'Poppins'}>Valor Total</Typography>
-            <Typography variant="body2" color="success" fontWeight={600} fontFamily={'Poppins'}>{getTotalAgreedValue()}</Typography>
+            <Typography variant="body1" color="success" fontWeight={600} fontFamily={'Poppins'}>R${getTotalAgreedValue()}</Typography>
           </Stack>
         </Stack>
         <Stack spacing={2} mt={2}>
@@ -253,7 +259,15 @@ const PreContratoPage = () => {
           <TextField
             fullWidth
             margin="dense"
-            label="Valor Acordado"
+            label="Contato feito via"
+            placeholder="Telefone, WhatsApp, E-mail..."
+            value={newCard.contactedBy}
+            onChange={(e) => setNewCard({ ...newCard, contactedBy: e.target.value })}
+          />
+          <TextField
+            fullWidth
+            margin="dense"
+            label="Valor Total Acordado"
             value={newCard.agreedValue}
             onChange={(e) => setNewCard({ ...newCard, agreedValue: e.target.value })}
           />
