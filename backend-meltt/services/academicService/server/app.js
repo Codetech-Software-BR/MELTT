@@ -168,13 +168,18 @@ app.patch("/api/notificacoes/:id", authMiddleware, (req, res) => {
 // BLING API
 app.get("/api/bling/contatos", async (req, res) => {
   try {
-    const { access_token } = req.headers;
-    console.log("access_token", access_token);
+    const { authorization } = req.headers;
+    if (!authorization) {
+      return res.status(401).json({ error: "Authorization header is missing" });
+    }
+
+    const token = authorization.replace(/^Bearer\s+/i, "");
+    
     const response = await axios.get(
       `https://www.bling.com.br/Api/v3/contatos`,
       {
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
