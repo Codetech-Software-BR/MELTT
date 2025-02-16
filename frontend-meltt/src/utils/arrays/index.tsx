@@ -4,7 +4,7 @@ import { FaCircle, FaHardHat } from "react-icons/fa";
 import { MateriaType } from "../../types";
 import { BiSolidParty, BiSupport } from "react-icons/bi";
 import { IoContract } from "react-icons/io5";
-import { MdBookmarkAdded, MdEmojiEvents } from "react-icons/md";
+import { MdBookmarkAdded, MdEmojiEvents, MdOutlinePayments } from "react-icons/md";
 
 export const menuListAdmin = [
   {
@@ -26,6 +26,11 @@ export const menuListAdmin = [
     title: "Alunos",
     route: "/alunos",
     icon: <FaUsers size={22}  />,
+  },
+  {
+    title: "Pagamentos",
+    route: "/pagamentos",
+    icon: <MdOutlinePayments size={22}  />,
   },
   {
     title: "Contratos e eventos",

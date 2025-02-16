@@ -19,7 +19,7 @@ const SplashScreen = () => {
   useEffect(() => {
     setShow(true);
     setTimeout(() => {
-      if(decoded?.tipo === 'ASSOCIACAO') {
+      if (decoded?.tipo === 'ASSOCIACAO') {
         navigate("/contratos");
       } else {
         navigate("/turmas");
@@ -29,7 +29,7 @@ const SplashScreen = () => {
 
 
   useEffect(() => {
-    if (decoded?.tipo === "ADMIN") {
+    if (decoded?.tipo === "ADMIN" && localStorage.getItem("bling-access-token") === null) {
       toast.error("Faça Login no Bling primeiro para acessar a plataforma");
       setTimeout(() => {
         redirectToBlingAuth();
