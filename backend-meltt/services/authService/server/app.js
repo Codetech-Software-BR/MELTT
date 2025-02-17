@@ -216,19 +216,21 @@ app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
   }
 });
 
-app.post("/api/external/bling/oauth", authMiddleware, async (req, res) => {
+app.post("/api/external/bling/oauth", async (req, res) => {
   const { code } = req.query;
+  console.log('code', code);
 
   try {
     const url = "https://www.bling.com.br/Api/v3/oauth/token"; 
     const username = process.env.CLIENT_ID;
     const password = process.env.CLIENT_SECRET; 
 
+    console.log('entrou no try');
+
     const data = new URLSearchParams();
     if(code) {
       data.append("grant_type", "authorization_code");
-      data.append("code", "81cff79ea01b51bf13bec92c07d9f3ffde0511a0"); 
-      // data.append("code", code); 
+      data.append("code", code); 
     }
 
     const config = {
@@ -248,12 +250,11 @@ app.post("/api/external/bling/oauth", authMiddleware, async (req, res) => {
       refresh_token,
     });
   } catch (error) {
-    console.error("Erro ao obter tokens: ", error);
     return res.status(500).json({ error: "Erro ao obter tokens de acesso" });
   }
 });
 
-app.post("/api/external/bling/refresh", authMiddleware, async (req, res) => {
+app.post("/api/external/bling/refresh", async (req, res) => {
   const { code } = req.query;
 
   try {

@@ -19,7 +19,7 @@ const SplashScreen = () => {
   useEffect(() => {
     setShow(true);
     setTimeout(() => {
-      if(decoded?.tipo === 'ASSOCIACAO') {
+      if (decoded?.tipo === 'ASSOCIACAO') {
         navigate("/contratos");
       } else {
         navigate("/turmas");
@@ -29,24 +29,24 @@ const SplashScreen = () => {
 
 
   useEffect(() => {
-    if (decoded?.tipo === "ADMIN") {
-      // toast.error("Faça Login no Bling primeiro para acessar a plataforma");
-      // setTimeout(() => {
-      //   redirectToBlingAuth();
-      //   const queryParams = new URLSearchParams(window.location.search);
-      //   const code = queryParams.get("code");
-      //   console.log('CODE', code)
+    if (decoded?.tipo === "ADMIN" && localStorage.getItem("bling-access-token") === null) {
+      toast.error("Faça Login no Bling primeiro para acessar a plataforma");
+      setTimeout(() => {
+        redirectToBlingAuth();
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get("code");
+        console.log('CODE', code)
 
-      //   if (code) {
-      //     apiPostData("academic", "/external/bling/oauth", { code })
-      //       .then((response) => {
-      //         console.log("Tokens recebidos:", response.data);
-      //       })
-      //       .catch((error) => {
-      //         console.error("Erro ao enviar código para o backend:", error);
-      //       });
-      //   }
-      // }, 1000);
+        if (code) {
+          apiPostData("academic", "/external/bling/oauth", { code })
+            .then((response) => {
+              console.log("Tokens recebidos:", response.data);
+            })
+            .catch((error) => {
+              console.error("Erro ao enviar código para o backend:", error);
+            });
+        }
+      }, 1000);
     }
   }, [window.location.search]);
 
@@ -67,7 +67,6 @@ const SplashScreen = () => {
               color="textSecondary"
               fontWeight={"light"}
               variant="subtitle2"
-              fontFamily={"Poppins"}
             >
               <b>Gestão de Formaturas</b>, de maneira simples e eficiente.
             </Typography>

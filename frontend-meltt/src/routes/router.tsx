@@ -13,7 +13,6 @@ import SplashScreen from "../pages/splash";
 import TurmasPage from "../pages/turmas";
 import PagamentosPage from "../pages/pagamentos";
 import EventosPage from "../pages/eventos";
-import FornecedoresPage from "../pages/fornecedores";
 import FornecedoresEditPage from "../pages/fornecedores/edit";
 import TurmasPageEdit from "../pages/turmas/view";
 import TurmasPageNew from "../pages/turmas/new";
@@ -32,6 +31,7 @@ import SplashGetBlingInfo from "../pages/splash/blingInfo";
 import PreContratoPage from "../pages/pre-contratos";
 import AdesoesPage from "../pages/adesoes";
 import ContratosEventosPage from "../pages/contratos-eventos";
+import TurmasEditPage from "../pages/turmas/edit";
 
 export const router = createBrowserRouter([
   {
@@ -120,12 +120,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/turmas/edit/:id",
-        element: <TurmasPageEdit />,
+        element: <TurmasEditPage />,
       },
-      {
-        path: "/turmas/view/:id",
-        element: <TurmasPageEdit />,
-      },
+      // {
+      //   path: "/turmas/view/:id",
+      //   element: <TurmasPageEdit />,
+      // },
       {
         path: "/turmas/view/:id/pagina-turma",
         element: <PaginaDaTurmaPage />,

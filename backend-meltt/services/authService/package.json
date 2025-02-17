@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=development nodemon server.js",
+    "dev": "cross-env NODE_ENV=development nodemon server/app.js",
     "start": "cross-env NODE_ENV=production node server/app.js",
-    "build": "cross-env NODE_ENV=production node server.js",
-    "dev:local": "cross-env NODE_ENV=development node server.js"
+    "build": "cross-env NODE_ENV=production node server/app.js",
+    "dev:local": "cross-env NODE_ENV=development node server/app.js"
   },
   "keywords": [],
   "author": "",

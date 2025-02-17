@@ -31,7 +31,7 @@ const SplashGetBlingInfo = () => {
     try {
       const response = await apiPostData(
         "authentication",
-        `external/bling/oauth?code=${code}`,
+        `/external/bling/oauth?code=${code}`,
         {}
       );
       setBlingAccessToken(response.access_token);
@@ -46,7 +46,7 @@ const SplashGetBlingInfo = () => {
   };
 
   const tryAgainBlingAuthenticate = () => {
-    redirectToBlingAuth();
+    window.location.href = "/splash"
   };
 
   useEffect(() => {
@@ -74,7 +74,6 @@ const SplashGetBlingInfo = () => {
               color="textSecondary"
               fontWeight={"light"}
               variant="subtitle2"
-              fontFamily={"Poppins"}
             >
               <b>
                 {showTryAgain

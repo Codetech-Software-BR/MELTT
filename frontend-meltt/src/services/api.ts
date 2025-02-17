@@ -30,7 +30,11 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
       const blingToken = localStorage.getItem("bling-access-token");
 
       // Se for uma requisição para o Bling, usa o token do Bling
-      if (config.url?.includes("bling.com.br")) {
+      if (config.url?.includes("bling")) {
+        // if(!blingToken){
+        //   toast.error("Sessão do Bling expirada. Faça login novamente.");
+        //   window.location.href = "/splash";
+        // }
         if (blingToken) {
           config.headers["Authorization"] = `Bearer ${blingToken}`;
         }
@@ -46,14 +50,12 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
     (error) => Promise.reject(error)
   );
 
-  // Interceptador de respostas para renovar tokens se necessário
   api.interceptors.response.use(
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
 
-      // Se for erro 401 para o Bling
-      if (error.response?.status === 401 && originalRequest.url.includes("bling.com.br")) {
+      if (error.response?.status === 401 && originalRequest.url.includes("bling")) {
         if (!originalRequest._retry) {
           originalRequest._retry = true;
 
@@ -80,7 +82,6 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
             }
           }
 
-          // Se já estiver renovando, aguarda a atualização do token
           return new Promise((resolve) => {
             blingRefreshSubscribers.push((token: string) => {
               originalRequest.headers["Authorization"] = `Bearer ${token}`;
@@ -102,9 +103,7 @@ const refreshBlingAccessToken = async (): Promise<string> => {
     const refreshToken = localStorage.getItem("bling-refresh-token");
     if (!refreshToken) throw new Error("No Bling refresh token available");
 
-    const response = await axios.post(`https://bling.com.br/api/refresh-token`, {
-      refresh_token: refreshToken,
-    });
+    const response = await apiPostData("authentication", "/external/bling/refresh", refreshToken)
 
     return response.data.access_token;
   } catch (error) {

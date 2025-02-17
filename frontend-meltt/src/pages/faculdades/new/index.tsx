@@ -77,7 +77,6 @@ const TurmasPageNew = () => {
                 <Box display={"flex"} flexDirection={"column"} gap={3} p={2}>
                   <Typography
                     color="primary"
-                    fontFamily={"Poppins"}
                     fontWeight={600}
                   >
                     Cadastrar Nova Turma

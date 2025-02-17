@@ -25,13 +25,14 @@ import LoadingBackdrop from "../../../components/loadingBackdrop";
 import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
-import { LoadingButton } from "@mui/lab";
+import { DatePicker, LoadingButton } from "@mui/lab";
 import { initialValuesTurma } from "../../../initialValues";
 import { useDropzone } from "react-dropzone";
 import IconUpload from "../../../assets/icons/upload";
 import { TbTrash } from "react-icons/tb";
 import { SlMagnifier } from "react-icons/sl";
 import { graduationYearsList } from "../../../utils/arrays";
+import dayjs from "dayjs";
 
 export type StudentInfo = {
   educacao_basica: string | undefined;
@@ -48,10 +49,12 @@ export type StudentInitialValuesFn = (
 const TurmasPageNew = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [faculdades, setFaculdades] = useState([]);
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+
+  const [eventos, setEventos] = useState<{ data: string; descricao: string }[]>([]);
+  const [novoEvento, setNovoEvento] = useState({ data: "", descricao: "" });
 
   const [plans, setPlans] = useState<{ nome: string; inclusos: string; valor: string }[]>([]);
   const [newPlan, setNewPlan] = useState({ nome: "", inclusos: "", valor: "" });
@@ -79,13 +82,6 @@ const TurmasPageNew = () => {
     },
   });
 
-  const fetchFaculdades = async () => {
-    await apiGetData("academic", `/faculdades`).then((data) =>
-      setFaculdades(data)
-    );
-  };
-
-
 
   const adicionarPlano = () => {
     if (!newPlan.nome || !newPlan.inclusos || !newPlan.valor) return;
@@ -97,10 +93,19 @@ const TurmasPageNew = () => {
     setPlans(plans.filter((_, i) => i !== index));
   };
 
+  const adicionarEvento = () => {
+    if (!novoEvento.data || !novoEvento.descricao) return;
+    setEventos([...eventos, novoEvento]);
+    setNovoEvento({ data: "", descricao: "" });
+  };
+
+  const removerEvento = (index: number) => {
+    setEventos(eventos.filter((_, i) => i !== index));
+  };
+
   const onSubmitTurma = async (values: any) => {
     setLoadingSave(true);
 
-    console.log("values", values);
     let dataObj = {
       ...values,
       faculdade_id: 1,
@@ -126,9 +131,6 @@ const TurmasPageNew = () => {
     setLoadingSave(false);
   };
 
-  useEffect(() => {
-    fetchFaculdades();
-  }, []);
 
   return (
     <Stack width={"100%"} height={"100%"} gap={10}>
@@ -143,14 +145,11 @@ const TurmasPageNew = () => {
         <Paper
           elevation={0}
           style={{
-            paddingBottom: 90,
             fontFamily: "Poppins",
             position: "relative",
             padding: "12px",
             height: "calc(100vh - 132px)",
-            maxHeight: "calc(100vh - 132px)",
             overflowY: "auto",
-            overflowX: "hidden",
             borderRadius: "24px",
             backgroundColor: "#fff",
           }}
@@ -174,18 +173,20 @@ const TurmasPageNew = () => {
                   }
                 }}
               >
-                <Stack height={"100%"} justifyContent={"space-between"} overflow={"auto"}>
+                <Stack height={"100%"} overflow={"auto"}>
                   <Box
-                    height={"100%"}
                     display={"flex"}
                     flexDirection={"column"}
                     gap={3}
                     p={2}
+                    sx={{
+                      maxHeight: "calc(85vh - 132px)",
+                      overflowY: "auto", 
+                    }}
                   >
                     <Stack direction={"column"}>
                       <Typography
                         color="primary"
-                        fontFamily={"Poppins"}
                         fontWeight={600}
                       >
                         Cadastrar Nova Turma (NOVA ASSOCIAÇÃO)
@@ -193,7 +194,6 @@ const TurmasPageNew = () => {
                       <Typography
                         variant="caption"
                         color="primary"
-                        fontFamily={"Poppins"}
                       >
                         preencha as informações abaixo.
                       </Typography>
@@ -349,7 +349,7 @@ const TurmasPageNew = () => {
                       )}
                     </div>
                     <Stack spacing={3} bgcolor={"#f9f9f9"} p={2} borderRadius={2}>
-                      <Typography variant="body1" color="primary" fontFamily={'Poppins'}>
+                      <Typography variant="body1" color="primary">
                         Planos de Formatura
                       </Typography>
                       <Stack direction="row" spacing={2}>
@@ -383,9 +383,9 @@ const TurmasPageNew = () => {
                         {plans.map((plano, index) => (
                           <Card key={index} variant="outlined">
                             <CardContent>
-                              <Typography variant="body1" sx={{ fontFamily: 'Poppins', fontWeight: 600 }}>{plano.nome}</Typography>
-                              <Typography variant="body2" sx={{ fontFamily: 'Poppins' }}>Inclusos: {plano.inclusos}</Typography>
-                              <Typography variant="body2" sx={{ fontFamily: 'Poppins' }}>Valor: R$ {plano.valor}</Typography>
+                              <Typography variant="body1" sx={{ fontWeight: 600 }}>{plano.nome}</Typography>
+                              <Typography variant="body2">Inclusos: {plano.inclusos}</Typography>
+                              <Typography variant="body2">Valor: R$ {plano.valor}</Typography>
                             </CardContent>
                             <CardActions>
                               <IconButton size="small" color="error" onClick={() => removerPlano(index)}>
@@ -432,6 +432,36 @@ const TurmasPageNew = () => {
                       onChange={handleChange}
                       placeholder="descreva detalhadamente as regras de renegociação"
                     />
+                    <Stack gap={2}>
+                      <Typography variant="h6">Cronograma Inicial</Typography>
+                      <Stack direction="row" gap={2}>
+                        <DatePicker
+                          label="Data do Evento"
+                          value={novoEvento.data ? dayjs(novoEvento.data) : null}
+                          onChange={(date: Date | null) => setNovoEvento({ ...novoEvento, data: date ? dayjs(date).format("YYYY-MM-DD") : "" })}
+                          renderInput={(params: any) => <TextField {...params} fullWidth />}
+                        />
+                        <TextField
+                          fullWidth
+                          label="Descrição"
+                          value={novoEvento.descricao}
+                          onChange={(e) => setNovoEvento({ ...novoEvento, descricao: e.target.value })}
+                        />
+                        <Button variant="contained" onClick={adicionarEvento}>
+                          Adicionar
+                        </Button>
+                      </Stack>
+
+                      {eventos.map((evento, index) => (
+                        <Stack key={index} direction="row" alignItems="center" gap={2}>
+                          <TextField value={evento.data} fullWidth disabled />
+                          <TextField value={evento.descricao} fullWidth disabled />
+                          <IconButton onClick={() => removerEvento(index)}>
+                            <TbTrash color="red" />
+                          </IconButton>
+                        </Stack>
+                      ))}
+                    </Stack>
                   </Box>
                   <Stack
                     width="100%"
@@ -442,12 +472,11 @@ const TurmasPageNew = () => {
                     mt={1}
                     sx={{
                       position: "absolute",
-                      bottom: 12, 
+                      bottom: 12,
                       left: 0,
                       right: 0,
                       backgroundColor: "white",
                       p: 2,
-                      boxShadow: "0px -2px 4px rgba(0, 0, 0, 0.1)"
                     }}
                   >
                     <Button

@@ -60,11 +60,11 @@ const PaginadaTurmaCriarTopicoPage = () => {
           <Typography
             color="primary"
             fontWeight={600}
-            sx={{ fontSize: 20, fontFamily: "Poppins" }}
+            sx={{ fontSize: 20 }}
           >
             Criar Novo Tópico 🎉
           </Typography>
-          <Typography color="textSecondary" variant="caption" fontFamily={'Poppins'}>
+          <Typography color="textSecondary" variant="caption">
             escreva aquilo que você deseja compartilha com sua turma. Mas ei,
             não se esqueça de ser gentil e respeitoso.
           </Typography>
