@@ -3,12 +3,6 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import axios from 'axios'
-import multer from "multer";
-import authMiddleware from "./middlewares/auth/index.js";
-import db from "./db.js";
-
-// Controllers
-import turmaController from "./controllers/turmaController.js";
 
 // Routes
 import routes from "./routes/index.js";
@@ -18,7 +12,6 @@ import "dotenv/config";
 
 const app = express();
 const corsOptions = { origin: "*", credentials: true };
-const upload = multer({ storage: multer.memoryStorage() });
 
 // const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -28,68 +21,6 @@ app.use(cors(corsOptions));
 
 // Rotas - /api
 app.use("/api", routes);
-
-// Turmas - Arquivos
-app.post(
-  "/api/turmas/arquivos/upload",
-  upload.single("pdf"),
-  authMiddleware,
-  async (req, res) => {
-    let { id_turma, id_aluno } = req.body;
-    let arquivo = req.file;
-
-    if (!arquivo) {
-      return res.status(400).json({ message: "Arquivo não enviado!" });
-    }
-
-    if (!id_turma || !id_aluno) {
-      return res
-        .status(400)
-        .json({ message: "Todos os campos são obrigatórios!" });
-    }
-
-    const nomeArquivo = arquivo.originalname;
-    const tipoMime = arquivo.mimetype;
-    const dados = arquivo.buffer;
-
-    db.query(
-      "INSERT INTO arquivos (nome_arquivo, tipo_mime, dados, id_turma, id_aluno) VALUES (?, ?, ?, ?, ?)",
-      [nomeArquivo, tipoMime, dados, id_turma, id_aluno],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-
-        res.status(201).json({
-          message: "Arquivo enviado com sucesso!",
-          arquivoId: result.insertId,
-        });
-      }
-    );
-  }
-);
-
-app.get("/api/turmas/arquivos/turma/:id", authMiddleware, turmaController.getArquivosByTurmaId);
-app.get("/api/turmas/arquivos/:id", authMiddleware, turmaController.getArquivoById);
-
-// Notificações
-app.get("/api/notificacoes", authMiddleware, (req, res) => {
-  const { id } = req.user;
-  const query =
-    "SELECT * FROM notificacoes WHERE usuario_id = ? ORDER BY criada_em DESC";
-  db.query(query, [id], (err, result) => {
-    if (err) return res.status(500).json(err);
-    console.log(result);
-    res.status(200).json(result);
-  });
-});
-app.patch("/api/notificacoes/:id", authMiddleware, (req, res) => {
-  const { id } = req.params;
-  const query = "UPDATE notificacoes SET lida = TRUE WHERE id = ?";
-
-  db.query(query, [id], (err, result) => {
-    if (err) return res.status(500).json(err);
-    res.status(200).json({ message: "Notificação marcada como lida" });
-  });
-});
 
 // BLING API
 app.get("/api/bling/contatos", async (req, res) => {

@@ -9,6 +9,7 @@ import topicosRoutes from "./topicosRoutes.js";
 import respostasRoutes from "./respostasRoutes.js";
 import eventosRoutes from "./eventosRoutes.js";
 import preContratosRoutes from "./preContratoRoutes.js";
+import notificacoesRoutes from "./notificacoesRoutes.js";
 
 const router = express.Router();
 
@@ -21,5 +22,6 @@ router.use("/topicos", topicosRoutes);
 router.use("/respostas", respostasRoutes);
 router.use("/eventos", eventosRoutes);
 router.use("/pre-contrato", preContratosRoutes);
+router.use("/notificacoes", notificacoesRoutes);
 
 export default router;
