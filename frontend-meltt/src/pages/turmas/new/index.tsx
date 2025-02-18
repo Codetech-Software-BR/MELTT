@@ -108,6 +108,8 @@ const TurmasPageNew = () => {
 
     let dataObj = {
       ...values,
+      ...eventos,
+      ...plans,
       faculdade_id: 1,
     };
 
@@ -251,11 +253,11 @@ const TurmasPageNew = () => {
                     </Stack>
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="identificador"
                       variant="outlined"
                       focused
                       label="Identificador da turma"
-                      value={values.Identificador}
+                      value={values.identificador}
                       onChange={handleChange}
                       placeholder="código único identificador da turma ?"
                     />
@@ -398,7 +400,7 @@ const TurmasPageNew = () => {
                     </Stack>
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="regras_adesao"
                       variant="outlined"
                       focused
                       label="Regras de Adesão"
@@ -410,7 +412,7 @@ const TurmasPageNew = () => {
                     />
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="regras_rescisao"
                       variant="outlined"
                       focused
                       label="Regras de Rescisão"
@@ -422,7 +424,7 @@ const TurmasPageNew = () => {
                     />
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="regras_renegociacao"
                       variant="outlined"
                       focused
                       label="Regras de Renegociação"

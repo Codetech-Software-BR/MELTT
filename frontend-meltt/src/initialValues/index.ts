@@ -10,6 +10,10 @@ export const initialValuesFornecedor = {
 
 export const initialValuesTurma = {
   nome: "",
+  identificador: "",
+  regras_adesao: "",
+  regras_rescisao: "",
+  regras_renegociacao: "",
 };
 
 export const initialValuesAluno = {
