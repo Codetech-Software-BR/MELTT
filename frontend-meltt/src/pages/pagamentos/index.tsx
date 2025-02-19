@@ -12,7 +12,6 @@ import {
   Stack,
   TableCell,
   TableRow,
-  TextField,
   Tooltip,
 } from "@mui/material";
 import BasicTable from "../../components/table";
@@ -24,7 +23,6 @@ import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
 import { MdOutlinePayments } from "react-icons/md";
-import { useAlunoContext } from "../../providers/alunoContext";
 import { FaEye } from "react-icons/fa6";
 import { pagamentosColumns } from "./table/columns";
 import { format } from "date-fns";
@@ -50,7 +48,6 @@ interface Student {
 const PagamentosPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-
   const [payments, setPayments] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
@@ -79,7 +76,6 @@ const PagamentosPage = () => {
     setLoading(false);
   };
   
-
   const fetchWithFilters = async () => {
     setLoading(true);
 
@@ -173,14 +169,6 @@ const PagamentosPage = () => {
         <h2 className="text-2xl text-default font-extrabold"></h2>
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
-        {/* <Stack direction={'row'} alignItems={'center'} gap={2}>
-          <Select size="small" variant="outlined" placeholder="filtrar por Status">
-            <MenuItem>Pago</MenuItem>
-            <MenuItem>Em Aberto</MenuItem>
-            <MenuItem>Cancelado</MenuItem>
-          </Select>
-          <TextField variant="outlined" size="small" placeholder="filtrar por situação"/>
-        </Stack> */}
         <Paper
           elevation={0}
           sx={{
@@ -204,14 +192,6 @@ const PagamentosPage = () => {
                 <MenuItem value={5}>Cancelado</MenuItem>
               </Select>
             </FormControl>
-            {/* <TextField
-              variant="outlined"
-              label=""
-              placeholder="data inicial, ex: ANO-MES-DIA"
-              value={filterDate}
-              onChange={(e) => setFilterDate(e.target.value)}
-              sx={{width: '20%'}}
-            /> */}
             <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchWithFilters}>
               Buscar
             </Button>

@@ -1,7 +1,6 @@
 import express from "express";
 import turmaController from "../controllers/turmaController.js";
 import authMiddleware from "../middlewares/auth/index.js";
-import multer from "multer";
 
 const router = express.Router();
 

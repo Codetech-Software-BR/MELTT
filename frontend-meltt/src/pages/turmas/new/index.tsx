@@ -48,7 +48,6 @@ export type StudentInitialValuesFn = (
 
 const TurmasPageNew = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -84,10 +83,8 @@ const TurmasPageNew = () => {
 
   const onSubmitTurma = async (values: any) => {
     setLoadingSave(true);
-    // console.log('file', file)
 
     try {
-      // let fileUrl = null;
       if (file instanceof File) {
         const formData = new FormData();
         formData.append("file", file);
@@ -105,7 +102,7 @@ const TurmasPageNew = () => {
           if(result.status === 200) {
             let dataObj = {
               ...values,
-              arquivo_url: pressignedUrl.url,
+              arquivo_url:`https://meltt-turmas.s3.amazonaws.com/turmas/${encodeURIComponent(file.name)}`,
             };
             let response = await apiPostData("academic", "/turmas", dataObj )
             if(response.id){
@@ -125,38 +122,6 @@ const TurmasPageNew = () => {
     setLoadingSave(false);
   };
 
-
-  // const onSubmitTurma = async (values: any) => {
-  //   setLoadingSave(true);
-
-  //   console.log('values', values)
-
-  //   let dataObj = {
-  //     ...values,
-  //     ...eventos,
-  //     ...plans,
-  //     faculdade_id: 1,
-  //   };
-
-  //   try {
-  //     if (id) {
-  //       const response = await apiPutData("academic", `/turmas/${id}`, dataObj);
-  //       if (response.result.nome) {
-  //         toast.success("Turma editada com sucesso");
-  //         navigate(-1);
-  //       }
-  //     } else {
-  //       const response = await apiPostData("academic", "/turmas", dataObj);
-  //       if (response.id) {
-  //         toast.success("Turma salvo com sucesso");
-  //         navigate(-1);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     toast.error("Erro ao salvar turma");
-  //   }
-  //   setLoadingSave(false);
-  // };
 
   const adicionarPlano = () => {
     if (!newPlan.nome || !newPlan.inclusos || !newPlan.valor) return;
@@ -245,22 +210,6 @@ const TurmasPageNew = () => {
                         preencha as informações abaixo.
                       </Typography>
                     </Stack>
-                    {/* <FormControl fullWidth>
-                      <InputLabel id="faculdade" sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
-                      <Select
-                        name="faculdade"
-                        color="primary"
-                        value={values.faculdade}
-                        onChange={handleChange}
-                        sx={{ width: "49%" }}
-                      >
-                        {faculdades.map((option: any) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl> */}
                     <Stack
                       direction={"row"}
                       justifyContent={"space-between"}
