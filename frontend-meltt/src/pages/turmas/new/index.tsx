@@ -82,6 +82,77 @@ const TurmasPageNew = () => {
     },
   });
 
+  const onSubmitTurma = async (values: any) => {
+    setLoadingSave(true);
+    console.log('file', file)
+    try {
+      let fileUrl = null;
+      if (file instanceof File) {
+        const formData = new FormData();
+        formData.append("file", file);
+      
+        const pressignedUrl = await apiGetData("academic", `/s3/uploads/turma/pressignedUrl?fileName=${file.name}&fileType=${file.type}`);
+        
+        // console.log('pressignedUrl', pressignedUrl)
+        // if (uploadResponse.url) {
+        //   fileUrl = uploadResponse.url;
+        // }
+      } else {
+        console.error("Erro: O arquivo não é um objeto File válido.");
+      }
+
+      // let dataObj = {
+      //   ...values,
+      //   faculdade_id: 1,
+      //   arquivo_url: fileUrl,
+      // };
+
+      // const response = id
+      //   ? await apiPutData("academic", `/turmas/${id}`, dataObj)
+      //   : await apiPostData("academic", "/turmas", dataObj);
+
+      // if (response.id) {
+      //   toast.success("Turma salva com sucesso");
+      //   navigate(-1);
+      // }
+    } catch (error) {
+      toast.error("Erro ao salvar turma");
+    }
+    setLoadingSave(false);
+  };
+
+
+  // const onSubmitTurma = async (values: any) => {
+  //   setLoadingSave(true);
+
+  //   console.log('values', values)
+
+  //   let dataObj = {
+  //     ...values,
+  //     ...eventos,
+  //     ...plans,
+  //     faculdade_id: 1,
+  //   };
+
+  //   try {
+  //     if (id) {
+  //       const response = await apiPutData("academic", `/turmas/${id}`, dataObj);
+  //       if (response.result.nome) {
+  //         toast.success("Turma editada com sucesso");
+  //         navigate(-1);
+  //       }
+  //     } else {
+  //       const response = await apiPostData("academic", "/turmas", dataObj);
+  //       if (response.id) {
+  //         toast.success("Turma salvo com sucesso");
+  //         navigate(-1);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     toast.error("Erro ao salvar turma");
+  //   }
+  //   setLoadingSave(false);
+  // };
 
   const adicionarPlano = () => {
     if (!newPlan.nome || !newPlan.inclusos || !newPlan.valor) return;
@@ -101,36 +172,6 @@ const TurmasPageNew = () => {
 
   const removerEvento = (index: number) => {
     setEventos(eventos.filter((_, i) => i !== index));
-  };
-
-  const onSubmitTurma = async (values: any) => {
-    setLoadingSave(true);
-
-    let dataObj = {
-      ...values,
-      ...eventos,
-      ...plans,
-      faculdade_id: 1,
-    };
-
-    try {
-      if (id) {
-        const response = await apiPutData("academic", `/turmas/${id}`, dataObj);
-        if (response.result.nome) {
-          toast.success("Turma editada com sucesso");
-          navigate(-1);
-        }
-      } else {
-        const response = await apiPostData("academic", "/turmas", dataObj);
-        if (response.id) {
-          toast.success("Turma salvo com sucesso");
-          navigate(-1);
-        }
-      }
-    } catch (error) {
-      toast.error("Erro ao salvar turma");
-    }
-    setLoadingSave(false);
   };
 
 
@@ -183,7 +224,7 @@ const TurmasPageNew = () => {
                     p={2}
                     sx={{
                       maxHeight: "calc(85vh - 132px)",
-                      overflowY: "auto", 
+                      overflowY: "auto",
                     }}
                   >
                     <Stack direction={"column"}>
