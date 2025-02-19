@@ -1,4 +1,4 @@
-import { LuPartyPopper } from "react-icons/lu";
+import { LuNetwork, LuPartyPopper } from "react-icons/lu";
 import { FaChartSimple, FaFileSignature, FaGraduationCap, FaMoneyBill1Wave, FaUsers } from "react-icons/fa6";
 import { FaCircle, FaHardHat } from "react-icons/fa";
 import { MateriaType } from "../../types";
@@ -36,6 +36,11 @@ export const menuListAdmin = [
     title: "Contratos e eventos",
     route: "/fornecedores",
     icon: <MdEmojiEvents size={22} />,
+  },
+  {
+    title: "Tarefas",
+    route: "/tarefas",
+    icon: <LuNetwork size={22} />,
   },
   {
     title: "Relatórios",
