@@ -166,35 +166,6 @@ app.patch("/api/notificacoes/:id", authMiddleware, (req, res) => {
 });
 
 // BLING API
-app.get("/api/bling/contatos", async (req, res) => {
-  try {
-    const { authorization } = req.headers;
-    if (!authorization) {
-      return res.status(401).json({ error: "Authorization header is missing" });
-    }
-
-    const token = authorization.replace(/^Bearer\s+/i, "");
-    
-    const response = await axios.get(
-      `https://www.bling.com.br/Api/v3/contatos`,
-      {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    return res.json(response.data);
-  } catch (error) {
-    console.error(
-      "Erro ao comunicar com Bling:",
-      error.response?.data || error.message
-    );
-    return res.status(500).json({ error: "Erro ao comunicar com Bling" });
-  }
-});
-
 app.get("/api/bling/contas/receber", async (req, res) => {
   try {
     const { authorization } = req.headers;
@@ -219,8 +190,6 @@ app.get("/api/bling/contas/receber", async (req, res) => {
     return res.status(500).json({ error: "Erro ao comunicar com Bling" });
   }
 });
-
-// app.post("/api/bling/:endpoint", async (req, res) => {
 //   try {
 //     const { endpoint } = req.params;
 //     const { access_token } = req.body;
@@ -323,6 +292,7 @@ app.get("/api/bling/contas/receber", async (req, res) => {
 
 // UNITICKET API
 
+// UNITICKET
 app.get("/api/uniticket/buyers", async (req, res) => {
   try {
     const { access_token } = req.headers;
