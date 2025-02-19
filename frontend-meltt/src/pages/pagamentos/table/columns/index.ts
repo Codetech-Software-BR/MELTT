@@ -3,7 +3,7 @@ export const pagamentosColumns = [
   { label: "Documento (CPF)", key: "contato.numeroDocumento" },
   { label: "Valor", key: "valor" },
   { label: "Vencimento", key: "vencimento" },
-  { label: "Status", key: "situacao" },
+  { label: "Situação", key: "situacao" },
   // {label: "Boleto", key: "linkBoleto"},
   { label: "Ações", key: "acoes" }
 ];

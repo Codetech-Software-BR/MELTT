@@ -8,11 +8,16 @@ class BlingController {
             const token = authorization.replace(/^Bearer\s+/i, "");
 
             const params = new URLSearchParams();
-            params.append("limite", 20)
-            params.append("pagina", pagina);
-            if (situacoes) params.append("situacoes", situacoes);
+            params.append("limite", "20");
+            params.append("pagina", String(pagina));
+            if (situacoes) params.append("situacoes[]", situacoes); 
+
             if (dataInicial) params.append("dataInicial", dataInicial);
             if (dataFinal) params.append("dataFinal", dataFinal);
+
+            console.log("params", params.toString());
+            console.log("situacoes", situacoes);
+            console.log(`https://www.bling.com.br/Api/v3/contas/receber?${params.toString()}`);
 
             const response = await axios.get(
                 `https://www.bling.com.br/Api/v3/contas/receber?${params.toString()}`,
