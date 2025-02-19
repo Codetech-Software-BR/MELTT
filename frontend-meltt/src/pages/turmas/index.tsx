@@ -14,9 +14,9 @@ import {
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { useEffect, useState } from "react";
-import { useTurmaContext } from "../../providers/turmaContext";
+import { useTurmaContext, Turma } from "../../providers/turmaContext";
 import { useNavigate } from "react-router-dom";
-import { apiDeleteData, apiGetData } from "../../services/api";
+import { apiGetData } from "../../services/api";
 import { IoIosDocument, IoMdAdd } from "react-icons/io";
 import { jwtDecode } from "jwt-decode";
 import { getToken } from "../../utils/token";
@@ -29,13 +29,6 @@ import { format } from "date-fns";
 import { FaEye } from "react-icons/fa6";
 import { MdModeEdit } from "react-icons/md";
 
-interface Turma {
-  id: number;
-  nome: string;
-  ano_formatura: any;
-  arquivo_url: string;
-  criado_em: any;
-}
 
 const TurmasPage = () => {
   const navigate = useNavigate();
@@ -46,7 +39,7 @@ const TurmasPage = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
-  // const []
+
   const [openModalDetails, setOpenModalDetails] = useState(false);
 
   const token = getToken();
@@ -109,7 +102,10 @@ const TurmasPage = () => {
         <TableCell align="left">
           <Stack direction={"row"}>
             <Tooltip title="Editar Turma" arrow>
-              <IconButton onClick={() => navigate(`/turmas/edit/${row.id}`)}>
+              <IconButton onClick={() => {
+                dispatchTurma({ type: "SET_TURMA_SELECIONADA", payload: row });
+                navigate(`/turmas/edit/${row.id}`)
+              }}>
                 {loadingDelete ? (
                   <CircularProgress color="secondary" size={12} />
                 ) : (
