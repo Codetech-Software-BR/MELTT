@@ -9,18 +9,22 @@ import { TableColumnsType } from "../../types";
 import { ReactNode } from "react";
 
 type BasicTableProps = {
+  page: number;
   columns: TableColumnsType[];
   rows: any[];
   dataRow: (row: any) => ReactNode;
   loading: boolean;
+  handleChangePagination: (event: React.ChangeEvent<unknown>, value: number) => void;
 };
 
 
 export default function BasicTable({
+  page,
   columns,
   rows,
   dataRow,
   loading,
+  handleChangePagination
 }: BasicTableProps) {
   return (
     <div className="flex flex-col items-center justify-center">
@@ -59,7 +63,7 @@ export default function BasicTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination count={rows.length} sx={{ mt: 2 }} color="primary" />
+      <Pagination count={rows.length} page={page} onChange={handleChangePagination} sx={{ mt: 2 }} color="primary" />
     </div>
   );
 }
