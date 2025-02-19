@@ -48,11 +48,12 @@ const PagamentosPage = () => {
   const [payments, setPayments] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
+  const [page, setPage] = useState(1);
 
-  const fetchPagamentos = async () => {
+  const fetchPagamentos = async (page:number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/bling/contas/receber");
+      const response = await apiGetData("academic", `/bling/contas/receber?pagina=${page}`);
       setPayments(response.data);
     } catch (error) {
       toast.error("Erro ao buscar Pagamento");
@@ -66,25 +67,14 @@ const PagamentosPage = () => {
     navigate(`/alunos/view/${row.id}`);
   };
 
-  // const onClickRowEdit = (row: any) => {
-  //   dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
-  //   navigate(`/alunos/edit/${row.id}`);
-  // };
-
-  // const onClickDelete = async (id: number) => {
-  //   setLoadingDelete(true);
-  //   try {
-  //     const response = await apiDeleteData("academic", `/alunos/${id}`);
-  //     if (response.id) {
-  //       fetchPagamentos();
-  //       toast.success("Aluno excluído com sucesso");
-  //     }
-  //     console.log("response", response);
-  //   } catch (error) {
-  //     toast.error("Erro ao excluir aluno");
-  //   }
-  //   setLoadingDelete(false);
-  // };
+  const handleChangePagination = (event: React.ChangeEvent<unknown>, value: number) => {
+    try {
+      fetchPagamentos(value);
+    } catch (error) {
+      toast.error("Erro ao buscar Pagamentos");
+    }
+    setPage(value);
+  };
 
   const dataRow = (row: Student) => {
     return (
@@ -135,7 +125,7 @@ const PagamentosPage = () => {
   };
 
   useEffect(() => {
-    fetchPagamentos();
+    fetchPagamentos(1);
     setOnLoad(true);
   }, []);
 
@@ -186,6 +176,8 @@ const PagamentosPage = () => {
                 rows={payments}
                 loading={loading}
                 dataRow={dataRow}
+                page={page}
+                handleChangePagination={handleChangePagination}
               />
             ) : (
               <NoTableData
