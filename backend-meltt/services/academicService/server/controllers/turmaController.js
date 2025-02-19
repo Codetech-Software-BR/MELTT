@@ -1,6 +1,4 @@
 import db from "../db.js";
-import fs from "fs";
-
 class TurmaController {
 
   getAllTurmas(req, res) {
@@ -124,6 +122,38 @@ class TurmaController {
       }
     );
   };
+
+  async uploadArquivo(req, res) {
+    let { id_turma, id_aluno } = req.body;
+    let arquivo = req.file;
+
+    if (!arquivo) {
+      return res.status(400).json({ message: "Arquivo não enviado!" });
+    }
+
+    if (!id_turma || !id_aluno) {
+      return res
+        .status(400)
+        .json({ message: "Todos os campos são obrigatórios!" });
+    }
+
+    const nomeArquivo = arquivo.originalname;
+    const tipoMime = arquivo.mimetype;
+    const dados = arquivo.buffer;
+
+    db.query(
+      "INSERT INTO arquivos (nome_arquivo, tipo_mime, dados, id_turma, id_aluno) VALUES (?, ?, ?, ?, ?)",
+      [nomeArquivo, tipoMime, dados, id_turma, id_aluno],
+      (err, result) => {
+        if (err) return res.status(500).json(err);
+
+        res.status(201).json({
+          message: "Arquivo enviado com sucesso!",
+          arquivoId: result.insertId,
+        });
+      }
+    );
+  }
 
   deleteArquivo(req, res) {
     const { id } = req.params;
