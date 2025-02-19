@@ -31,12 +31,11 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
 
       // Se for uma requisição para o Bling, usa o token do Bling
       if (config.url?.includes("bling")) {
-        // if(!blingToken){
-        //   toast.error("Sessão do Bling expirada. Faça login novamente.");
-        //   window.location.href = "/splash";
-        // }
         if (blingToken) {
           config.headers["Authorization"] = `Bearer ${blingToken}`;
+        } else {
+          toast.error("Sessão do Bling expirada. Faça login novamente.");
+          window.location.href = "/splash";
         }
       } else {
         // Senão, usa o token da aplicação
@@ -54,8 +53,8 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
     (response) => response,
     async (error) => {
       const originalRequest = error.config;
-
-      if (error.response?.status === 401 && originalRequest.url.includes("bling")) {
+      console.log("error", error.response?.status, originalRequest.url);
+      if (error.response && originalRequest.url.includes("bling")) {
         if (!originalRequest._retry) {
           originalRequest._retry = true;
 
@@ -103,7 +102,7 @@ const refreshBlingAccessToken = async (): Promise<string> => {
     const refreshToken = localStorage.getItem("bling-refresh-token");
     if (!refreshToken) throw new Error("No Bling refresh token available");
 
-    const response = await apiPostData("authentication", "/external/bling/refresh", refreshToken)
+    const response = await apiPostData("authentication", `/external/bling/refresh?code=${refreshToken}`, {})
 
     return response.data.access_token;
   } catch (error) {
@@ -154,4 +153,3 @@ export const apiDeleteData = (serviceType: string, url: string, data?: any, head
   apiRequest(serviceType, "DELETE", url, data, null, headers);
 
 
-// export default createApiInstance;

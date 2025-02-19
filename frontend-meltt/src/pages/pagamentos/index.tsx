@@ -7,6 +7,7 @@ import {
   Stack,
   TableCell,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
@@ -33,6 +34,7 @@ interface Student {
   vencimento: string;
   situacao: number;
   plano: string;
+  linkBoleto: string;
   educacao_basica: keyof typeof EnumStudentBasicEducation;
   formatura_paga: boolean;
   turma: string;
@@ -114,7 +116,7 @@ const PagamentosPage = () => {
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <Chip
-            label={row.situacao === 2 ? "Valor Pago" : row.situacao === 1 ? 'Valor em Aberto' : 'Cancelado'}
+            label={row.situacao === 2 ? "Pago" : row.situacao === 1 ? 'Em Aberto' : 'Cancelado'}
             color={row.situacao === 2 ? "success" : row.situacao === 1 ? "warning" : "error"}
             variant="filled"
             icon={<MdOutlinePayments />}
@@ -122,19 +124,11 @@ const PagamentosPage = () => {
           />
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          <IconButton size="small" onClick={() => onClickRowView(row)}>
-            <FaEye color="#2d1c63" size={22} />
-          </IconButton>
-          {/* <IconButton size="small" onClick={() => onClickRowEdit(row)}>
-            <MdModeEdit color="#2d1c63" size={22} />
-          </IconButton> */}
-          {/* <IconButton size="small" onClick={() => onClickDelete(row.id)}>
-            {loadingDelete ? (
-              <CircularProgress color="secondary" size={10} />
-            ) : (
-              <FaTrashAlt color="red" />
-            )}
-          </IconButton> */}
+          <Tooltip title="Visualizar Boleto">
+            <IconButton size="small" onClick={() => window.location.href = row.linkBoleto}>
+              <FaEye color="#2d1c63" size={22} />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
     );
@@ -154,17 +148,6 @@ const PagamentosPage = () => {
         my={2}
       >
         <h2 className="text-2xl text-default font-extrabold"></h2>
-        {/* <Button
-          color="secondary"
-          variant="contained"
-          endIcon={<IoMdAdd />}
-          onClick={() => {
-            navigate("/alunos/edit");
-          }}
-          sx={{ borderRadius: 2 }}
-        >
-          Adicionar
-        </Button> */}
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper

@@ -4,6 +4,7 @@ export const pagamentosColumns = [
   { label: "Valor", key: "valor" },
   { label: "Vencimento", key: "vencimento" },
   { label: "Status", key: "situacao" },
+  // {label: "Boleto", key: "linkBoleto"},
   { label: "Ações", key: "acoes" }
 ];
 

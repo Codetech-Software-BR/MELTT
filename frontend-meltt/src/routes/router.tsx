@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
     element: <SplashScreen />,
   },
   {
-    path: "/splash-bling-info/:id?",
+    path: "/splash-bling-info",
     element: <SplashGetBlingInfo />,
   },
   {

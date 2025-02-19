@@ -26,6 +26,7 @@ app.use("/api", routes);
 app.get("/api/bling/contas/receber", async (req, res) => {
   try {
     const { authorization } = req.headers;
+    console.log(authorization)
     const token = authorization.replace(/^Bearer\s+/i, "");
 
     const response = await axios.get(
@@ -38,116 +39,17 @@ app.get("/api/bling/contas/receber", async (req, res) => {
       }
     );
 
-    return res.json(response.data);
+    return res.json(response.data); 
   } catch (error) {
-    console.error(
-      "Erro ao comunicar com Bling:",
-      error.response?.data || error.message
-    );
-    return res.status(500).json({ error: "Erro ao comunicar com Bling" });
+    console.log(error)
+    if(error.status === 401) {
+      return res.status(401).json({ status: error.status, message: error.message });
+    } else {
+      // console.log("Erro ao comunicar com BLING:", error.response?.data || error.message);
+      return res.status(500).json({ error: 'Falha ao fazer requisição ao Bling' });
+    }
   }
 });
-//   try {
-//     const { endpoint } = req.params;
-//     const { access_token } = req.body;
-
-//     const response = await axios.post(
-//       `https://www.bling.com.br/Api/v3/${endpoint}`,
-//       req.body,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${access_token}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-
-//     return res.json(response.data);
-//   } catch (error) {
-//     console.error(
-//       "Erro ao comunicar com Bling:",
-//       error.response?.data || error.message
-//     );
-//     return res.status(500).json({ error: "Erro ao comunicar com Bling" });
-//   }
-// });
-// app.patch("/api/bling/:endpoint", async (req, res) => {
-//   try {
-//     const { endpoint } = req.params;
-//     const { access_token } = req.body;
-
-//     const response = await axios.patch(
-//       `https://www.bling.com.br/Api/v3/${endpoint}`,
-//       req.body,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${access_token}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-
-//     return res.json(response.data);
-//   } catch (error) {
-//     console.error(
-//       "Erro ao comunicar com Bling:",
-//       error.response?.data || error.message
-//     );
-//     return res.status(500).json({ error: "Erro ao comunicar com Bling" });
-//   }
-// });
-// app.put("/api/bling/:endpoint", async (req, res) => {
-//   try {
-//     const { endpoint } = req.params;
-//     const { access_token } = req.body;
-
-//     const response = await axios.put(
-//       `https://www.bling.com.br/Api/v3/${endpoint}`,
-//       req.body,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${access_token}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-
-//     return res.json(response.data);
-//   } catch (error) {
-//     console.error(
-//       "Erro ao comunicar com Bling:",
-//       error.response?.data || error.message
-//     );
-//     return res.status(500).json({ error: "Erro ao comunicar com Bling" });
-//   }
-// });
-// app.delete("/api/bling/:endpoint", async (req, res) => {
-//   try {
-//     const { endpoint } = req.params;
-//     const { access_token } = req.body;
-
-//     const response = await axios.delete(
-//       `https://www.bling.com.br/Api/v3/${endpoint}`,
-//       req.body,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${access_token}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-
-//     return res.json(response.data);
-//   } catch (error) {
-//     console.error(
-//       "Erro ao comunicar com Bling:",
-//       error.response?.data || error.message
-//     );
-//     return res.status(500).json({ error: "Erro ao comunicar com Bling" });
-//   }
-// });
-
-// UNITICKET API
 
 // UNITICKET
 app.get("/api/uniticket/buyers", async (req, res) => {
