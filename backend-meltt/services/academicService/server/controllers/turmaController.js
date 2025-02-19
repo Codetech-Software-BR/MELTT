@@ -46,10 +46,10 @@ class TurmaController {
   };
 
   createTurma(req, res) {
-    const { faculdade_id, nome, ano_formatura } = req.body;
+    const { nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, arquivo_url, ano_formatura } = req.body;
     const query =
-      "INSERT INTO turmas (faculdade_id, nome, ano_formatura) VALUES (?, ?, ?)";
-    db.query(query, [faculdade_id, nome, ano_formatura], (err, result) => {
+      "INSERT INTO turmas (nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, arquivo_url, ano_formatura) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    db.query(query, [nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, arquivo_url, ano_formatura], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(201).json({ id: result.insertId, ...req.body });
     });
@@ -57,10 +57,10 @@ class TurmaController {
 
   updateTurma(req, res) {
     const id = req.params.id;
-    const { faculdade_id, nome, ano_formatura } = req.body;
+    const { nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, ano_formatura, arquivo_url} = req.body;
     const query =
-      "UPDATE turmas SET faculdade_id = ?, nome = ?, ano_formatura = ? WHERE id = ?";
-    db.query(query, [faculdade_id, nome, ano_formatura, , id], (err) => {
+      "UPDATE turmas SET nome = ?, identificador = ?, regras_adesao = ?, regras_renegociacao = ?, regras_rescisao = ?, ano_formatura = ?, arquivo_url = ? WHERE id = ?";
+    db.query(query, [nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, ano_formatura, arquivo_url, id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Turma atualizado com sucesso!" });
     });
@@ -71,101 +71,6 @@ class TurmaController {
     db.query("DELETE FROM turmas WHERE id = ?", [id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Turma deletado com sucesso!" });
-    });
-  };
-
-  getArquivosByTurmaId(req, res) {
-    const { id } = req.params;
-
-    db.query(
-      "SELECT nome_arquivo, tipo_mime, dados FROM arquivos WHERE id_turma = ?",
-      [id],
-      (err, results) => {
-        if (err) return res.status(500).json(err);
-
-        if (results.length === 0) {
-          return res.status(404).json({ message: "Nenhum arquivo encontrado para a turma especificada!" });
-        }
-
-        const arquivos = results.map((arquivo) => ({
-          nome_arquivo: arquivo.nome_arquivo,
-          tipo_mime: arquivo.tipo_mime,
-          dados: arquivo.dados.toString("base64")
-        }));
-
-        res.json(arquivos);
-      }
-    );
-  };
-
-
-
-  getArquivoById(req, res) {
-    const { id } = req.params;
-
-    db.query(
-      "SELECT nome_arquivo, dados, tipo_mime FROM arquivos WHERE id = ?",
-      [id],
-      (err, results) => {
-        if (err) return res.status(500).json(err);
-        if (results.length === 0)
-          return res.status(404).json({ message: "Arquivo não encontrado!" });
-
-        const { nome_arquivo, dados, tipo_mime } = results[0];
-
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename="${nome_arquivo}"`
-        );
-        res.setHeader("Content-Type", tipo_mime);
-        res.send(dados);
-      }
-    );
-  };
-
-  async uploadArquivo(req, res) {
-    let { id_turma, id_aluno } = req.body;
-    let arquivo = req.file;
-
-    if (!arquivo) {
-      return res.status(400).json({ message: "Arquivo não enviado!" });
-    }
-
-    if (!id_turma || !id_aluno) {
-      return res
-        .status(400)
-        .json({ message: "Todos os campos são obrigatórios!" });
-    }
-
-    const nomeArquivo = arquivo.originalname;
-    const tipoMime = arquivo.mimetype;
-    const dados = arquivo.buffer;
-
-    db.query(
-      "INSERT INTO arquivos (nome_arquivo, tipo_mime, dados, id_turma, id_aluno) VALUES (?, ?, ?, ?, ?)",
-      [nomeArquivo, tipoMime, dados, id_turma, id_aluno],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-
-        res.status(201).json({
-          message: "Arquivo enviado com sucesso!",
-          arquivoId: result.insertId,
-        });
-      }
-    );
-  }
-
-  deleteArquivo(req, res) {
-    const { id } = req.params;
-
-    db.query("DELETE FROM arquivos WHERE id = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ message: "Arquivo não encontrado!" });
-      }
-
-      res.status(200).json({ message: "Arquivo deletado com sucesso!" });
     });
   };
 

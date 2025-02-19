@@ -84,38 +84,42 @@ const TurmasPageNew = () => {
 
   const onSubmitTurma = async (values: any) => {
     setLoadingSave(true);
-    console.log('file', file)
+    // console.log('file', file)
+
     try {
-      let fileUrl = null;
+      // let fileUrl = null;
       if (file instanceof File) {
         const formData = new FormData();
         formData.append("file", file);
+        toast.loading("Enviando Arquivo do Estatuto...");
       
         const pressignedUrl = await apiGetData("academic", `/s3/uploads/turma/pressignedUrl?fileName=${file.name}&fileType=${file.type}`);
-        
-        // console.log('pressignedUrl', pressignedUrl)
-        // if (uploadResponse.url) {
-        //   fileUrl = uploadResponse.url;
-        // }
+        if(pressignedUrl?.url) {
+          const result = await fetch(pressignedUrl.url, {
+            method: 'PUT',
+            body: file,
+            headers: {
+              'Content-Type': file.type
+            }
+          })
+          if(result.status === 200) {
+            let dataObj = {
+              ...values,
+              arquivo_url: pressignedUrl.url,
+            };
+            let response = await apiPostData("academic", "/turmas", dataObj )
+            if(response.id){
+              toast.dismiss();
+              toast.success("Turma salva com sucesso");
+              navigate(-1);
+            }
+          }
+        }
       } else {
         console.error("Erro: O arquivo não é um objeto File válido.");
       }
-
-      // let dataObj = {
-      //   ...values,
-      //   faculdade_id: 1,
-      //   arquivo_url: fileUrl,
-      // };
-
-      // const response = id
-      //   ? await apiPutData("academic", `/turmas/${id}`, dataObj)
-      //   : await apiPostData("academic", "/turmas", dataObj);
-
-      // if (response.id) {
-      //   toast.success("Turma salva com sucesso");
-      //   navigate(-1);
-      // }
     } catch (error) {
+      toast.dismiss();
       toast.error("Erro ao salvar turma");
     }
     setLoadingSave(false);
