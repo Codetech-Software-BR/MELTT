@@ -1,83 +1,131 @@
 import {
-  Button,
   Chip,
   IconButton,
+  Link,
   Paper,
   Slide,
   Stack,
   TableCell,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import BasicTable from "../../components/table";
-import { useEffect, useState } from "react";
-import { useTurmaContext } from "../../providers/turmaContext";
+import { Key, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiGetData } from "../../services/api";
-import { IoMdAdd } from "react-icons/io";
+import { EnumStudentBasicEducation } from "../../utils/enums";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
-import { pagamentosColumns } from "./table/columns";
+import { MdOutlinePayments } from "react-icons/md";
+import { useAlunoContext } from "../../providers/alunoContext";
 import { FaEye } from "react-icons/fa6";
+import { pagamentosColumns } from "./table/columns";
+import { format } from "date-fns";
 
-interface Pagamento {
+interface Student {
   id: number;
-  nome: string;
-  email: string;
-  telefone: string;
-  formatura_paga: string;
+  name: Key | null | undefined;
+  contato: {
+    nome: string;
+    numeroDocumento: string;
+  };
+  valor: string;
+  vencimento: string;
+  situacao: number;
+  plano: string;
+  linkBoleto: string;
+  educacao_basica: keyof typeof EnumStudentBasicEducation;
+  formatura_paga: boolean;
+  turma: string;
 }
 
 const PagamentosPage = () => {
   const navigate = useNavigate();
-  const { dispatchTurma } = useTurmaContext();
+  const { dispatchAluno } = useAlunoContext();
   const [loading, setLoading] = useState(false);
-  const [pagamentos, setPagamentos] = useState([]);
-  const [onLoad, setOnLoad] = useState(false);
 
-  const fetchPagamentos = async () => {
+  const [payments, setPayments] = useState([]);
+
+  const [onLoad, setOnLoad] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const fetchPagamentos = async (page:number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/alunos");
-      setPagamentos(response);
+      const response = await apiGetData("academic", `/bling/contas/receber?pagina=${page}`);
+      setPayments(response.data);
     } catch (error) {
-      toast.error("Erro ao buscar pagamentos");
+      toast.error("Erro ao buscar Pagamento");
     }
+
     setLoading(false);
   };
 
-  const dataRow = (row: Pagamento) => {
+  const onClickRowView = (row: any) => {
+    dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
+    navigate(`/alunos/view/${row.id}`);
+  };
+
+  const handleChangePagination = (event: React.ChangeEvent<unknown>, value: number) => {
+    try {
+      fetchPagamentos(value);
+    } catch (error) {
+      toast.error("Erro ao buscar Pagamentos");
+    }
+    setPage(value);
+  };
+
+  const dataRow = (row: Student) => {
     return (
       <TableRow
-        key={row.nome}
+        key={row.id}
         sx={{
           "&:last-child td, &:last-child th": { border: 0 },
           " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
         }}
       >
         <TableCell component="th" scope="row">
-          {row.nome}
+          <Link
+            color="primary"
+            underline="always"
+            onClick={() => onClickRowView(row)}
+            sx={{ fontFamily: "Poppins" }}
+          >
+            {row.contato.nome}
+          </Link>
         </TableCell>
-        <TableCell align="left">{row.email}</TableCell>
-        <TableCell align="left">{row.telefone}</TableCell>
-        <TableCell align="left">
+        <TableCell component="th" scope="row">
+          {row.contato.numeroDocumento}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          R$ {row.valor}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          {row.vencimento ? format(new Date(row.vencimento), "dd/MM/yyyy") : ""}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <Chip
+            label={row.situacao === 2 ? "Pago" : row.situacao === 1 ? 'Em Aberto' : 'Cancelado'}
+            color={row.situacao === 2 ? "success" : row.situacao === 1 ? "warning" : "error"}
             variant="filled"
-            color={row.formatura_paga ? "success" : "error"}
-            label={row.formatura_paga ? "Fatura paga" : "Fatura não paga"}
+            icon={<MdOutlinePayments />}
+            sx={{ padding: 1 }}
           />
         </TableCell>
-        <TableCell align="left">
-          <IconButton onClick={() => navigate(`/pagamentos/view/${row.id}`)}>
-            <FaEye color="#2d1c63" size={22} />
-          </IconButton>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          <Tooltip title="Visualizar Boleto">
+            <IconButton size="small" onClick={() => window.location.href = row.linkBoleto}>
+              <FaEye color="#2d1c63" size={22} />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
     );
   };
 
   useEffect(() => {
-    fetchPagamentos();
+    fetchPagamentos(1);
     setOnLoad(true);
   }, []);
 
@@ -90,18 +138,6 @@ const PagamentosPage = () => {
         my={2}
       >
         <h2 className="text-2xl text-default font-extrabold"></h2>
-        <Button
-          color="secondary"
-          variant="contained"
-          endIcon={<IoMdAdd />}
-          onClick={() => {
-            dispatchTurma({ type: "SET_TURMA_SELECIONADA", payload: null });
-            navigate("/pagamentos/edit");
-          }}
-          sx={{ borderRadius: 2 }}
-        >
-          Adicionar
-        </Button>
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
@@ -134,19 +170,21 @@ const PagamentosPage = () => {
           >
             {loading ? (
               <LoadingTable />
-            ) : pagamentos.length > 0 ? (
+            ) : payments.length > 0 ? (
               <BasicTable
                 columns={pagamentosColumns}
-                rows={pagamentos}
+                rows={payments}
                 loading={loading}
                 dataRow={dataRow}
+                page={page}
+                handleChangePagination={handleChangePagination}
               />
             ) : (
               <NoTableData
                 pronoum={"he"}
-                pageName="pagamento"
+                pageName="aluno"
                 disabledButton={false}
-                onClickAction={() => navigate("/pagamentos/edit")}
+                onClickAction={() => navigate("/alunos/edit")}
               />
             )}
           </Paper>

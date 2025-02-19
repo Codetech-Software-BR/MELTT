@@ -1,0 +1,95 @@
+class UniticketController {
+    async getBuyers(req, res) {
+        try {
+            const { access_token } = req.headers;
+            const response = await axios.get(
+                `https://public-api.uniticket.com.br/buyers`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            return res.json(response.data);
+        } catch (error) {
+            console.error(
+                "Erro ao comunicar com UNITICKET:",
+                error.response?.data || error.message
+            );
+            return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+        }
+    }
+
+    async getCheckins(req, res) {
+        try {
+            const { access_token } = req.headers;
+            const response = await axios.get(
+                `https://public-api.uniticket.com.br/checkins`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            return res.json(response.data);
+        } catch (error) {
+            console.error(
+                "Erro ao comunicar com UNITICKET:",
+                error.response?.data || error.message
+            );
+            return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+        }
+    }
+
+    async getTickets(req, res) {
+        try {
+            const { access_token } = req.headers;
+            const response = await axios.get(
+                `https://public-api.uniticket.com.br/tickets`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            return res.json(response.data);
+        } catch (error) {
+            console.error(
+                "Erro ao comunicar com UNITICKET:",
+                error.response?.data || error.message
+            );
+            return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+        }
+    }
+
+    async getParticipants(req, res) {
+        try {
+            const { access_token } = req.headers;
+            const response = await axios.get(
+                `https://public-api.uniticket.com.br/participants`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${access_token}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            return res.json(response.data);
+        } catch (error) {
+            console.error(
+                "Erro ao comunicar com UNITICKET:",
+                error.response?.data || error.message
+            );
+            return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+        }
+    }
+}
+
+export default new UniticketController();

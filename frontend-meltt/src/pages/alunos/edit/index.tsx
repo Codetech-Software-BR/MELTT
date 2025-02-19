@@ -204,7 +204,7 @@ const AlunosPageEdit = () => {
                     />
                   </Stack>
                   <Stack width={"100%"} direction={"row"} gap={2}>
-                    <FormControl fullWidth>
+                    {/* <FormControl fullWidth>
                       <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
                       <Select
                         fullWidth
@@ -220,7 +220,7 @@ const AlunosPageEdit = () => {
                           </MenuItem>
                         ))}
                       </Select>
-                    </FormControl>
+                    </FormControl> */}
                     <FormControl fullWidth>
                       <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Turma</InputLabel>
                       <Select

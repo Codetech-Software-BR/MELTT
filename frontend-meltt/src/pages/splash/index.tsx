@@ -8,7 +8,7 @@ import { getToken } from "../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../components/customDrawer";
 import toast from "react-hot-toast";
-import { redirectToBlingAuth } from "../../utils/functions";
+import { redirectToBlingURLAuth } from "../../utils/functions";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
@@ -16,39 +16,46 @@ const SplashScreen = () => {
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
-  useEffect(() => {
-    setShow(true);
-    setTimeout(() => {
-      if(decoded?.tipo === 'ASSOCIACAO') {
-        navigate("/contratos");
-      } else {
-        navigate("/turmas");
-      }
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   setShow(true);
+  //   switch (decoded?.tipo) {
+  //     // case "ADMIN":
+  //     //   navigate("/splash-bling-info")
+  //     //    break;
+  //     case "ASSOCIACAO":
+  //       navigate("/contratos");
+  //       break;
+  //     // default:
+  //     //   navigate("/turmas");
+  //   }
+  // }, []);
 
 
   useEffect(() => {
-    if (decoded?.tipo === "ADMIN") {
+    if (decoded?.tipo === "ADMIN" && localStorage.getItem("bling-access-token") === null) {
       // toast.error("Faça Login no Bling primeiro para acessar a plataforma");
       // setTimeout(() => {
-      //   redirectToBlingAuth();
-      //   const queryParams = new URLSearchParams(window.location.search);
-      //   const code = queryParams.get("code");
-      //   console.log('CODE', code)
+        redirectToBlingURLAuth();
+        // const queryParams = new URLSearchParams(window.location.search);
+        // const code = queryParams.get("code");
 
-      //   if (code) {
-      //     apiPostData("academic", "/external/bling/oauth", { code })
-      //       .then((response) => {
-      //         console.log("Tokens recebidos:", response.data);
-      //       })
-      //       .catch((error) => {
-      //         console.error("Erro ao enviar código para o backend:", error);
-      //       });
-      //   }
+        // if (code) {
+        //   apiPostData("academic", "/external/bling/oauth", { code })
+        //     .then((response) => {
+        //       console.log("Tokens recebidos:", response.data);
+        //     })
+        //     .catch((error) => {
+        //       console.error("Erro ao enviar código para o backend:", error);
+        //     });
+        // }
       // }, 1000);
     }
-  }, [window.location.search]);
+    else if(decoded?.tipo === "ASSOCIACAO") {
+      navigate("/contratos")
+    } else {
+      navigate("/turmas")
+    }
+  }, []);
 
   return (
     <Stack

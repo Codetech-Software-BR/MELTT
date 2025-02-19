@@ -31,6 +31,7 @@ import SplashGetBlingInfo from "../pages/splash/blingInfo";
 import PreContratoPage from "../pages/pre-contratos";
 import AdesoesPage from "../pages/adesoes";
 import ContratosEventosPage from "../pages/contratos-eventos";
+import TurmasEditPage from "../pages/turmas/edit";
 
 export const router = createBrowserRouter([
   {
@@ -62,7 +63,7 @@ export const router = createBrowserRouter([
     element: <SplashScreen />,
   },
   {
-    path: "/splash-bling-info/:id?",
+    path: "/splash-bling-info",
     element: <SplashGetBlingInfo />,
   },
   {
@@ -119,12 +120,12 @@ export const router = createBrowserRouter([
       },
       {
         path: "/turmas/edit/:id",
-        element: <TurmasPageEdit />,
+        element: <TurmasEditPage />,
       },
-      {
-        path: "/turmas/view/:id",
-        element: <TurmasPageEdit />,
-      },
+      // {
+      //   path: "/turmas/view/:id",
+      //   element: <TurmasPageEdit />,
+      // },
       {
         path: "/turmas/view/:id/pagina-turma",
         element: <PaginaDaTurmaPage />,

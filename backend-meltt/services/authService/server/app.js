@@ -96,9 +96,7 @@ app.post("/api/users/login", async (req, res) => {
     if (!user || !(await verifyPassword(user.senha, senha))) {
       return res.status(401).json({ error: "E-mail ou Senha incorretos" });
     }
-    console.log("before token");
     const token = generateToken(user);
-    console.log("token", token);
     res.json({ token });
   } catch (error) {
     res.status(500).json({ error: "Failed to login" });
@@ -151,19 +149,14 @@ app.post("/api/users/forgot-password", async (req, res) => {
 
 app.post("/api/users/reset-password/", authMiddleware, async (req, res) => {
   const { email, senha } = req.body;
-  console.log("email", email);
-  console.log("senha", senha);
 
   try {
     const user = await findUserByEmail(email);
-    console.log("user =====>", user);
-
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
     const newPassword = await bcrypt.hash(senha, 10);
-    console.log("newPassword", newPassword);
     // user.senha = await bcrypt.hash(senha, 10);
     connection.query("UPDATE usuarios SET senha = ? WHERE id = ?", [
       newPassword,
@@ -183,7 +176,6 @@ app.delete("/api/users/:id", authMiddleware, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
-
     await connection.query("DELETE FROM usuarios WHERE id = ?", [id]);
 
     res.json({ message: "Usuário deletado com sucesso" });
@@ -216,7 +208,7 @@ app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
   }
 });
 
-app.post("/api/external/bling/oauth", authMiddleware, async (req, res) => {
+app.post("/api/external/bling/oauth", async (req, res) => {
   const { code } = req.query;
 
   try {
@@ -227,8 +219,7 @@ app.post("/api/external/bling/oauth", authMiddleware, async (req, res) => {
     const data = new URLSearchParams();
     if(code) {
       data.append("grant_type", "authorization_code");
-      data.append("code", "81cff79ea01b51bf13bec92c07d9f3ffde0511a0"); 
-      // data.append("code", code); 
+      data.append("code", code); 
     }
 
     const config = {
@@ -248,12 +239,13 @@ app.post("/api/external/bling/oauth", authMiddleware, async (req, res) => {
       refresh_token,
     });
   } catch (error) {
-    console.error("Erro ao obter tokens: ", error);
-    return res.status(500).json({ error: "Erro ao obter tokens de acesso" });
+    // console.error("Erro ao obter tokens: ", error);
+    return res.status(500).json({ error: error });
+    // return res.status(500).json({ error: "Erro ao obter tokens de acesso" });
   }
 });
 
-app.post("/api/external/bling/refresh", authMiddleware, async (req, res) => {
+app.post("/api/external/bling/refresh", async (req, res) => {
   const { code } = req.query;
 
   try {
