@@ -12,6 +12,7 @@ import preContratosRoutes from "./preContratoRoutes.js";
 import notificacoesRoutes from "./notificacoesRoutes.js";
 import blingRoutes from "./blingRoutes.js";
 import uniticketRoutes from "./uniticketRoutes.js";
+import s3Routes from "./s3Routes.js";
 
 const router = express.Router();
 
@@ -27,5 +28,6 @@ router.use("/pre-contrato", preContratosRoutes);
 router.use("/notificacoes", notificacoesRoutes);
 router.use("/bling", blingRoutes);
 router.use("/uniticket", uniticketRoutes);
+router.use("/s3/uploads", s3Routes)
 
 export default router;
