@@ -51,7 +51,7 @@ const AlunosPage = () => {
   const fetchAlunos = async () => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/bling/contatos");
+      const response = await apiGetData("academic", "/alunos");
       setStudents(response.data);
     } catch (error) {
       toast.error("Erro ao buscar alunos");

@@ -71,12 +71,12 @@ class AlunoController {
   };
 
   createAluno(req, res) {
-    const { turma_id, nome, email, telefone, plano, formatura_paga } = req.body;
+    const { turma_id, nome, telefone, documento } = req.body;
     const query =
-      "INSERT INTO alunos (turma_id, nome, email, telefone, plano, formatura_paga ) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO alunos (turma_id, nome, telefone, documento ) VALUES (?, ?, ?, ?)";
     db.query(
       query,
-      [turma_id, nome, email, telefone, plano, formatura_paga],
+      [turma_id, nome, telefone, documento],
       (err, result) => {
         if (err) return res.status(500).json(err);
         res.status(201).json({ id: result.insertId, ...req.body });

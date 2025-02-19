@@ -48,7 +48,7 @@ const TurmasPage = () => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", "/turmas");
-      setTurmas(response);
+      setTurmas(response.data);
     } catch (error) {
       toast.error("Erro ao buscar turmas");
     }
