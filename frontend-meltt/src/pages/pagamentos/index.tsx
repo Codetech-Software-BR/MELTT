@@ -1,8 +1,13 @@
 import {
+  Button,
   Chip,
+  FormControl,
   IconButton,
+  InputLabel,
   Link,
+  MenuItem,
   Paper,
+  Select,
   Slide,
   Stack,
   TableCell,
@@ -18,10 +23,10 @@ import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
 import { MdOutlinePayments } from "react-icons/md";
-import { useAlunoContext } from "../../providers/alunoContext";
 import { FaEye } from "react-icons/fa6";
 import { pagamentosColumns } from "./table/columns";
 import { format } from "date-fns";
+import { BiSearch } from "react-icons/bi";
 
 interface Student {
   id: number;
@@ -42,30 +47,55 @@ interface Student {
 
 const PagamentosPage = () => {
   const navigate = useNavigate();
-  const { dispatchAluno } = useAlunoContext();
   const [loading, setLoading] = useState(false);
-
   const [payments, setPayments] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
   const [page, setPage] = useState(1);
+  const [filterSituation, setFilterSituation] = useState<string | null>(null);
+  const [filterDate, setFilterDate] = useState<string | null>(null);
 
-  const fetchPagamentos = async (page:number) => {
+  const fetchPagamentos = async (page: number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", `/bling/contas/receber?pagina=${page}`);
+      const params = new URLSearchParams();
+      
+      params.append("pagina", page.toString());
+      if (filterSituation) {
+        params.append("situacoes", filterSituation);
+      }
+      if (filterDate) {
+        params.append("dataInicial", filterDate);
+      }
+  
+      const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
       setPayments(response.data);
     } catch (error) {
       toast.error("Erro ao buscar Pagamento");
     }
-
     setLoading(false);
   };
+  
+  const fetchWithFilters = async () => {
+    setLoading(true);
 
-  const onClickRowView = (row: any) => {
-    dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
-    navigate(`/alunos/view/${row.id}`);
-  };
+    try {
+      const params = new URLSearchParams();
+  
+      if (filterSituation) {
+        params.append("situacoes", filterSituation);
+      }
+      if (filterDate) params.append("dataInicial", filterDate);
+  
+      const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
+      setPayments(response.data);
+    } catch (error) {
+      toast.error("Erro ao aplicar filtro");
+    }
+    setLoading(false);
+
+  }
+
 
   const handleChangePagination = (event: React.ChangeEvent<unknown>, value: number) => {
     try {
@@ -89,7 +119,6 @@ const PagamentosPage = () => {
           <Link
             color="primary"
             underline="always"
-            onClick={() => onClickRowView(row)}
             sx={{ fontFamily: "Poppins" }}
           >
             {row.contato.nome}
@@ -150,6 +179,23 @@ const PagamentosPage = () => {
             borderRadius: 4,
           }}
         >
+          <Stack direction={'row'} alignItems={'center'} gap={2} p={2}>
+            <FormControl sx={{ width: '20%' }}>
+              <InputLabel sx={{ p: 0.3, bgcolor: '#fff' }}>filtrar por Status</InputLabel>
+              <Select
+                value={filterSituation}
+                label="status"
+                onChange={(e) => setFilterSituation(e.target.value)}
+              >
+                <MenuItem value={2}>Pago</MenuItem>
+                <MenuItem value={1}>Em Aberto</MenuItem>
+                <MenuItem value={5}>Cancelado</MenuItem>
+              </Select>
+            </FormControl>
+            <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchWithFilters}>
+              Buscar
+            </Button>
+          </Stack>
           <Paper
             elevation={0}
             sx={{

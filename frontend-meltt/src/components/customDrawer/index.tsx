@@ -26,7 +26,7 @@ import {
   menuListAssociacao,
 } from "../../utils/arrays";
 import IconLogout from "../../assets/icons/logout";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Routes, useLocation, useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../../utils/token";
 import { IoSettings } from "react-icons/io5";
 import { DrawerMenuListType } from "../../types";
@@ -92,8 +92,8 @@ export default function CustomDrawer(props: Props) {
     decoded?.tipo === "ADMIN"
       ? menuListAdmin
       : decoded?.tipo === "ASSOCIACAO"
-      ? menuListAssociacao
-      : menuListAluno;
+        ? menuListAssociacao
+        : menuListAluno;
 
   const fetchNotificacoes = async () => {
     try {
@@ -108,7 +108,7 @@ export default function CustomDrawer(props: Props) {
     const interval = setInterval(fetchNotificacoes, 300000);
     fetchNotificacoes();
     return () => clearInterval(interval);
-  },[]);
+  }, []);
 
   const drawer = (
     <Box
@@ -146,8 +146,8 @@ export default function CustomDrawer(props: Props) {
                       style: {
                         color:
                           location.pathname === item.route ||
-                          routeSelected === item.route ||
-                          routeSelected.includes(item.route)
+                            routeSelected === item.route ||
+                            routeSelected.includes(item.route)
                             ? "#DB1F8D"
                             : "#F1F5F9",
                       },
@@ -156,8 +156,8 @@ export default function CustomDrawer(props: Props) {
                   <Typography
                     sx={{
                       ...(location.pathname === item.route ||
-                      routeSelected === item.route ||
-                      routeSelected.includes(item.route)
+                        routeSelected === item.route ||
+                        routeSelected.includes(item.route)
                         ? { color: "#342394", fontWeight: 700 }
                         : { color: "white" }),
                     }}
@@ -167,7 +167,7 @@ export default function CustomDrawer(props: Props) {
                 </ListItemButton>
               </ListItem>
               {item.subRoutes && item.subRoutes.length > 0 && (
-                <Collapse in={routeSelected.includes("dashboard")}>
+                <Collapse in={location.pathname === item.route && (item.route.includes("fornecedores") || item.route.includes("dashboard"))}>
                   <List component="div" disablePadding sx={{ paddingLeft: 5 }}>
                     {item.subRoutes.map((subItem, subIndex) => (
                       <ListItem key={`${index}-${subIndex}`} disablePadding>
@@ -179,15 +179,11 @@ export default function CustomDrawer(props: Props) {
                             navigate(subItem.route);
                           }}
                         >
-                          {/* <ListItemIcon>
-                          {subItem.icon}
-                          </ListItemIcon> */}
                           <Typography
                             sx={{
                               ml: 4,
                               fontSize: 14,
-                              ...(location.pathname === subItem.route ||
-                              routeSelected === subItem.route
+                              ...(location.pathname === subItem.route || routeSelected === subItem.route
                                 ? { color: "white", fontWeight: 700 }
                                 : { color: "#eee" }),
                             }}
@@ -312,7 +308,7 @@ export default function CustomDrawer(props: Props) {
                     ) : (
                       <small
                         className="text-xs"
-                        style={{ }}
+                        style={{}}
                       >
                         😥 nenhuma notificação disponível
                       </small>
@@ -383,7 +379,7 @@ export default function CustomDrawer(props: Props) {
                 src="https://media.licdn.com/dms/image/v2/C4D0BAQGHK2vhhHiVfQ/company-logo_200_200/company-logo_200_200/0/1678893040439/meltt_formaturas_logo?e=2147483647&v=beta&t=HbKS2BEqaCTDQL4JYmNDwzxD0OH-tS1wNYau8TDjrjw"
                 alt="das"
                 onClick={() => props.setOpenProfileImage(true)}
-                sx={{ width: 50, height: 50, cursor:'pointer' }}
+                sx={{ width: 50, height: 50, cursor: 'pointer' }}
               />
             </Stack>
           </Stack>
