@@ -10,6 +10,7 @@ export const initialValuesFornecedor = {
 
 export const initialValuesTurma = {
   nome: "",
+  ano_formatura: "",
   identificador: "",
   regras_adesao: "",
   regras_rescisao: "",

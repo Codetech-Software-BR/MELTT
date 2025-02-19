@@ -71,7 +71,7 @@ const PreContratoPage = () => {
 
       setColumns(prev => {
         const updatedColumns = { ...initialColumns };
-        response.forEach((preContrato: Item) => {
+        response.data?.forEach((preContrato: Item) => {
           const statusKey = preContrato.status;
           if (updatedColumns[statusKey]) {
             updatedColumns[statusKey].items.push(preContrato);
