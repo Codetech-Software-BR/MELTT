@@ -32,6 +32,7 @@ import PreContratoPage from "../pages/pre-contratos";
 import AdesoesPage from "../pages/adesoes";
 import ContratosEventosPage from "../pages/contratos-eventos";
 import TurmasEditPage from "../pages/turmas/edit";
+import FornecedoresPage from "../pages/fornecedores";
 
 export const router = createBrowserRouter([
   {
@@ -154,10 +155,10 @@ export const router = createBrowserRouter([
         path: "/fornecedores",
         element: <ContratosEventosPage/>
       },
-      // {
-      //   path: "/fornecedores",
-      //   element: <FornecedoresPage/>
-      // },
+      {
+        path: "/fornecedores/servico",
+        element: <FornecedoresPage/>
+      },
       {
         path: "/fornecedor/edit/:id?",
         element: <FornecedoresEditPage/>

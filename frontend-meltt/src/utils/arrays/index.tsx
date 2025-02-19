@@ -36,6 +36,9 @@ export const menuListAdmin = [
     title: "Contratos e eventos",
     route: "/fornecedores",
     icon: <MdEmojiEvents size={22} />,
+    subRoutes: [
+      {title: "Fornecedores", route: "/fornecedores/servico", icon: <FaCircle size={8} className="text-white" />},
+    ]
   },
   {
     title: "Relatórios",
