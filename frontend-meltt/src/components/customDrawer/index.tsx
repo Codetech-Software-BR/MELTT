@@ -27,7 +27,7 @@ import {
 } from "../../utils/arrays";
 import IconLogout from "../../assets/icons/logout";
 import { useLocation, useNavigate } from "react-router-dom";
-import { getToken, removeToken } from "../../utils/token";
+import { getToken, removeAllTokens } from "../../utils/token";
 import { IoSettings } from "react-icons/io5";
 import { DrawerMenuListType } from "../../types";
 import { FaBell } from "react-icons/fa6";
@@ -220,7 +220,7 @@ export default function CustomDrawer(props: Props) {
         <ListItem disablePadding>
           <ListItemButton
             onClick={() => {
-              removeToken();
+              removeAllTokens();
               navigate("/login");
             }}
           >

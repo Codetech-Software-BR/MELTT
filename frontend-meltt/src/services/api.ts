@@ -13,8 +13,8 @@ const getBaseURL = (serviceType: string): string => {
   }
 };
 
-let isBlingRefreshing = false;
-let blingRefreshSubscribers: ((token: string) => void)[] = [];
+// let isBlingRefreshing = false;
+// let blingRefreshSubscribers: ((token: string) => void)[] = [];
 const createApiInstance = (serviceType: string): AxiosInstance => {
   const api = axios.create({
     baseURL: getBaseURL(serviceType),
@@ -48,6 +48,21 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
     },
     (error) => Promise.reject(error)
   );
+
+  api.interceptors.response.use((response) => response, (error) => {
+    console.log('error', error.response.data.status)
+    if(error.response.data.status === 401) {
+      let refreshToken = localStorage.getItem("bling-refresh-token")
+      let refreshRequest =  apiPostData("authentication", `/external/bling/refresh`, {
+        refresh_token: refreshToken
+      })
+      console.log('refreshRequest', refreshRequest.then((res) => res))
+      refreshRequest.then((res) => {
+        localStorage.setItem("bling-access-token", res.data.access_token)
+        localStorage.setItem("bling-refresh-token", res.data.refresh_token)
+      })
+    }
+  })
 
   // api.interceptors.response.use(
   //   (response) => response,

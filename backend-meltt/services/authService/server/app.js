@@ -246,38 +246,41 @@ app.post("/api/external/bling/oauth", async (req, res) => {
 });
 
 app.post("/api/external/bling/refresh", async (req, res) => {
-  const { code } = req.query;
+  const { refresh_token } = req.body; 
+
+  if (!refresh_token) {
+    return res.status(400).json({ error: "refresh_token é obrigatório" });
+  }
 
   try {
     const url = "https://www.bling.com.br/Api/v3/oauth/token"; 
     const username = process.env.CLIENT_ID;
-    const password = process.env.CLIENT_SECRET; 
+    const password = process.env.CLIENT_SECRET;
 
     const data = new URLSearchParams();
-    if(code) {
-      data.append("grant_type", "refresh_token");
-      data.append("refresh_token", code); 
-    }
+    data.append("grant_type", "refresh_token");
+    data.append("refresh_token", refresh_token);
 
     const config = {
       headers: {
-        Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString(
-          "base64"
-        )}`,
+        Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
     };
 
     const response = await axios.post(url, data, config);
-    const { access_token, refresh_token } = response.data;
+    const { access_token, refresh_token: new_refresh_token } = response.data;
 
     return res.json({
       access_token,
-      refresh_token,
+      refresh_token: new_refresh_token,
     });
   } catch (error) {
-    console.error("Erro ao obter tokens: ", error);
-    return res.status(500).json({ error: "Erro ao obter tokens de acesso" });
+    console.error("Erro ao atualizar token:", error.response?.data || error.message);
+    return res.status(500).json({ 
+      error: "Erro ao atualizar token",
+      details: error.response?.data || error.message 
+    });
   }
 });
 
