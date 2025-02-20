@@ -48,7 +48,6 @@ export type StudentInitialValuesFn = (
 
 const TurmasPageNew = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -82,6 +81,47 @@ const TurmasPageNew = () => {
     },
   });
 
+  const onSubmitTurma = async (values: any) => {
+    setLoadingSave(true);
+
+    try {
+      if (file instanceof File) {
+        const formData = new FormData();
+        formData.append("file", file);
+        toast.loading("Enviando Arquivo do Estatuto...");
+      
+        const pressignedUrl = await apiGetData("academic", `/s3/uploads/turma/pressignedUrl?fileName=${file.name}&fileType=${file.type}`);
+        if(pressignedUrl?.url) {
+          const result = await fetch(pressignedUrl.url, {
+            method: 'PUT',
+            body: file,
+            headers: {
+              'Content-Type': file.type
+            }
+          })
+          if(result.status === 200) {
+            let dataObj = {
+              ...values,
+              arquivo_url:`https://meltt-turmas.s3.amazonaws.com/turmas/${encodeURIComponent(file.name)}`,
+            };
+            let response = await apiPostData("academic", "/turmas", dataObj )
+            if(response.id){
+              toast.dismiss();
+              toast.success("Turma salva com sucesso");
+              navigate(-1);
+            }
+          }
+        }
+      } else {
+        console.error("Erro: O arquivo não é um objeto File válido.");
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error("Erro ao salvar turma");
+    }
+    setLoadingSave(false);
+  };
+
 
   const adicionarPlano = () => {
     if (!newPlan.nome || !newPlan.inclusos || !newPlan.valor) return;
@@ -101,36 +141,6 @@ const TurmasPageNew = () => {
 
   const removerEvento = (index: number) => {
     setEventos(eventos.filter((_, i) => i !== index));
-  };
-
-  const onSubmitTurma = async (values: any) => {
-    setLoadingSave(true);
-
-    let dataObj = {
-      ...values,
-      ...eventos,
-      ...plans,
-      faculdade_id: 1,
-    };
-
-    try {
-      if (id) {
-        const response = await apiPutData("academic", `/turmas/${id}`, dataObj);
-        if (response.result.nome) {
-          toast.success("Turma editada com sucesso");
-          navigate(-1);
-        }
-      } else {
-        const response = await apiPostData("academic", "/turmas", dataObj);
-        if (response.id) {
-          toast.success("Turma salvo com sucesso");
-          navigate(-1);
-        }
-      }
-    } catch (error) {
-      toast.error("Erro ao salvar turma");
-    }
-    setLoadingSave(false);
   };
 
 
@@ -183,7 +193,7 @@ const TurmasPageNew = () => {
                     p={2}
                     sx={{
                       maxHeight: "calc(85vh - 132px)",
-                      overflowY: "auto", 
+                      overflowY: "auto",
                     }}
                   >
                     <Stack direction={"column"}>
@@ -200,22 +210,6 @@ const TurmasPageNew = () => {
                         preencha as informações abaixo.
                       </Typography>
                     </Stack>
-                    {/* <FormControl fullWidth>
-                      <InputLabel id="faculdade" sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
-                      <Select
-                        name="faculdade"
-                        color="primary"
-                        value={values.faculdade}
-                        onChange={handleChange}
-                        sx={{ width: "49%" }}
-                      >
-                        {faculdades.map((option: any) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl> */}
                     <Stack
                       direction={"row"}
                       justifyContent={"space-between"}

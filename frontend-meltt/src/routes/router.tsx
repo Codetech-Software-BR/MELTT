@@ -32,6 +32,7 @@ import PreContratoPage from "../pages/pre-contratos";
 import AdesoesPage from "../pages/adesoes";
 import ContratosEventosPage from "../pages/contratos-eventos";
 import TurmasEditPage from "../pages/turmas/edit";
+import TarefasPage from "../pages/tarefas";
 
 export const router = createBrowserRouter([
   {
@@ -177,6 +178,10 @@ export const router = createBrowserRouter([
       {
         path: "/eventos/edit/:id?",
         element: <EventosPageEdit/>,
+      },
+      {
+        path: "/tarefas",
+        element: <TarefasPage/>,
       },
       {
         path: "/adesoes",

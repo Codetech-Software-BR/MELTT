@@ -19,10 +19,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
 import { validateTurmaSchema } from "../../../utils/validationSchemas";
 import toast from "react-hot-toast";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
+import { apiPostData, apiPutData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
 import { DatePicker, LoadingButton } from "@mui/lab";
@@ -33,6 +33,7 @@ import { TbTrash } from "react-icons/tb";
 import { SlMagnifier } from "react-icons/sl";
 import { graduationYearsList } from "../../../utils/arrays";
 import dayjs from "dayjs";
+import { useTurmaContext } from "../../../providers/turmaContext";
 
 export type StudentInfo = {
   educacao_basica: string | undefined;
@@ -49,8 +50,10 @@ export type StudentInitialValuesFn = (
 const TurmasEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const {stateTurma} = useTurmaContext();
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
+
   const [file, setFile] = useState<File | null>(null);
 
   const [eventos, setEventos] = useState<{ data: string; descricao: string }[]>([]);
@@ -58,6 +61,18 @@ const TurmasEditPage = () => {
 
   const [plans, setPlans] = useState<{ nome: string; inclusos: string; valor: string }[]>([]);
   const [newPlan, setNewPlan] = useState({ nome: "", inclusos: "", valor: "" });
+
+  const getTurmasInitialValue = Object.keys(initialValuesTurma).reduce(
+    (acc, key) => {
+      const typedKey = key as keyof typeof initialValuesTurma;
+      acc[typedKey] = id
+        ? stateTurma.turmaSelecionada?.[typedKey]
+        : initialValuesTurma[typedKey];
+      return acc;
+    },
+    {} as any
+  );
+
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -156,7 +171,7 @@ const TurmasEditPage = () => {
         >
           <Formik
             initialValues={{
-              ...initialValuesTurma,
+              ...getTurmasInitialValue,
             }}
             validationSchema={validateTurmaSchema}
             onSubmit={(values: any) => onSubmitTurma(values)}
@@ -181,7 +196,7 @@ const TurmasEditPage = () => {
                     p={2}
                     sx={{
                       maxHeight: "calc(85vh - 132px)",
-                      overflowY: "auto", 
+                      overflowY: "auto",
                     }}
                   >
                     <Stack direction={"column"}>
@@ -198,22 +213,6 @@ const TurmasEditPage = () => {
                         preencha as informações abaixo.
                       </Typography>
                     </Stack>
-                    {/* <FormControl fullWidth>
-                      <InputLabel id="faculdade" sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
-                      <Select
-                        name="faculdade"
-                        color="primary"
-                        value={values.faculdade}
-                        onChange={handleChange}
-                        sx={{ width: "49%" }}
-                      >
-                        {faculdades.map((option: any) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl> */}
                     <Stack
                       direction={"row"}
                       justifyContent={"space-between"}
@@ -255,99 +254,103 @@ const TurmasEditPage = () => {
                       variant="outlined"
                       focused
                       label="Identificador da turma"
-                      value={values.Identificador}
+                      value={values.identificador}
                       onChange={handleChange}
                       placeholder="código único identificador da turma ?"
                     />
-                    <Typography variant="body2">Arquivo do Estatuto</Typography>
-                    <div
-                      className="h-44 border-2 border-dashed border-default rounded-md -mt-4 p-4"
-                      {...getRootProps()}
-                    >
-                      {file ? (
-                        <Stack
-                          height={"100%"}
-                          direction={"column"}
-                          justifyContent={"center"}
-                          alignItems={"center"}
-                          overflow={"hidden"}
-                          p={2}
+                    {!id && (
+                      <Stack direction={'column'}>
+                        <Typography variant="body2">Arquivo do Estatuto</Typography>
+                        <div
+                          className="h-44 border-2 border-dashed border-default rounded-md -mt-4 p-4"
+                          {...getRootProps()}
                         >
-                          <IconUpload />
-                          <Typography
-                            variant="body1"
-                            fontWeight={800}
-                            textAlign={"center"}
-                            color="primary"
-                          >
-                            {file?.name}
-                          </Typography>
-                          <Typography variant="body2" color="primary">
-                            {file?.type}
-                          </Typography>
-                          <IconButton
-                            size="small"
-                            onClick={() => {
-                              setFile(null);
-                            }}
-                          >
-                            <TbTrash size={14} className="text-red-500" />
-                          </IconButton>
-                        </Stack>
-                      ) : (
-                        <>
-                          <input {...getInputProps()} />
-                          {isDragActive ? (
-                            <p className=" flex items-center justify-center text-default h-full text-center">
-                              Solte seu arquivo aqui...
-                            </p>
-                          ) : (
+                          {file ? (
                             <Stack
-                              width={"100%"}
                               height={"100%"}
-                              alignItems={"center"}
+                              direction={"column"}
                               justifyContent={"center"}
+                              alignItems={"center"}
+                              overflow={"hidden"}
+                              p={2}
                             >
-                              <Stack direction={"column"} alignItems={"center"} gap={1}>
-                                <IconUpload />
-                                <small
-                                  className="text-[#777] font-light text-xs"
-                                  style={{ fontFamily: "Poppins" }}
-                                >
-                                  Arraste seu arquivo para iniciar o upload
-                                </small>
-                                <small
-                                  className="text-[#777] font-light text-xs"
-                                  style={{ fontFamily: "Poppins", fontSize: 10 }}
-                                >
-                                  pdf/jpg/png
-                                </small>
-                                <Divider
-                                  orientation="horizontal"
-                                  flexItem
-                                  sx={{ color: "black", fontSize: 12 }}
-                                >
-                                  ou
-                                </Divider>
-                                <Button
-                                  variant="outlined"
-                                  color="primary"
-                                  endIcon={<SlMagnifier size={14} color="#2d1c63" />}
-                                  style={{
-                                    borderRadius: "8px",
-                                    padding: "6px",
-                                    fontSize: 12,
-                                    width: 150,
-                                  }}
-                                >
-                                  Buscar arquivo
-                                </Button>
-                              </Stack>
+                              <IconUpload />
+                              <Typography
+                                variant="body1"
+                                fontWeight={800}
+                                textAlign={"center"}
+                                color="primary"
+                              >
+                                {file?.name}
+                              </Typography>
+                              <Typography variant="body2" color="primary">
+                                {file?.type}
+                              </Typography>
+                              <IconButton
+                                size="small"
+                                onClick={() => {
+                                  setFile(null);
+                                }}
+                              >
+                                <TbTrash size={14} className="text-red-500" />
+                              </IconButton>
                             </Stack>
+                          ) : (
+                            <>
+                              <input {...getInputProps()} />
+                              {isDragActive ? (
+                                <p className=" flex items-center justify-center text-default h-full text-center">
+                                  Solte seu arquivo aqui...
+                                </p>
+                              ) : (
+                                <Stack
+                                  width={"100%"}
+                                  height={"100%"}
+                                  alignItems={"center"}
+                                  justifyContent={"center"}
+                                >
+                                  <Stack direction={"column"} alignItems={"center"} gap={1}>
+                                    <IconUpload />
+                                    <small
+                                      className="text-[#777] font-light text-xs"
+                                      style={{ fontFamily: "Poppins" }}
+                                    >
+                                      Arraste seu arquivo para iniciar o upload
+                                    </small>
+                                    <small
+                                      className="text-[#777] font-light text-xs"
+                                      style={{ fontFamily: "Poppins", fontSize: 10 }}
+                                    >
+                                      pdf/jpg/png
+                                    </small>
+                                    <Divider
+                                      orientation="horizontal"
+                                      flexItem
+                                      sx={{ color: "black", fontSize: 12 }}
+                                    >
+                                      ou
+                                    </Divider>
+                                    <Button
+                                      variant="outlined"
+                                      color="primary"
+                                      endIcon={<SlMagnifier size={14} color="#2d1c63" />}
+                                      style={{
+                                        borderRadius: "8px",
+                                        padding: "6px",
+                                        fontSize: 12,
+                                        width: 150,
+                                      }}
+                                    >
+                                      Buscar arquivo
+                                    </Button>
+                                  </Stack>
+                                </Stack>
+                              )}
+                            </>
                           )}
-                        </>
-                      )}
-                    </div>
+                        </div>
+                      </Stack>
+                    )}
                     <Stack spacing={3} bgcolor={"#f9f9f9"} p={2} borderRadius={2}>
                       <Typography variant="body1" color="primary">
                         Planos de Formatura
@@ -402,6 +405,7 @@ const TurmasEditPage = () => {
                       variant="outlined"
                       focused
                       label="Regras de Adesão"
+                      disabled={id ? true : false}
                       multiline
                       rows={4}
                       value={values.regras_adesao}
@@ -414,6 +418,7 @@ const TurmasEditPage = () => {
                       variant="outlined"
                       focused
                       label="Regras de Rescisão"
+                      disabled={id ? true : false}
                       multiline
                       rows={4}
                       value={values.regras_rescisao}
@@ -426,6 +431,7 @@ const TurmasEditPage = () => {
                       variant="outlined"
                       focused
                       label="Regras de Renegociação"
+                      disabled={id ? true : false}
                       multiline
                       rows={4}
                       value={values.regras_renegociacao}

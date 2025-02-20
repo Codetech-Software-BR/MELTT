@@ -92,8 +92,8 @@ export default function CustomDrawer(props: Props) {
     decoded?.tipo === "ADMIN"
       ? menuListAdmin
       : decoded?.tipo === "ASSOCIACAO"
-      ? menuListAssociacao
-      : menuListAluno;
+        ? menuListAssociacao
+        : menuListAluno;
 
   const fetchNotificacoes = async () => {
     try {
@@ -108,7 +108,7 @@ export default function CustomDrawer(props: Props) {
     const interval = setInterval(fetchNotificacoes, 300000);
     fetchNotificacoes();
     return () => clearInterval(interval);
-  },[]);
+  }, []);
 
   const drawer = (
     <Box
@@ -117,8 +117,11 @@ export default function CustomDrawer(props: Props) {
       justifyContent={"space-between"}
       width={280}
       height={"100%"}
-      bgcolor={"#2D1C63"}
+      // bgcolor={"#2D1C63"}
       role="presentation"
+      sx={{
+        background: "linear-gradient(135deg, #2D1C63 30%, #1B0E40 100%)"
+      }}
     >
       <Stack direction={"column"} gap={4} ml={2}>
         <Stack pt={8} px={3} ml={4}>
@@ -135,7 +138,18 @@ export default function CustomDrawer(props: Props) {
               >
                 <ListItemButton
                   selected={location.pathname.includes(item.route)}
-                  sx={{ borderRadius: "32px 0 0 32px" }}
+                  sx={{
+                    borderRadius: "32px 0 0 32px",
+                    ...(location.pathname === item.route ||
+                      routeSelected === item.route ||
+                      routeSelected.includes(item.route)
+                      ? {
+                        backgroundColor: "#fff",
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                        transform: "scale(1.07)",
+                      }
+                      : {}),
+                  }}
                   onClick={() => {
                     setRouteSelected(item.route);
                     navigate(item.route);
@@ -146,8 +160,8 @@ export default function CustomDrawer(props: Props) {
                       style: {
                         color:
                           location.pathname === item.route ||
-                          routeSelected === item.route ||
-                          routeSelected.includes(item.route)
+                            routeSelected === item.route ||
+                            routeSelected.includes(item.route)
                             ? "#DB1F8D"
                             : "#F1F5F9",
                       },
@@ -156,8 +170,8 @@ export default function CustomDrawer(props: Props) {
                   <Typography
                     sx={{
                       ...(location.pathname === item.route ||
-                      routeSelected === item.route ||
-                      routeSelected.includes(item.route)
+                        routeSelected === item.route ||
+                        routeSelected.includes(item.route)
                         ? { color: "#342394", fontWeight: 700 }
                         : { color: "white" }),
                     }}
@@ -179,15 +193,12 @@ export default function CustomDrawer(props: Props) {
                             navigate(subItem.route);
                           }}
                         >
-                          {/* <ListItemIcon>
-                          {subItem.icon}
-                          </ListItemIcon> */}
                           <Typography
                             sx={{
                               ml: 4,
                               fontSize: 14,
                               ...(location.pathname === subItem.route ||
-                              routeSelected === subItem.route
+                                routeSelected === subItem.route
                                 ? { color: "white", fontWeight: 700 }
                                 : { color: "#eee" }),
                             }}
@@ -202,6 +213,7 @@ export default function CustomDrawer(props: Props) {
               )}
             </React.Fragment>
           ))}
+
         </List>
       </Stack>
       <List>
@@ -312,7 +324,7 @@ export default function CustomDrawer(props: Props) {
                     ) : (
                       <small
                         className="text-xs"
-                        style={{ }}
+                        style={{}}
                       >
                         😥 nenhuma notificação disponível
                       </small>
@@ -383,7 +395,7 @@ export default function CustomDrawer(props: Props) {
                 src="https://media.licdn.com/dms/image/v2/C4D0BAQGHK2vhhHiVfQ/company-logo_200_200/company-logo_200_200/0/1678893040439/meltt_formaturas_logo?e=2147483647&v=beta&t=HbKS2BEqaCTDQL4JYmNDwzxD0OH-tS1wNYau8TDjrjw"
                 alt="das"
                 onClick={() => props.setOpenProfileImage(true)}
-                sx={{ width: 50, height: 50, cursor:'pointer' }}
+                sx={{ width: 50, height: 50, cursor: 'pointer' }}
               />
             </Stack>
           </Stack>
