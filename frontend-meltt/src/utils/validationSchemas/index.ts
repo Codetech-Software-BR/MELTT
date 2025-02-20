@@ -2,8 +2,9 @@ import * as Yup from "yup";
 
 export const validateStudentSchema = Yup.object({
   nome: Yup.string().required("o campo nome é obrigatório."),
-  email: Yup.string().required("o campo email é obrigatório."),
-  plano: Yup.string().required("o campo plano é obrigatório."),
+  documento: Yup.string().required("o campo documento é obrigatório."),
+  turma_id: Yup.string().required("o campo turma é obrigatório."),
+  telefone: Yup.string().required("o campo telefone é obrigatório."),
 });
 
 export const validateFaculdadeSchema = Yup.object({

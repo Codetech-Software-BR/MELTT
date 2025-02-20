@@ -39,6 +39,7 @@ const TurmasPage = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [openModalDetails, setOpenModalDetails] = useState(false);
 
@@ -49,6 +50,7 @@ const TurmasPage = () => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/turmas?page=${page}`);
+      setTotalPages(response.totalPages);
       setTurmas(response.data);
     } catch (error) {
       toast.error("Erro ao buscar turmas");
@@ -227,6 +229,7 @@ const TurmasPage = () => {
               <LoadingTable />
             ) : turmas.length > 0 ? (
               <BasicTable
+                totalPages={totalPages}
                 columns={turmasColumns}
                 rows={turmas}
                 loading={loading}
