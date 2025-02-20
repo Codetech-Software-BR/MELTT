@@ -10,6 +10,7 @@ import { ReactNode } from "react";
 
 type BasicTableProps = {
   page: number;
+  totalPages: number;
   columns: TableColumnsType[];
   rows: any[];
   dataRow: (row: any) => ReactNode;
@@ -20,6 +21,7 @@ type BasicTableProps = {
 
 export default function BasicTable({
   page,
+  totalPages,
   columns,
   rows,
   dataRow,
@@ -63,7 +65,7 @@ export default function BasicTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination count={rows.length} page={page} onChange={handleChangePagination} sx={{ mt: 2 }} color="primary" />
+      <Pagination count={totalPages} page={page} onChange={handleChangePagination} sx={{ mt: 2 }} color="primary" />
     </div>
   );
 }

@@ -75,6 +75,7 @@ const AlunosPageEdit = () => {
   };
 
   const onSubmitAluno = async (values: any) => {
+    console.log("values", values);
     setLoadingAluno(true);
     try {
       if (id) {
@@ -130,7 +131,10 @@ const AlunosPageEdit = () => {
               ...getAlunosInitialValue,
             }}
             validationSchema={validateStudentSchema}
-            onSubmit={(values: any) => onSubmitAluno(values)}
+            onSubmit={(values: any) => {
+              console.log(values)
+              onSubmitAluno(values)
+            }}
           >
             {({ values, errors, handleChange, handleSubmit }) => (
               <form
