@@ -53,8 +53,8 @@ const TurmasPageNew = () => {
   useEffect(() => {
     const getPlanos = async () => {
       const response = await apiGetData("academic", "/planos-formatura");
-      if (response) {
-        setPlanos(response);
+      if (response.data) {
+        setPlanos(response.data);
       }
     };
     getPlanos();
@@ -84,7 +84,10 @@ const TurmasPageNew = () => {
   });
 
   const onSubmitTurma = async (values: any) => {
+    console.log(values);
     setLoadingSave(true);
+
+    const { planos_formatura, ...turmaValues } = values;
 
     try {
       if (file instanceof File) {
@@ -103,11 +106,21 @@ const TurmasPageNew = () => {
           })
           if (result.status === 200) {
             let dataObj = {
-              ...values,
+              ...turmaValues,
               arquivo_url: `https://meltt-turmas.s3.amazonaws.com/turmas/${encodeURIComponent(file.name)}`,
             };
             let response = await apiPostData("academic", "/turmas", dataObj)
             if (response.id) {
+              const requests = planos_formatura.map((plano: any) => {
+                return apiPostData("academic", `/turmas/vincular-planos`, {
+                  turma_id: response.id,
+                  plano_id: plano.id,
+                });
+              });
+
+              // Aguarda todas as requisições serem concluídas
+              await Promise.all(requests);
+
               toast.dismiss();
               toast.success("Turma salva com sucesso");
               navigate(-1);
@@ -153,7 +166,7 @@ const TurmasPageNew = () => {
             validationSchema={validateTurmaSchema}
             onSubmit={(values: any) => onSubmitTurma(values)}
           >
-            {({ values, errors, handleChange, handleSubmit }) => (
+            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%]"
                 onSubmit={handleSubmit}
@@ -161,7 +174,6 @@ const TurmasPageNew = () => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     handleSubmit(e);
-                    () => { };
                   }
                 }}
               >
@@ -243,11 +255,15 @@ const TurmasPageNew = () => {
                           id="planos_formatura"
                           options={planos}
                           getOptionLabel={(option) => option.nome}
+                          value={values.planos_formatura} // Ensure this is an array
+                          onChange={(_, newValue) => {
+                            setFieldValue("planos_formatura", newValue);
+                          }}
                           renderInput={(params) => (
                             <TextField
                               {...params}
-                              variant="outlined"
                               label="Planos de Formatura"
+                              variant="outlined"
                             />
                           )}
                         />
@@ -348,7 +364,7 @@ const TurmasPageNew = () => {
                       variant="outlined"
                       label="Regras de Adesão"
                       multiline
-                      rows={4}
+                      rows={3}
                       value={values.regras_adesao}
                       onChange={handleChange}
                       placeholder="descreva detalhamente as regras de adesão"
@@ -359,7 +375,7 @@ const TurmasPageNew = () => {
                       variant="outlined"
                       label="Regras de Rescisão"
                       multiline
-                      rows={4}
+                      rows={3}
                       value={values.regras_rescisao}
                       onChange={handleChange}
                       placeholder="descreva detalhadamento as regras de rescisão"
@@ -370,7 +386,7 @@ const TurmasPageNew = () => {
                       variant="outlined"
                       label="Regras de Renegociação"
                       multiline
-                      rows={4}
+                      rows={3}
                       value={values.regras_renegociacao}
                       onChange={handleChange}
                       placeholder="descreva detalhadamente as regras de renegociação"
