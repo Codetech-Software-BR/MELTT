@@ -13,6 +13,7 @@ import notificacoesRoutes from "./notificacoesRoutes.js";
 import blingRoutes from "./blingRoutes.js";
 import uniticketRoutes from "./uniticketRoutes.js";
 import s3Routes from "./s3Routes.js";
+import planosFormaturaRoutes from "./planosFormaturaRoutes.js";
 
 const router = express.Router();
 
@@ -29,5 +30,6 @@ router.use("/notificacoes", notificacoesRoutes);
 router.use("/bling", blingRoutes);
 router.use("/uniticket", uniticketRoutes);
 router.use("/s3/uploads", s3Routes)
+router.use("/planos-formatura", planosFormaturaRoutes);
 
 export default router;
