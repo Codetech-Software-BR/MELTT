@@ -52,7 +52,6 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
   api.interceptors.response.use((response) => response, (error) => {
     console.log('error', error.response.data.status)
     if(error.response.data.status === 401) {
-      // let refreshToken = localStorage.getItem("bling-refresh-token")
       toast.error("Sessão do Bling expirada. Faça Login Novamente. Se necessário, deslogue do Bling e logue novamente!", {
         duration: 10000,
         icon: '🔒'
