@@ -223,6 +223,7 @@ const PagamentosPage = () => {
                 loading={loading}
                 dataRow={dataRow}
                 page={page}
+                totalPages={payments.length}
                 handleChangePagination={handleChangePagination}
               />
             ) : (

@@ -45,7 +45,7 @@ const FornecedoresPage = () => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", "/fornecedores");
-      setFornecedores(response);
+      setFornecedores(response.data);
     } catch (error) {
       toast.error("Erro ao buscar fornecedores");
     }
@@ -54,7 +54,7 @@ const FornecedoresPage = () => {
 
   const onClickRow = (row: any) => {
     dispatchFornecedor({ type: "SET_FORNECEDOR_SELECIONADO", payload: row });
-    navigate(`/fornecedor/edit/${row.id}`);
+    navigate(`/fornecedores/edit/${row.id}`);
   };
 
   const onClickDelete = async (row: Fornecedor) => {

@@ -52,15 +52,24 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
   api.interceptors.response.use((response) => response, (error) => {
     console.log('error', error.response.data.status)
     if(error.response.data.status === 401) {
-      let refreshToken = localStorage.getItem("bling-refresh-token")
-      let refreshRequest =  apiPostData("authentication", `/external/bling/refresh`, {
-        refresh_token: refreshToken
-      })
-      console.log('refreshRequest', refreshRequest.then((res) => res))
-      refreshRequest.then((res) => {
-        localStorage.setItem("bling-access-token", res.data.access_token)
-        localStorage.setItem("bling-refresh-token", res.data.refresh_token)
-      })
+      // let refreshToken = localStorage.getItem("bling-refresh-token")
+      toast.error("Sessão do Bling expirada. Faça Login Novamente. Se necessário, deslogue do Bling e logue novamente!", {
+        duration: 10000,
+        icon: '🔒'
+      });
+      localStorage.removeItem("@meltt-user-token");
+      localStorage.removeItem("bling-access-token");
+      localStorage.removeItem("bling-refresh-token");
+      // window.location.reload();
+      // alert('Faça Login no Bling NOVAMENTE para acessar a plataforma, se necessário saia do Bling e faça Login novamente.')
+      // let refreshRequest =  apiPostData("authentication", `/external/bling/refresh`, {
+      //   refresh_token: refreshToken
+      // })
+      // console.log('refreshRequest', refreshRequest.then((res) => res))
+      // refreshRequest.then((res) => {
+      //   localStorage.setItem("bling-access-token", res.data.access_token)
+      //   localStorage.setItem("bling-refresh-token", res.data.refresh_token)
+      // })
     }
   })
 
