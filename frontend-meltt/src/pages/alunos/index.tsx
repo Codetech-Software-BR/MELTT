@@ -1,9 +1,9 @@
 import {
   Button,
-  Chip,
   CircularProgress,
   IconButton,
   Link,
+  MenuItem,
   Paper,
   Slide,
   Stack,
@@ -16,11 +16,10 @@ import { studentsColumns } from "./table/columns";
 import { useNavigate } from "react-router-dom";
 import { apiDeleteData, apiGetData } from "../../services/api";
 import { IoMdAdd } from "react-icons/io";
-import { EnumStudentBasicEducation } from "../../utils/enums";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
-import { MdModeEdit, MdOutlinePayments } from "react-icons/md";
+import { MdModeEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useAlunoContext } from "../../providers/alunoContext";
 import { FaEye } from "react-icons/fa6";
@@ -29,13 +28,9 @@ interface Student {
   id: number;
   name: Key | null | undefined;
   nome: string;
-  email: string;
   telefone: string;
-  escola: string;
-  plano: string;
-  educacao_basica: keyof typeof EnumStudentBasicEducation;
-  formatura_paga: boolean;
-  turma: string;
+  documento: string;
+  turma_id: number;
 }
 
 const AlunosPage = () => {
@@ -43,15 +38,25 @@ const AlunosPage = () => {
   const { dispatchAluno } = useAlunoContext();
   const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
+  const [turmas, setTurmas] = useState([]);
+  const [loadingTurmas, setLoadingTurmas] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [students, setStudents] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
 
+  const fetchTurmas = async () => {
+    setLoadingTurmas(true);
+    await apiGetData("academic", `/turmas`).then((response) => setTurmas(response.data));
+    setLoadingTurmas(false);
+  };
+
   const fetchAlunos = async () => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/bling/contatos");
+      const response = await apiGetData("academic", "/alunos");
+      setTotalPages(response.totalPages);
       setStudents(response.data);
     } catch (error) {
       toast.error("Erro ao buscar alunos");
@@ -105,19 +110,13 @@ const AlunosPage = () => {
           </Link>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.email}
+          {row.documento}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           {row.telefone}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          <Chip
-            label={row.formatura_paga ? "Fatura paga" : "Fatura em aberto"}
-            color={row.formatura_paga ? "success" : "error"}
-            variant="filled"
-            icon={<MdOutlinePayments />}
-            sx={{ padding: 1 }}
-          />
+          {turmas.find((turma: any) => turma.id === row.turma_id)?.nome}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <IconButton size="small" onClick={() => onClickRowView(row)}>
@@ -139,6 +138,8 @@ const AlunosPage = () => {
   };
 
   useEffect(() => {
+    fetchTurmas();
+    console.log(turmas)
     fetchAlunos();
     setOnLoad(true);
   }, []);
@@ -197,6 +198,7 @@ const AlunosPage = () => {
               <LoadingTable />
             ) : students.length > 0 ? (
               <BasicTable
+                totalPages={totalPages}
                 columns={studentsColumns}
                 rows={students}
                 loading={loading}

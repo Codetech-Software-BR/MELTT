@@ -69,13 +69,15 @@ const AlunosPageView = () => {
   const fetchFaculdade = async () => {
     setLoadingFaculdade(true);
     await apiGetData("academic", `/faculdades/${turma[0].faculdade_id}`).then(
-      (data) => setFaculdade(data)
+      (data) => { 
+        console.log(data)
+        setFaculdade(data) }
     );
     setLoadingFaculdade(false);
   };
 
   const onSubmitAluno = async () => {
-    
+
   };
 
   useEffect(() => {

@@ -19,12 +19,9 @@ export const initialValuesTurma = {
 
 export const initialValuesAluno = {
   nome: "",
-  email: "",
+  documento: "",
   telefone: "",
-  plano: "",
-  faculdade: "",
   turma_id: null,
-  formatura_paga: false,
 }
 
 export const initialValuesFaculdade = {

@@ -70,11 +70,12 @@ const AlunosPageEdit = () => {
 
   const fetchTurmas = async () => {
     setLoadingTurmas(true);
-    await apiGetData("academic", `/turmas`).then((data) => setTurmas(data));
+    await apiGetData("academic", `/turmas`).then((response) => setTurmas(response.data));
     setLoadingTurmas(false);
   };
 
   const onSubmitAluno = async (values: any) => {
+    console.log("values", values);
     setLoadingAluno(true);
     try {
       if (id) {
@@ -130,7 +131,10 @@ const AlunosPageEdit = () => {
               ...getAlunosInitialValue,
             }}
             validationSchema={validateStudentSchema}
-            onSubmit={(values: any) => onSubmitAluno(values)}
+            onSubmit={(values: any) => {
+              console.log(values)
+              onSubmitAluno(values)
+            }}
           >
             {({ values, errors, handleChange, handleSubmit }) => (
               <form
@@ -160,7 +164,6 @@ const AlunosPageEdit = () => {
                   <Stack width={"100%"} direction={"row"} gap={2}>
                     <TextField
                       fullWidth
-                      focused
                       label="Nome"
                       name="nome"
                       placeholder="nome completo do aluno"
@@ -171,19 +174,17 @@ const AlunosPageEdit = () => {
                     />
                     <TextField
                       fullWidth
-                      focused
-                      label="E-mail"
-                      name="email"
-                      placeholder="fulanodetal@gmail.com"
+                      label="Documento"
+                      name="documento"
+                      placeholder="RG ou CPF"
                       size="small"
-                      value={values.email}
-                      error={Boolean(errors.email)}
+                      value={values.documento}
+                      error={Boolean(errors.documento)}
                       onChange={handleChange}
                     />
                   </Stack>
                   <Stack width={"100%"} direction={"row"} gap={2}>
                     <TextField
-                      focused
                       label="Telefone Celular"
                       name="telefone"
                       placeholder="(XX) XXXXX-XXXX"
@@ -191,64 +192,28 @@ const AlunosPageEdit = () => {
                       value={values.telefone}
                       onChange={handleChange}
                     />
-                    <TextField
-                      fullWidth
-                      focused
-                      label="Plano da Formatura"
-                      name="plano"
-                      placeholder="ex: Básico, Completo"
-                      size="small"
-                      value={values.plano}
-                      error={Boolean(errors.plano)}
-                      onChange={handleChange}
-                    />
-                  </Stack>
-                  <Stack width={"100%"} direction={"row"} gap={2}>
-                    {/* <FormControl fullWidth>
-                      <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Faculdade</InputLabel>
-                      <Select
-                        fullWidth
-                        name="faculdade"
-                        disabled={loadingFaculdades}
-                        size="small"
-                        value={values.faculdade}
-                        onChange={handleChange}
+                    <FormControl fullWidth size="small">
+                      <InputLabel
+                        id="turma-label"
+                        sx={{
+                          backgroundColor: "white",
+                          px: 0.5,
+                        }}
                       >
-                        {faculdades.map((faculdade: any) => (
-                          <MenuItem value={faculdade.id}>
-                            {faculdade.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl> */}
-                    <FormControl fullWidth>
-                      <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Turma</InputLabel>
+                        Turma
+                      </InputLabel>
                       <Select
-                        fullWidth
+                        labelId="turma-label"
                         name="turma_id"
-                        size="small"
                         value={values.turma}
                         disabled={loadingTurmas}
                         onChange={handleChange}
                       >
                         {turmas.map((turma: any) => (
-                          <MenuItem value={turma.id}>{turma.nome}</MenuItem>
+                          <MenuItem key={turma.id} value={turma.id}>
+                            {turma.nome}
+                          </MenuItem>
                         ))}
-                      </Select>
-                    </FormControl>
-                  </Stack>
-                  <Stack width={"40%"}>
-                    <FormControl fullWidth>
-                      <InputLabel sx={{ p: 0.5, bgcolor: "#fff" }}>Formatura foi paga integralmente?</InputLabel>
-                      <Select
-                        fullWidth
-                        name="formatura_paga"
-                        size="small"
-                        value={values.formatura_paga}
-                        onChange={handleChange}
-                      >
-                        <MenuItem value={1}>Sim, já foi paga</MenuItem>
-                        <MenuItem value={0}>Não foi paga</MenuItem>
                       </Select>
                     </FormControl>
                   </Stack>
