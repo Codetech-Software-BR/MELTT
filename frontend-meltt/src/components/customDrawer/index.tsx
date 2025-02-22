@@ -146,7 +146,7 @@ export default function CustomDrawer(props: Props) {
                       ? {
                         backgroundColor: "#fff",
                         boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
-                        transform: "scale(1.07)",
+                        // transform: "scale(0.95)",
                       }
                       : {}),
                   }}

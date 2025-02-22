@@ -1,8 +1,7 @@
 import { LuNetwork, LuPartyPopper } from "react-icons/lu";
-import { FaChartSimple, FaFileSignature, FaGraduationCap, FaMoneyBill1Wave, FaUsers } from "react-icons/fa6";
-import { FaCircle, FaHardHat } from "react-icons/fa";
-import { MateriaType } from "../../types";
-import { BiSolidParty, BiSupport } from "react-icons/bi";
+import { FaChartSimple, FaGraduationCap, FaMoneyBill1Wave, FaRegHandshake, FaUsers } from "react-icons/fa6";
+import { FaCircle } from "react-icons/fa";
+import { BiSupport } from "react-icons/bi";
 import { IoContract } from "react-icons/io5";
 import { MdBookmarkAdded, MdEmojiEvents, MdOutlinePayments } from "react-icons/md";
 
@@ -32,15 +31,20 @@ export const menuListAdmin = [
     route: "/pagamentos",
     icon: <MdOutlinePayments size={22}  />,
   },
-  {
-    title: "Contratos e eventos",
-    route: "/fornecedores",
-    icon: <MdEmojiEvents size={22} />,
-  },
+  // {
+  //   title: "Contratos e eventos",
+  //   route: "/fornecedores",
+  //   icon: <MdEmojiEvents size={22} />,
+  // },
   {
     title: "Tarefas",
     route: "/tarefas",
     icon: <LuNetwork size={22} />,
+  },
+  {
+    title: "Fornecedores",
+    route: "/fornecedores",
+    icon: <FaRegHandshake size={22} />,
   },
   {
     title: "Relatórios",
