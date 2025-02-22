@@ -35,6 +35,8 @@ import TurmasEditPage from "../pages/turmas/edit";
 import TarefasPage from "../pages/tarefas";
 import TarefasPageNew from "../pages/tarefas/new";
 import FornecedoresPage from "../pages/fornecedores";
+import TarefasNewPage from "../pages/tarefas/new";
+import TarefasEditPage from "../pages/tarefas/edit";
 
 export const router = createBrowserRouter([
   {
@@ -162,7 +164,7 @@ export const router = createBrowserRouter([
         element: <FornecedoresPage/>
       },
       {
-        path: "/fornecedor/edit/:id?",
+        path: "/fornecedores/edit/:id?",
         element: <FornecedoresEditPage/>
       },
       // {
@@ -187,7 +189,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/tarefas/new",
-        element: <TarefasPageNew/>,
+        element: <TarefasNewPage/>,
+      },
+      {
+        path: "/tarefas/edit/:id?",
+        element: <TarefasEditPage/>,
       },
       {
         path: "/adesoes",

@@ -1,20 +1,16 @@
 import {
-  Box,
   Button,
-  CircularProgress,
   IconButton,
-  Modal,
   Paper,
   Slide,
   Stack,
   TableCell,
   TableRow,
   Tooltip,
-  Typography,
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { useEffect, useState } from "react";
-import { useTurmaContext, Turma } from "../../providers/turmaContext";
+import { Tarefa } from "../../providers/tarefaContext";
 import { useNavigate } from "react-router-dom";
 import { apiGetData } from "../../services/api";
 import { IoIosDocument, IoMdAdd } from "react-icons/io";
@@ -25,20 +21,19 @@ import { format } from "date-fns";
 import { FaEye } from "react-icons/fa6";
 import { MdModeEdit } from "react-icons/md";
 import { tarefasColumns } from "./table/columns";
+import { useTarefaContext } from "../../providers/tarefaContext";
 
 
 const TarefasPage = () => {
   const navigate = useNavigate();
-  const { dispatchTurma } = useTurmaContext();
+  const { dispatchTarefa } = useTarefaContext();
   const [page, setPage] = useState(1);
   const [onLoad, setOnLoad] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
-  const [openModalDetails, setOpenModalDetails] = useState(false);
 
   const fetchTarefas = async (page: number) => {
     setLoading(true);
@@ -53,7 +48,7 @@ const TarefasPage = () => {
     setLoading(false);
   };
 
-  const handleChangePagination = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
       fetchTarefas(value);
     } catch (error) {
@@ -61,8 +56,7 @@ const TarefasPage = () => {
     }
     setPage(value);
   };
-
-  const dataRow = (row: Turma) => {
+  const dataRow = (row: Tarefa) => {
     return (
       <TableRow
         key={row.nome}
@@ -76,7 +70,10 @@ const TarefasPage = () => {
             {row.nome}
           </Stack>
         </TableCell>
-        <TableCell align="left">{row.ano_formatura}</TableCell>
+        <TableCell align="left">{row.responsavel}</TableCell>
+        <TableCell align="left">
+          {row.atribuido_por}
+        </TableCell>
         <TableCell align="left">
           {row.criado_em ? format(row.criado_em, "dd/MM/yyyy") : "N/As"}
         </TableCell>
@@ -84,26 +81,10 @@ const TarefasPage = () => {
           <Stack direction={"row"}>
             <Tooltip title="Editar Tarefa" arrow>
               <IconButton onClick={() => {
-                dispatchTurma({ type: "SET_TURMA_SELECIONADA", payload: row });
-                navigate(`/turmas/edit/${row.id}`)
+                dispatchTarefa({ type: "SET_TAREFA_SELECIONADA", payload: row });
+                navigate(`/tarefas/edit/${row.id}`)
               }}>
-                {loadingDelete ? (
-                  <CircularProgress color="secondary" size={12} />
-                ) : (
-                  <MdModeEdit color="#2d1c63" size={22} />
-                )}
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Estatuto">
-              <IconButton onClick={() => window.open(row.arquivo_url, "_blank")}>
-                <IoIosDocument color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Visualizar Turma" arrow>
-              <IconButton
-                onClick={() => navigate(`/turmas/view/${row.id}/pagina-turma`)}
-              >
-                <FaEye color="#2d1c63" size={22} />
+                <MdModeEdit color="#2d1c63" size={22} />
               </IconButton>
             </Tooltip>
           </Stack>
@@ -132,7 +113,7 @@ const TarefasPage = () => {
           variant="contained"
           endIcon={<IoMdAdd />}
           onClick={() => {
-            dispatchTurma({ type: "SET_TURMA_SELECIONADA", payload: null });
+            dispatchTarefa({ type: "SET_TAREFA_SELECIONADA", payload: null });
             navigate("/tarefas/new");
           }}
           sx={{ borderRadius: 2 }}
@@ -186,13 +167,13 @@ const TarefasPage = () => {
                 pronoum={"he"}
                 pageName="tarefas"
                 disabledButton={false}
-                onClickAction={() => navigate("/tarefas/edit")}
+                onClickAction={() => navigate("/tarefas/new")}
               />
             )}
           </Paper>
         </Paper>
       </Slide>
-      <Modal
+      {/* <Modal
         open={openModalDetails}
         onClose={() => setOpenModalDetails(false)}
         aria-labelledby="modal-modal-title"
@@ -216,7 +197,7 @@ const TarefasPage = () => {
             Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
           </Typography>
         </Box>
-      </Modal>
+      </Modal> */}
     </Stack>
   );
 };

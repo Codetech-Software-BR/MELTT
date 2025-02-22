@@ -17,6 +17,12 @@ export const initialValuesTurma = {
   regras_renegociacao: "",
 };
 
+export const initialValuesTarefa = {
+  nome: "",
+  responsavel: "",
+  atribuido_por: ""
+}
+
 export const initialValuesAluno = {
   nome: "",
   documento: "",

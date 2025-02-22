@@ -10,27 +10,41 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
 import { validateTarefaSchema } from "../../../utils/validationSchemas";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPostData } from "../../../services/api";
+import { apiGetData, apiPatchData, apiPostData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
 import { LoadingButton } from "@mui/lab";
 import { initialValuesTarefa } from "../../../initialValues";
+import { useTarefaContext } from "../../../providers/tarefaContext";
 
 
 
-const TarefasNewPage = () => {
+const TarefasEditPage = () => {
+  const {id} = useParams();
   const navigate = useNavigate();
+  const {stateTarefa} = useTarefaContext();
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
 
   const [responsaveis, setResponsaveis] = useState([]);
+
+    const getTarefasInitialValue = Object.keys(initialValuesTarefa).reduce(
+      (acc, key) => {
+        const typedKey = key as keyof typeof initialValuesTarefa;
+        acc[typedKey] = id
+          ? stateTarefa.tarefaSelecionada?.[typedKey]
+          : initialValuesTarefa[typedKey];
+        return acc;
+      },
+      {} as any
+    );
 
   const fetchResponsaveis = async () => {
     try {
@@ -46,10 +60,10 @@ const TarefasNewPage = () => {
 
     toast.loading("Salvando Tarefa...");
     try {
-      let response = await apiPostData("academic", "/tarefas", values)
+      let response = await apiPatchData("academic", `/tarefas/${id}`, values)
       if (response.id) {
         toast.dismiss();
-        toast.success("Tarefa salva com sucesso");
+        toast.success("Tarefa atualizada com sucesso");
         navigate(-1);
       }
     } catch (error) {
@@ -88,7 +102,7 @@ const TarefasNewPage = () => {
         >
           <Formik
             initialValues={{
-              ...initialValuesTarefa,
+              ...getTarefasInitialValue,
             }}
             validationSchema={validateTarefaSchema}
             onSubmit={(values: any) => onSubmitTarefa(values)}
@@ -225,4 +239,4 @@ const TarefasNewPage = () => {
   );
 };
 
-export default TarefasNewPage;
+export default TarefasEditPage;

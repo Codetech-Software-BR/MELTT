@@ -54,7 +54,7 @@ class TarefasController {
       "UPDATE tarefas SET nome = ?, responsavel = ?, atribuido_por = ? WHERE id = ?";
     db.query(query, [nome, responsavel, atribuido_por, id], (err) => {
       if (err) return res.status(500).json(err);
-      res.status(200).json({ message: "Tarefa atualizada com sucesso!" });
+      res.status(200).json({ message: "Tarefa atualizada com sucesso!", id, ...req.body });
     });
   };
 

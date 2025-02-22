@@ -187,7 +187,6 @@ app.delete("/api/users/:id", authMiddleware, async (req, res) => {
 
 app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
   const { tipo } = req.query;
-  console.log("tipo", tipo);
 
   if (!tipo) {
     return res.status(400).json({ error: "O parâmetro 'tipo' é obrigatório" });
@@ -198,7 +197,7 @@ app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
     console.log("users", users);
 
     if (users.length === 0) {
-      return res.status(404).json({ error: "Nenhum usuário encontrado para este TIPO" });
+      return res.status(404).json({ error: `Nenhum usuário encontrado para o tipo ${tipo}` });
     }
 
     res.json({ result: users });
