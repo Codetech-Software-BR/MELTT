@@ -33,6 +33,10 @@ import AdesoesPage from "../pages/adesoes";
 import ContratosEventosPage from "../pages/contratos-eventos";
 import TurmasEditPage from "../pages/turmas/edit";
 import TarefasPage from "../pages/tarefas";
+import TarefasPageNew from "../pages/tarefas/new";
+import FornecedoresPage from "../pages/fornecedores";
+import TarefasNewPage from "../pages/tarefas/new";
+import TarefasEditPage from "../pages/tarefas/edit";
 
 export const router = createBrowserRouter([
   {
@@ -152,21 +156,21 @@ export const router = createBrowserRouter([
         element: <ViewPagamentoPage />,
       },
       {
-        path: "/fornecedores",
+        path: "/contratos-eventos",
         element: <ContratosEventosPage/>
       },
-      // {
-      //   path: "/fornecedores",
-      //   element: <FornecedoresPage/>
-      // },
       {
-        path: "/fornecedor/edit/:id?",
-        element: <FornecedoresEditPage/>
+        path: "/fornecedores",
+        element: <FornecedoresPage/>
       },
       {
         path: "/fornecedores/edit/:id?",
         element: <FornecedoresEditPage/>
       },
+      // {
+      //   path: "/fornecedores/edit/:id?",
+      //   element: <FornecedoresEditPage/>
+      // },
       {
         path: "/contratos-envio",
         element: <ContratosEnvioPage/>,
@@ -182,6 +186,14 @@ export const router = createBrowserRouter([
       {
         path: "/tarefas",
         element: <TarefasPage/>,
+      },
+      {
+        path: "/tarefas/new",
+        element: <TarefasNewPage/>,
+      },
+      {
+        path: "/tarefas/edit/:id?",
+        element: <TarefasEditPage/>,
       },
       {
         path: "/adesoes",

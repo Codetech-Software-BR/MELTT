@@ -24,6 +24,7 @@ import {
   faculdadeReducer,
 } from "../../providers/faculdadeContext";
 import { AlunoContext, alunoInitialState, alunoReducer } from "../../providers/alunoContext";
+import { TarefaContext, tarefaInitialState, tarefaReducer } from "../../providers/tarefaContext";
 
 const RootLayout = () => {
   const navigate = useNavigate();
@@ -44,6 +45,11 @@ const RootLayout = () => {
     fornecedorReducer,
     fornecedorInitialState
   );
+
+  const [stateTarefa, dispatchTarefa] = useReducer(
+    tarefaReducer,
+    tarefaInitialState
+  )
 
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1280px) and (max-width: 1600px)",
@@ -68,33 +74,35 @@ const RootLayout = () => {
           <FornecedorContext.Provider
             value={{ stateFornecedor, dispatchFornecedor }}
           >
-            <ThemeProvider theme={theme}>
-              <Stack
-                width={"100%"}
-                height={"100vh"}
-                bgcolor={"#F2F2F2"}
-                direction={"column"}
-              >
-                {isDesktopOrLaptop && (
-                  <DesktopLayout>
-                    <Outlet />
-                  </DesktopLayout>
-                )}
-                {isBigScreen && (
-                  <DesktopLayout>
-                    <Outlet />
-                  </DesktopLayout>
-                )}
-                {isTabletOrMobile && (
-                  <MobileLayout>
-                    <p className="text-default font-medium p-3 flex items-center justify-center h-screen w-full">
-                      Ops! Versão para celulares e tablets ainda não está
-                      disponível, acesse por um computador.
-                    </p>
-                  </MobileLayout>
-                )}
-              </Stack>
-            </ThemeProvider>
+            <TarefaContext.Provider value={{stateTarefa, dispatchTarefa}}>
+              <ThemeProvider theme={theme}>
+                <Stack
+                  width={"100%"}
+                  height={"100vh"}
+                  bgcolor={"#F2F2F2"}
+                  direction={"column"}
+                >
+                  {isDesktopOrLaptop && (
+                    <DesktopLayout>
+                      <Outlet />
+                    </DesktopLayout>
+                  )}
+                  {isBigScreen && (
+                    <DesktopLayout>
+                      <Outlet />
+                    </DesktopLayout>
+                  )}
+                  {isTabletOrMobile && (
+                    <MobileLayout>
+                      <p className="text-default font-medium p-3 flex items-center justify-center h-screen w-full">
+                        Ops! Versão para celulares e tablets ainda não está
+                        disponível, acesse por um computador.
+                      </p>
+                    </MobileLayout>
+                  )}
+                </Stack>
+              </ThemeProvider>
+            </TarefaContext.Provider>
           </FornecedorContext.Provider>
         </AlunoContext.Provider>
         <Toaster />

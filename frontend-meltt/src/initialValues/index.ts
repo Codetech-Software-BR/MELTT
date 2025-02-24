@@ -18,6 +18,12 @@ export const initialValuesTurma = {
   planos_formatura: [],
 };
 
+export const initialValuesTarefa = {
+  nome: "",
+  responsavel: "",
+  atribuido_por: ""
+}
+
 export const initialValuesAluno = {
   nome: "",
   documento: "",
