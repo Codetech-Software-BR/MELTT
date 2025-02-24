@@ -15,6 +15,7 @@ export const initialValuesTurma = {
   regras_adesao: "",
   regras_rescisao: "",
   regras_renegociacao: "",
+  planos_formatura: [],
 };
 
 export const initialValuesAluno = {
