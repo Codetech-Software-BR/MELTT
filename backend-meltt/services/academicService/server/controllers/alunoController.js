@@ -86,12 +86,12 @@ class AlunoController {
 
   updateAluno(req, res) {
     const id = req.params.id;
-    const { turma_id, nome, email, telefone, plano, formatura_paga } = req.body;
-    const updateQuery = `UPDATE alunos SET turma_id = ?, nome = ?, email = ?, telefone = ?, plano = ?, formatura_paga = ? WHERE id = ?`;
+    const { turma_id, nome, telefone, documento } = req.body;
+    const updateQuery = `UPDATE alunos SET turma_id = ?, nome = ?, telefone = ?, documento = ? WHERE id = ?`;
 
     db.query(
       updateQuery,
-      [turma_id, nome, email, telefone, plano, formatura_paga, id],
+      [turma_id, nome, telefone, documento, id],
       (err) => {
         if (err) return res.status(500).json(err);
 
@@ -119,7 +119,7 @@ class AlunoController {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Aluno deletado com sucesso!", id });
     });
-  };    
+  };
 }
 
 export default new AlunoController();

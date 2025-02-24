@@ -22,7 +22,7 @@ export const initialValuesAluno = {
   nome: "",
   documento: "",
   telefone: "",
-  turma_id: null,
+  turma_id: '',
 }
 
 export const initialValuesFaculdade = {
