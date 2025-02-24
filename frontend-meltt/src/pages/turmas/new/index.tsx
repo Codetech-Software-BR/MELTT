@@ -224,7 +224,6 @@ const TurmasPageNew = () => {
                           variant="outlined"
                           label="Data de Formatura da Turma"
                           value={values.ano_formatura}
-                          error={errors.ano_formatura ? true : false}
                           onChange={handleChange}
                         >
                           {graduationYearsList.map((option: any) => (
@@ -253,6 +252,7 @@ const TurmasPageNew = () => {
                           multiple
                           size="small"
                           id="planos_formatura"
+                          onKeyDown={(e) => {e.preventDefault()}}
                           options={planos}
                           getOptionLabel={(option) => option.nome}
                           value={values.planos_formatura} // Ensure this is an array
