@@ -41,12 +41,10 @@ const AlunosPageEdit = () => {
 
   const { id } = useParams();
 
-  const [faculdades, setFaculdades] = useState([]);
   const [turmas, setTurmas] = useState([]);
 
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
   const [loadingAluno, setLoadingAluno] = useState(false);
-  const [loadingFaculdades, setLoadingFaculdades] = useState(false);
   const [loadingTurmas, setLoadingTurmas] = useState(false);
 
   const getAlunosInitialValue = Object.keys(initialValuesAluno).reduce(
@@ -60,17 +58,12 @@ const AlunosPageEdit = () => {
     {} as any
   );
 
-  const fetchFaculdades = async () => {
-    setLoadingFaculdades(true);
-    await apiGetData("academic", `/faculdades`).then((data) =>
-      setFaculdades(data)
-    );
-    setLoadingFaculdades(false);
-  };
-
   const fetchTurmas = async () => {
     setLoadingTurmas(true);
-    await apiGetData("academic", `/turmas`).then((response) => setTurmas(response.data));
+    await apiGetData("academic", `/turmas`).then((response) => {
+      console.log(response.data)
+      setTurmas(response.data)
+    });
     setLoadingTurmas(false);
   };
 
@@ -80,7 +73,7 @@ const AlunosPageEdit = () => {
     try {
       if (id) {
         const response = await apiPutData("academic", `/alunos/${id}`, values);
-        console.log("response edit", response);
+        console.log("response", response);
         if (response.value?.id) {
           toast.success("Aluno atualizado com sucesso");
           navigate("/alunos");
@@ -100,7 +93,6 @@ const AlunosPageEdit = () => {
   };
 
   useEffect(() => {
-    fetchFaculdades();
     fetchTurmas();
   }, []);
 
@@ -205,11 +197,11 @@ const AlunosPageEdit = () => {
                       <Select
                         labelId="turma-label"
                         name="turma_id"
-                        value={values.turma}
+                        value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
                         disabled={loadingTurmas}
                         onChange={handleChange}
                       >
-                        {turmas.map((turma: any) => (
+                        {turmas.map((turma: { id: number, nome: string }) => (
                           <MenuItem key={turma.id} value={turma.id}>
                             {turma.nome}
                           </MenuItem>
