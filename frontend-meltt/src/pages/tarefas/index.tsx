@@ -1,7 +1,11 @@
 import {
   Button,
+  Chip,
   IconButton,
+  List,
+  ListItem,
   Paper,
+  Popover,
   Slide,
   Stack,
   TableCell,
@@ -13,16 +17,14 @@ import { useEffect, useState } from "react";
 import { Tarefa } from "../../providers/tarefaContext";
 import { useNavigate } from "react-router-dom";
 import { apiGetData } from "../../services/api";
-import { IoIosDocument, IoMdAdd } from "react-icons/io";
+import { IoMdAdd } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
 import { format } from "date-fns";
-import { FaEye } from "react-icons/fa6";
 import { MdModeEdit } from "react-icons/md";
 import { tarefasColumns } from "./table/columns";
 import { useTarefaContext } from "../../providers/tarefaContext";
-
 
 const TarefasPage = () => {
   const navigate = useNavigate();
@@ -30,10 +32,29 @@ const TarefasPage = () => {
   const [page, setPage] = useState(1);
   const [onLoad, setOnLoad] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [turmas, setTurmas] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [responsaveis, setResponsaveis] = useState([]);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+
+  const fetchResponsaveis = async () => {
+    try {
+      const response = await apiGetData("authentication", "/users/getByTipo?tipo=ADMIN");
+      setResponsaveis(response.result)
+    } catch (error) {
+      toast.error("Erro ao buscar responsáveis");
+    }
+  }
 
   const fetchTarefas = async (page: number) => {
     setLoading(true);
@@ -47,6 +68,11 @@ const TarefasPage = () => {
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchResponsaveis();
+  }, [])
+
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
@@ -70,7 +96,32 @@ const TarefasPage = () => {
             {row.nome}
           </Stack>
         </TableCell>
-        <TableCell align="left">{row.responsavel}</TableCell>
+        <TableCell align="left">
+          <Chip
+            label={row.responsavel}
+            onClick={handleClick}
+            variant="outlined"
+            icon={<IoMdAdd />}
+            sx={{ flexDirection: "row-reverse", paddingRight: 2 }}
+          />
+          {anchorEl && (
+            <Popover
+              open={open}
+              anchorEl={anchorEl}
+              onClose={handleClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            >
+              <List>
+                {responsaveis
+                  .filter((responsavel: any) => responsavel.nome !== row.responsavel) // 🔥 Remove o responsável exibido no Chip
+                  .map((responsavel: any) => (
+                    <ListItem key={responsavel.id}>{responsavel.nome}</ListItem>
+                  ))}
+              </List>
+            </Popover>
+          )}
+        </TableCell>
+
         <TableCell align="left">
           {row.atribuido_por}
         </TableCell>
