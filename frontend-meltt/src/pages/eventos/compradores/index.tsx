@@ -1,5 +1,7 @@
 import {
   Avatar,
+  Button,
+  CircularProgress,
   IconButton,
   Link,
   Paper,
@@ -8,23 +10,23 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import LoadingTable from "../../components/loadingTable";
-import BasicTable from "../../components/table";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { apiDeleteData, apiGetData } from "../../services/api";
 import { FaEye } from "react-icons/fa6";
-import { eventsColumns } from "./table/columns";
+import BasicTable from "../../../components/table";
+import LoadingTable from "../../../components/loadingTable";
+import { eventsColumns } from "../table/columns";
+import { apiGetData } from "../../../services/api";
 
-const EventosPage = () => {
+const EventosCompradoresPage = () => {
   const navigate = useNavigate();
+  const {id} = useParams();
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [eventos, setEventos] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
@@ -33,9 +35,10 @@ const EventosPage = () => {
   const fetchEventos = async (page:number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", `/eventos?page=${page}`);
-      setTotalPages(response.totalPages);
-      setEventos(response.data);
+      const response = await apiGetData("academic", `/uniticket/buyers?access_token=${id}`);
+      // setTotalPages(response.totalPages);
+      console.log('response', response)
+      setEventos(response);
     } catch (error) {
       toast.error("Erro ao buscar eventos");
     }
@@ -52,7 +55,7 @@ const EventosPage = () => {
   };
 
   const onClickRowView = (row: any) => {
-    navigate(`/eventos/compradores/${row.id}`);
+    navigate(`/eventos/view/${row.id}`);
   };
 
   const dataRow = (row: any) => {
@@ -136,7 +139,7 @@ const EventosPage = () => {
             {loading ? (
               <LoadingTable />
             ) : eventos.length > 0 ? (
-              <BasicTable
+              <BasicTable 
                 columns={eventsColumns}
                 rows={eventos}
                 loading={loading}
@@ -157,4 +160,4 @@ const EventosPage = () => {
   );
 };
 
-export default EventosPage;
+export default EventosCompradoresPage;

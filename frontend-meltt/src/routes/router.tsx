@@ -14,7 +14,6 @@ import TurmasPage from "../pages/turmas";
 import PagamentosPage from "../pages/pagamentos";
 import EventosPage from "../pages/eventos";
 import FornecedoresEditPage from "../pages/fornecedores/edit";
-import TurmasPageEdit from "../pages/turmas/view";
 import TurmasPageNew from "../pages/turmas/new";
 import PaginaDaTurmaPage from "../pages/turmas/view/paginaDaTurma";
 import PaginadaTurmaCriarTopicoPage from "../pages/turmas/view/paginaDaTurma/topico/new";
@@ -24,7 +23,6 @@ import DashboardFornecedoresPage from "../pages/dashboards/fornecedores";
 import DashboardTurmasPage from "../pages/dashboards/turmas";
 import ViewPagamentoPage from "../pages/pagamentos/view";
 import AlunosPageView from "../pages/alunos/view";
-import EventosPageEdit from "../pages/eventos/edit";
 import ContratosPage from "../pages/contratos";
 import ContratosEnvioPage from "../pages/contratos-envio";
 import SplashGetBlingInfo from "../pages/splash/blingInfo";
@@ -33,11 +31,13 @@ import AdesoesPage from "../pages/adesoes";
 import ContratosEventosPage from "../pages/contratos-eventos";
 import TurmasEditPage from "../pages/turmas/edit";
 import TarefasPage from "../pages/tarefas";
-import TarefasPageNew from "../pages/tarefas/new";
 import FornecedoresPage from "../pages/fornecedores";
 import TarefasNewPage from "../pages/tarefas/new";
 import TarefasEditPage from "../pages/tarefas/edit";
 import AdesaoEditPage from "../pages/adesoes/edit";
+import EventosCompradoresPage from "../pages/eventos/compradores";
+import EventosParticipantesPage from "../pages/eventos/participantes";
+import EventosTicketsPage from "../pages/eventos/tickets";
 
 export const router = createBrowserRouter([
   {
@@ -189,8 +189,16 @@ export const router = createBrowserRouter([
         element: <EventosPage/>,
       },
       {
-        path: "/eventos/edit/:id?",
-        element: <EventosPageEdit/>,
+        path: "/eventos/particiantes/:id",
+        element: <EventosParticipantesPage/>,
+      },
+      {
+        path: "/eventos/tickets/:id",
+        element: <EventosTicketsPage/>,
+      },
+      {
+        path: "/eventos/compradores/:id",
+        element: <EventosCompradoresPage/>,
       },
       {
         path: "/tarefas",
