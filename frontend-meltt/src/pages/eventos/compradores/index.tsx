@@ -1,6 +1,7 @@
 import {
   Avatar,
   Button,
+  Chip,
   CircularProgress,
   IconButton,
   Link,
@@ -18,27 +19,69 @@ import BasicTable from "../../../components/table";
 import LoadingTable from "../../../components/loadingTable";
 import { eventsColumns } from "../table/columns";
 import { apiGetData } from "../../../services/api";
+import { eventBuyersColumns } from "../table/columns/buyers";
+import { BiArrowBack } from "react-icons/bi";
 
 const EventosCompradoresPage = () => {
   const navigate = useNavigate();
-  const {id} = useParams();
+  const { id } = useParams();
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [eventos, setEventos] = useState([]);
+  const [eventBuyers, setEventBuyers] = useState([]);
+  const [totalAmount, setTotalAmount] = useState("");
+  const [totalPaidAmount, setTotalPaidAmount] = useState("");
 
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventos = async (page:number) => {
+  const fetchEventBuyers = async (page: number) => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/uniticket/buyers?access_token=${id}`);
-      // setTotalPages(response.totalPages);
-      console.log('response', response)
-      setEventos(response);
+      if (response && response.data && Array.isArray(response.data)) {
+        const totalAmount = response.data.reduce((sum: number, item: any) => {
+          if (item.order && item.order.total_amount) {
+            const amount = parseFloat(item.order.total_amount);
+            if (!isNaN(amount)) {
+              return sum + amount;
+            }
+          }
+          return sum;
+        }, 0);
+
+        const totalPaidAmount = response.data.reduce((sum: number, item: any) => {
+          if (item.order && item.order.total_amount && item.order.status === 'finalizado') {
+            const amount = parseFloat(item.order.total_amount);
+            if (!isNaN(amount)) {
+              return sum + amount;
+            }
+          }
+          return sum;
+        }, 0);
+
+        const formattedTotalAmount = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(totalAmount);
+
+        const formattedTotalPaidAmount = new Intl.NumberFormat('pt-BR', {
+          style: 'currency',
+          currency: 'BRL',
+        }).format(totalPaidAmount);
+
+        console.log('Total adquirido com vendas de ingressos:', formattedTotalAmount);
+        console.log('Valor pago com status finalizado:', formattedTotalPaidAmount);
+
+        setEventBuyers(response.data);
+        setTotalAmount(formattedTotalAmount);
+        setTotalPaidAmount(formattedTotalPaidAmount);
+      } else {
+        toast.error("Estrutura inesperada em response.data");
+      }
+
     } catch (error) {
       toast.error("Erro ao buscar eventos");
     }
@@ -47,7 +90,7 @@ const EventosCompradoresPage = () => {
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
-      fetchEventos(value);
+      fetchEventBuyers(value);
     } catch (error) {
       toast.error("Erro ao buscar Turmas");
     }
@@ -69,31 +112,34 @@ const EventosCompradoresPage = () => {
       >
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" gap={2}>
-            <Avatar src={"https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} alt="foto evento" sizes="32px"/>
             <Link
               color="primary"
               underline="always"
-              onClick={() => onClickRowView(row)}
               sx={{ fontFamily: "Poppins" }}
             >
-              {row.nome}
+              {row.name}
             </Link>
           </Stack>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.turma_id}
+          {row.cpf}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          <IconButton size="small" onClick={() => onClickRowView(row)}>
-            <FaEye color="#2d1c63" size={22} />
-          </IconButton>
+          {row.phone}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          <Chip color={row.order.status === 'finalizado' ? 'success' : 'secondary'} label={row.order.status} />
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          R$ {row.order.total_amount}
         </TableCell>
       </TableRow>
     );
   };
 
+
   useEffect(() => {
-    fetchEventos(1);
+    fetchEventBuyers(1);
     setOnLoad(true);
   }, []);
 
@@ -105,7 +151,16 @@ const EventosCompradoresPage = () => {
         justifyContent={"space-between"}
         my={2}
       >
-        <h2 className="text-2xl text-default font-extrabold"></h2>
+        <Stack direction={'row'} alignItems={'center'} gap={1}>
+          <IconButton size="small" onClick={() => navigate('/eventos')}>
+            <BiArrowBack />
+          </IconButton>
+          <h2 className="text-lg text-default font-extrabold">Quantidade de Compradores: {eventBuyers.length}</h2>
+        </Stack>
+        <Stack direction={'row'} gap={1}>
+          <Chip color="secondary" label={`Valor Movimentado: ${totalAmount}`} />
+          <Chip color="success" label={`Valor Total Pago: ${totalPaidAmount}`} />
+        </Stack>
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
@@ -138,10 +193,10 @@ const EventosCompradoresPage = () => {
           >
             {loading ? (
               <LoadingTable />
-            ) : eventos.length > 0 ? (
-              <BasicTable 
-                columns={eventsColumns}
-                rows={eventos}
+            ) : eventBuyers.length > 0 ? (
+              <BasicTable
+                columns={eventBuyersColumns}
+                rows={eventBuyers}
                 loading={loading}
                 dataRow={dataRow}
                 page={page}
@@ -149,8 +204,8 @@ const EventosCompradoresPage = () => {
                 handleChangePagination={handleChangePagination}
               />
             ) : (
-              <Stack width={'100%'} height={'100%'} alignItems={'center'}>
-                <h2 className="font-light">Não há eventos cadastrados</h2>
+              <Stack width={'100%'} mt={20} alignItems={'center'} textAlign={'center'}>
+                <h2 className="font-light">nenhuma informação de compradores para este evento.</h2>
               </Stack>
             )}
           </Paper>

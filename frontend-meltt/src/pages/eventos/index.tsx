@@ -7,6 +7,7 @@ import {
   Stack,
   TableCell,
   TableRow,
+  Tooltip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LoadingTable from "../../components/loadingTable";
@@ -14,8 +15,9 @@ import BasicTable from "../../components/table";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { apiDeleteData, apiGetData } from "../../services/api";
-import { FaEye } from "react-icons/fa6";
+import { FaEye, FaMoneyBillWave } from "react-icons/fa6";
 import { eventsColumns } from "./table/columns";
+import { IoTicket } from "react-icons/io5";
 
 const EventosPage = () => {
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ const EventosPage = () => {
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventos = async (page:number) => {
+  const fetchEventos = async (page: number) => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/eventos?page=${page}`);
@@ -51,8 +53,8 @@ const EventosPage = () => {
     setPage(value);
   };
 
-  const onClickRowView = (row: any) => {
-    navigate(`/eventos/compradores/${row.id}`);
+  const onClickRowView = (row: any, route: string) => {
+    navigate(`/eventos/${route}/${row.token}`);
   };
 
   const dataRow = (row: any) => {
@@ -66,11 +68,11 @@ const EventosPage = () => {
       >
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" gap={2}>
-            <Avatar src={"https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} alt="foto evento" sizes="32px"/>
+            <Avatar src={"https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} alt="foto evento" sizes="32px" />
             <Link
               color="primary"
               underline="always"
-              onClick={() => onClickRowView(row)}
+              onClick={() => onClickRowView(row, 'compradores')}
               sx={{ fontFamily: "Poppins" }}
             >
               {row.nome}
@@ -81,9 +83,18 @@ const EventosPage = () => {
           {row.turma_id}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          <IconButton size="small" onClick={() => onClickRowView(row)}>
-            <FaEye color="#2d1c63" size={22} />
-          </IconButton>
+          <Stack direction={'row'} gap={1}>
+            <Tooltip title="Ver compradores" arrow>
+              <IconButton size="small" onClick={() => onClickRowView(row, 'compradores')}>
+                <FaMoneyBillWave color="#2d1c63" size={22} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ver Tickets" arrow>
+              <IconButton size="small" onClick={() => onClickRowView(row, 'tickets')}>
+                <IoTicket color="#2d1c63" size={22} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         </TableCell>
       </TableRow>
     );
