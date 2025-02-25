@@ -16,6 +16,7 @@ import s3Routes from "./s3Routes.js";
 import planosFormaturaRoutes from "./planosFormaturaRoutes.js";
 import tarefasRoutes from "./tarefasRoutes.js"
 import adesoesRoutes from "./adesoesRoutes.js"
+import usuariosRoutes from "./usuariosRoutes.js";
 
 const router = express.Router();
 
@@ -35,5 +36,6 @@ router.use("/s3/uploads", s3Routes)
 router.use("/planos-formatura", planosFormaturaRoutes);
 router.use("/tarefas", tarefasRoutes )
 router.use("/adesoes", adesoesRoutes)
+router.use("/usuarios", usuariosRoutes);
 
 export default router;

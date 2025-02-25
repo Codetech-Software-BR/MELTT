@@ -28,7 +28,7 @@ export const initialValuesAdesao = {
 
 export const initialValuesTarefa = {
   nome: "",
-  responsavel: "",
+  responsaveis: [],
   atribuido_por: ""
 }
 

@@ -1,11 +1,9 @@
 import {
+  Autocomplete,
   Box,
   Button,
   FormControl,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Stack,
   TextField,
   Typography,
@@ -30,24 +28,37 @@ const TarefasNewPage = () => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
 
-  const [responsaveis, setResponsaveis] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
   const fetchResponsaveis = async () => {
     try {
       const response = await apiGetData("authentication", "/users/getByTipo?tipo=ADMIN");
-      setResponsaveis(response.result)
+      setUsuarios(response.result)
     } catch (error) {
       toast.error("Erro ao buscar responsáveis");
     }
   }
 
   const onSubmitTarefa = async (values: any) => {
+    const {responsaveis, ...tarefaValues} = values;
+    console.log("responsaveis", responsaveis);
     setLoadingSave(true);
 
     toast.loading("Salvando Tarefa...");
     try {
-      let response = await apiPostData("academic", "/tarefas", values)
+      const response = await apiPostData("academic", "/tarefas", tarefaValues)
+      console.log("response", response);
       if (response.id) {
+        const requests = responsaveis.map((usuario: any) => {
+          return apiPostData("academic", `/tarefas/vincular-responsavel`, {
+            usuario_id: usuario.id,
+            tarefa_id: response.id,
+          });
+        });
+
+        // Aguarda todas as requisições serem concluídas
+        await Promise.all(requests);
+
         toast.dismiss();
         toast.success("Tarefa salva com sucesso");
         navigate(-1);
@@ -93,7 +104,7 @@ const TarefasNewPage = () => {
             validationSchema={validateTarefaSchema}
             onSubmit={(values: any) => onSubmitTarefa(values)}
           >
-            {({ values, errors, handleChange, handleSubmit }) => (
+            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%]"
                 onSubmit={handleSubmit}
@@ -137,6 +148,7 @@ const TarefasNewPage = () => {
                     >
                       <TextField
                         fullWidth
+                        size="small"
                         name="nome"
                         variant="outlined"
                         label="Nome da Tarefa"
@@ -144,35 +156,38 @@ const TarefasNewPage = () => {
                         onChange={handleChange}
                         placeholder="ex: preencher planilha ABC"
                       />
-                      <FormControl fullWidth>
-                        <InputLabel id="responsavel" sx={{ p: 0.5, bgcolor: "#fff" }}>
-                          Responsável pela Tarefa
-                        </InputLabel>
-                        <Select
-                          name="responsavel"
-                          variant="outlined"
-                          label="Data de Formatura da Turma"
-                          value={values.responsavel}
-                          error={errors.responsavel ? true : false}
-                          onChange={handleChange}
-                        >
-                          {responsaveis.map((option: any) => (
-                            <MenuItem key={option.nome} value={option.nome}>
-                              {option.nome}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        name="atribuido_por"
+                        variant="outlined"
+                        label="Atribuído por"
+                        value={values.atribuido_por}
+                        onChange={handleChange}
+                        placeholder="quem está criando essa tarefa ?"
+                      />
                     </Stack>
-                    <TextField
-                      fullWidth
-                      name="atribuido_por"
-                      variant="outlined"
-                      label="Atribuído por"
-                      value={values.atribuido_por}
-                      onChange={handleChange}
-                      placeholder="quem está criando essa tarefa ?"
-                    />
+                    <FormControl fullWidth size="small">
+                      <Autocomplete
+                        multiple
+                        size="small"
+                        id="responsaveis"
+                        onKeyDown={(e) => { e.preventDefault() }}
+                        options={usuarios}
+                        getOptionLabel={(option) => option.nome}
+                        value={values.responsaveis} // Ensure this is an array
+                        onChange={(_, newValue) => {
+                          setFieldValue("responsaveis", newValue);
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Responsáveis"
+                            variant="outlined"
+                          />
+                        )}
+                      />
+                    </FormControl>
                   </Box>
                   <Stack
                     width="100%"
