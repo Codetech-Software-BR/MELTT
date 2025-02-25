@@ -3,10 +3,7 @@ import {
   Box,
   Button,
   FormControl,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
   Stack,
   TextField,
   Typography,
@@ -31,24 +28,37 @@ const TarefasNewPage = () => {
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
 
-  const [responsaveis, setResponsaveis] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
   const fetchResponsaveis = async () => {
     try {
       const response = await apiGetData("authentication", "/users/getByTipo?tipo=ADMIN");
-      setResponsaveis(response.result)
+      setUsuarios(response.result)
     } catch (error) {
       toast.error("Erro ao buscar responsáveis");
     }
   }
 
   const onSubmitTarefa = async (values: any) => {
+    const {responsaveis, ...tarefaValues} = values;
+    console.log("responsaveis", responsaveis);
     setLoadingSave(true);
 
     toast.loading("Salvando Tarefa...");
     try {
-      let response = await apiPostData("academic", "/tarefas", values)
+      const response = await apiPostData("academic", "/tarefas", tarefaValues)
+      console.log("response", response);
       if (response.id) {
+        const requests = responsaveis.map((usuario: any) => {
+          return apiPostData("academic", `/tarefas/vincular-responsavel`, {
+            usuario_id: usuario.id,
+            tarefa_id: response.id,
+          });
+        });
+
+        // Aguarda todas as requisições serem concluídas
+        await Promise.all(requests);
+
         toast.dismiss();
         toast.success("Tarefa salva com sucesso");
         navigate(-1);
@@ -163,7 +173,7 @@ const TarefasNewPage = () => {
                         size="small"
                         id="responsaveis"
                         onKeyDown={(e) => { e.preventDefault() }}
-                        options={responsaveis}
+                        options={usuarios}
                         getOptionLabel={(option) => option.nome}
                         value={values.responsaveis} // Ensure this is an array
                         onChange={(_, newValue) => {

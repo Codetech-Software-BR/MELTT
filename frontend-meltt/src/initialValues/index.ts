@@ -20,7 +20,7 @@ export const initialValuesTurma = {
 
 export const initialValuesTarefa = {
   nome: "",
-  responsavel: "",
+  responsaveis: [],
   atribuido_por: ""
 }
 

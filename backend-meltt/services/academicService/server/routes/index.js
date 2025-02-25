@@ -15,6 +15,7 @@ import uniticketRoutes from "./uniticketRoutes.js";
 import s3Routes from "./s3Routes.js";
 import planosFormaturaRoutes from "./planosFormaturaRoutes.js";
 import tarefasRoutes from "./tarefasRoutes.js"
+import usuariosRoutes from "./usuariosRoutes.js";
 
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.use("/uniticket", uniticketRoutes);
 router.use("/s3/uploads", s3Routes)
 router.use("/planos-formatura", planosFormaturaRoutes);
 router.use("/tarefas", tarefasRoutes )
+router.use("/usuarios", usuariosRoutes);
 
 export default router;

@@ -21,7 +21,7 @@ import { IoMdAdd } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { MdModeEdit } from "react-icons/md";
 import { tarefasColumns } from "./table/columns";
 import { useTarefaContext } from "../../providers/tarefaContext";
@@ -35,22 +35,39 @@ const TarefasPage = () => {
   const [turmas, setTurmas] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [responsaveis, setResponsaveis] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: React.MouseEvent, rowId: number) => {
     setAnchorEl(event.currentTarget);
+    setSelectedRowId(rowId);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+    setSelectedRowId(null);
   };
 
   const open = Boolean(anchorEl);
 
   const fetchResponsaveis = async () => {
     try {
-      const response = await apiGetData("authentication", "/users/getByTipo?tipo=ADMIN");
-      setResponsaveis(response.result)
+      const response = await apiGetData("academic", "/tarefas/responsaveis");
+      setResponsaveis(response);
+    } catch (error) {
+      toast.error("Erro ao buscar responsáveis");
+    }
+  }
+
+  useEffect(() => {
+    fetchResponsaveis();
+  }, []);
+
+  const fetchUsuarios = async () => {
+    try {
+      const response = await apiGetData("academic", "/usuarios");
+      setUsuarios(response.data)
     } catch (error) {
       toast.error("Erro ao buscar responsáveis");
     }
@@ -70,9 +87,12 @@ const TarefasPage = () => {
   };
 
   useEffect(() => {
+    fetchUsuarios();
     fetchResponsaveis();
   }, [])
 
+  console.log("usuarios", usuarios);
+  console.log("responsaveis", responsaveis);
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
@@ -82,10 +102,13 @@ const TarefasPage = () => {
     }
     setPage(value);
   };
+
+
   const dataRow = (row: Tarefa) => {
+    const responsaveisFiltrados = responsaveis.filter((r) => r.tarefa_id === row.id);
     return (
       <TableRow
-        key={row.nome}
+        key={row.id}
         sx={{
           "&:last-child td, &:last-child th": { border: 0 },
           " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
@@ -98,25 +121,23 @@ const TarefasPage = () => {
         </TableCell>
         <TableCell align="left">
           <Chip
-            label={row.responsavel}
-            onClick={handleClick}
+            label={responsaveisFiltrados[0]?.usuario_nome || "Nenhum disponível"}
+            onClick={(event) => handleClick(event, row.id)} // Ajuste aqui!
             variant="outlined"
             icon={<IoMdAdd />}
             sx={{ flexDirection: "row-reverse", paddingRight: 2 }}
           />
-          {anchorEl && (
+          {anchorEl && (selectedRowId === Number(row.id)) && (
             <Popover
-              open={open}
+              open={Boolean(anchorEl)}
               anchorEl={anchorEl}
               onClose={handleClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
             >
               <List>
-                {responsaveis
-                  .filter((responsavel: any) => responsavel.nome !== row.responsavel) // 🔥 Remove o responsável exibido no Chip
-                  .map((responsavel: any) => (
-                    <ListItem key={responsavel.id}>{responsavel.nome}</ListItem>
-                  ))}
+                {responsaveisFiltrados.slice(1).map((r, index) => (
+                  <ListItem key={index}>{r.usuario_nome}</ListItem>
+                ))}
               </List>
             </Popover>
           )}
