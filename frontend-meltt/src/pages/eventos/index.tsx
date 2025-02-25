@@ -25,6 +25,10 @@ import { eventsColumns } from "./table/columns";
 
 const EventosPage = () => {
   const navigate = useNavigate();
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
   const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [eventos, setEventos] = useState([]);
@@ -32,40 +36,30 @@ const EventosPage = () => {
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventos = async () => {
+  const fetchEventos = async (page:number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/eventos");
-      setEventos(response);
+      const response = await apiGetData("academic", `/eventos?page=${page}`);
+      setTotalPages(response.totalPages);
+      setEventos(response.data);
     } catch (error) {
       toast.error("Erro ao buscar eventos");
     }
     setLoading(false);
   };
 
+  const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
+    try {
+      fetchEventos(value);
+    } catch (error) {
+      toast.error("Erro ao buscar Turmas");
+    }
+    setPage(value);
+  };
+
   const onClickRowView = (row: any) => {
     // dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
     navigate(`/eventos/view/${row.id}`);
-  };
-
-  const onClickRowEdit = (row: any) => {
-    // dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
-    navigate(`/eventos/edit/${row.id}`);
-  };
-
-  const onClickDelete = async (id: number) => {
-    setLoadingDelete(true);
-    try {
-      const response = await apiDeleteData("academic", `/eventos/${id}`);
-      if (response.id) {
-        fetchEventos();
-        toast.success("Evento excluído com sucesso");
-      }
-      console.log("response", response);
-    } catch (error) {
-      toast.error("Erro ao excluir evento");
-    }
-    setLoadingDelete(false);
   };
 
   const dataRow = (row: any) => {
@@ -78,37 +72,24 @@ const EventosPage = () => {
         }}
       >
         <TableCell component="th" scope="row">
-          <Stack direction="row" alignItems="center">
-            <Avatar src={row?.foto_evento} alt="foto evento"/>
+          <Stack direction="row" alignItems="center" gap={2}>
+            <Avatar src={"https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} alt="foto evento" sizes="32px"/>
             <Link
               color="primary"
               underline="always"
               onClick={() => onClickRowView(row)}
               sx={{ fontFamily: "Poppins" }}
             >
-              {row.nome_evento}
+              {row.nome}
             </Link>
           </Stack>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.descricao_evento}
-        </TableCell>
-        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          R${row.valor_ingresso}
+          {row.turma_id}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <IconButton size="small" onClick={() => onClickRowView(row)}>
             <FaEye color="#2d1c63" size={22} />
-          </IconButton>
-          <IconButton size="small" onClick={() => onClickRowEdit(row)}>
-            <MdModeEdit color="#2d1c63" size={22} />
-          </IconButton>
-          <IconButton size="small" onClick={() => onClickDelete(row.id)}>
-            {loadingDelete ? (
-              <CircularProgress color="secondary" size={10} />
-            ) : (
-              <FaTrashAlt color="red" />
-            )}
           </IconButton>
         </TableCell>
       </TableRow>
@@ -116,7 +97,7 @@ const EventosPage = () => {
   };
 
   useEffect(() => {
-    fetchEventos();
+    fetchEventos(1);
     setOnLoad(true);
   }, []);
 
@@ -178,14 +159,14 @@ const EventosPage = () => {
                 rows={eventos}
                 loading={loading}
                 dataRow={dataRow}
+                page={page}
+                totalPages={totalPages}
+                handleChangePagination={handleChangePagination}
               />
             ) : (
-              <NoTableData
-                pronoum={"he"}
-                pageName="evento"
-                disabledButton={false}
-                onClickAction={() => navigate("/eventos/edit")}
-              />
+              <Stack width={'100%'} height={'100%'} alignItems={'center'}>
+                <h2 className="font-light">Não há eventos cadastrados</h2>
+              </Stack>
             )}
           </Paper>
         </Paper>
