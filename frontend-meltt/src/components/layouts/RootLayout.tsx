@@ -25,6 +25,7 @@ import {
 } from "../../providers/faculdadeContext";
 import { AlunoContext, alunoInitialState, alunoReducer } from "../../providers/alunoContext";
 import { TarefaContext, tarefaInitialState, tarefaReducer } from "../../providers/tarefaContext";
+import { AdesaoContext, adesaoInitialState, adesaoReducer } from "../../providers/adesaoContext";
 
 const RootLayout = () => {
   const navigate = useNavigate();
@@ -36,6 +37,12 @@ const RootLayout = () => {
     turmaReducer,
     turmaInitialState
   );
+
+  const [stateAdesao, dispatchAdesao] = useReducer(
+    adesaoReducer,
+    adesaoInitialState
+  )
+
   const [stateAluno, dispatchAluno] = useReducer(
     alunoReducer,
     alunoInitialState
@@ -70,6 +77,7 @@ const RootLayout = () => {
   return (
     <FaculdadeContext.Provider value={{ stateFaculdade, dispatchFaculdade }}>
       <TurmaContext.Provider value={{ stateTurma, dispatchTurma }}>
+        <AdesaoContext.Provider value={{stateAdesao, dispatchAdesao}}>
         <AlunoContext.Provider value={{ stateAluno, dispatchAluno }}>
           <FornecedorContext.Provider
             value={{ stateFornecedor, dispatchFornecedor }}
@@ -105,6 +113,8 @@ const RootLayout = () => {
             </TarefaContext.Provider>
           </FornecedorContext.Provider>
         </AlunoContext.Provider>
+        </AdesaoContext.Provider>
+
         <Toaster />
       </TurmaContext.Provider>
     </FaculdadeContext.Provider>

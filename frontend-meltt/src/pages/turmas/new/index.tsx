@@ -95,7 +95,7 @@ const TurmasPageNew = () => {
         formData.append("file", file);
         toast.loading("Enviando Arquivo do Estatuto...");
 
-        const pressignedUrl = await apiGetData("academic", `/s3/uploads/turma/pressignedUrl?fileName=${file.name}&fileType=${file.type}`);
+        const pressignedUrl = await apiGetData("academic", `/s3/uploads/turma/pressignedUrl?fileName=${file.name}&fileType=${file.type}&turmaId=${turmaValues.identificador}`);
         if (pressignedUrl?.url) {
           const result = await fetch(pressignedUrl.url, {
             method: 'PUT',

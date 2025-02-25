@@ -36,7 +36,7 @@ const PaginadaTurmaCriarTopicoPage = () => {
     const dataObj = {
       ...values,
       turma_id: id,
-      aluno_id: decoded?.id,
+      usuario_id: decoded?.id,
     };
 
     const response = await apiPostData("academic", "/topicos", dataObj);
@@ -53,7 +53,7 @@ const PaginadaTurmaCriarTopicoPage = () => {
   return (
     <Stack width={"calc(100% - 28px)"}>
       <Stack direction={"row"} alignItems={"center"} my={2} gap={2}>
-        <IconButton size="small" onClick={() => navigate(`/turmas/view/${id}`)}>
+        <IconButton size="small" onClick={() => navigate(`/turmas`)}>
           <IoMdArrowBack />
         </IconButton>
         <Stack direction={"column"}>

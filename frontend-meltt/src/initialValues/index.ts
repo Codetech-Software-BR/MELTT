@@ -18,6 +18,14 @@ export const initialValuesTurma = {
   planos_formatura: [],
 };
 
+export const initialValuesAdesao = {
+  aluno_id: "",
+  turma_id: "",
+  status: "",
+  data_assinatura: "",
+  observacoes: "",
+}
+
 export const initialValuesTarefa = {
   nome: "",
   responsavel: "",

@@ -37,6 +37,7 @@ import TarefasPageNew from "../pages/tarefas/new";
 import FornecedoresPage from "../pages/fornecedores";
 import TarefasNewPage from "../pages/tarefas/new";
 import TarefasEditPage from "../pages/tarefas/edit";
+import AdesaoEditPage from "../pages/adesoes/edit";
 
 export const router = createBrowserRouter([
   {
@@ -106,6 +107,14 @@ export const router = createBrowserRouter([
       {
         path: "/alunos/view/:id?",
         element: <AlunosPageView />,
+      },
+      {
+        path: "/adesoes",
+        element: <AdesoesPage/>
+      },
+      {
+        path: "/adesoes/edit/:id?",
+        element: <AdesaoEditPage/>
       },
       // {
       //   path: "/faculdades",
@@ -194,10 +203,6 @@ export const router = createBrowserRouter([
       {
         path: "/tarefas/edit/:id?",
         element: <TarefasEditPage/>,
-      },
-      {
-        path: "/adesoes",
-        element: <AdesoesPage/>
       },
       {
         path: "/pre-contratos",
