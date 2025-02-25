@@ -39,6 +39,7 @@ interface Student {
   contato: {
     nome: string;
     numeroDocumento: string;
+    id: string;
   };
   valor: string;
   vencimento: string;
@@ -123,8 +124,8 @@ const PagamentosPage = () => {
       nome: payment?.contato.nome,
       documento: payment?.contato.numeroDocumento,
       email: `${payment?.contato.numeroDocumento}@meltt.com.br`,
-      senha: payment?.id.toString(),
-      id_bling: payment?.id.toString(),
+      senha: payment?.contato.id.toString(),
+      id_bling: payment?.contato.id.toString(),
       tipo: "ALUNO",
     };
 
@@ -138,7 +139,8 @@ const PagamentosPage = () => {
         setOpenModalCreateUser(false);
       }
     } catch (error) {
-      toast.error("Erro ao criar usuário para aluno");
+      console.log(error)
+      toast.error("Erro ao criar usuário para aluno. Confira se o e-mail já não está cadastrado");
     }
     setLoadingSaveNewUser(false);
   }
