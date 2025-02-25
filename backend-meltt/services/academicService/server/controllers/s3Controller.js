@@ -105,23 +105,23 @@ class s3Controller {
   //   }
   // }
 
-  // async getAllConteudos(req, res) {
-  //   try {
-  //     const files = await s3Service.listFiles("eduflex-conteudos", req.params.prefix);
-  //     res.status(200).json({ message: "Lista de arquivos recuperados com sucesso", files });
-  //   } catch (error) {
-  //     res.status(500).json({ error: `Erro ao listar as imagens: ${error.message}` });
-  //   }
-  // }
+  async getAllContratosTurma(req, res) {
+    try {
+      const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, req.params.prefix);
+      res.status(200).json({ message: "Lista de contratos recuperados com sucesso", files });
+    } catch (error) {
+      res.status(500).json({ error: `Erro ao listar arquivos: ${error.message}` });
+    }
+  }
 
-  // async getConteudosByTurma(req, res) {
-  //   try {
-  //     const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, `turmas/${req.params.turma_id}`);
-  //     res.status(200).json({ message: "Lista de arquivos recuperados com sucesso", files });
-  //   } catch (error) {
-  //     res.status(500).json({ error: `Erro ao listar os arquivos: ${error.message}` });
-  //   }
-  // }
+  async getConteudosByTurma(req, res) {
+    try {
+      const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, `turmas/${req.params.turma_id}`);
+      res.status(200).json({ message: "Lista de arquivos recuperados com sucesso", files });
+    } catch (error) {
+      res.status(500).json({ error: `Erro ao listar os arquivos: ${error.message}` });
+    }
+  }
 
   // async getUploadTurmaContractUrl(req, res) {
   //   const {fileName, fileType} = req.query;
@@ -138,13 +138,13 @@ class s3Controller {
 
   async getUploadTurmaContractUrl(req, res) {
     try {
-      const { fileName, fileType } = req.query;
+      const { fileName, fileType, turmaId } = req.query;
   
-      if (!fileName || !fileType) {
-        return res.status(400).json({ error: "fileName e fileType são obrigatórios" });
+      if (!fileName || !fileType || !turmaId) {
+        return res.status(400).json({ error: "fileName, fileType e turmaId são obrigatórios" });
       }
   
-      const filePath = `turmas/${fileName}`;
+      const filePath = `turmas/${turmaId}`;
   
       const signedUrl = await s3Service.s3Client.getSignedUrl("putObject", {
         Bucket: process.env.AWS_BUCKET_TURMAS,

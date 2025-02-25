@@ -22,6 +22,12 @@ export const validateTurmaSchema = Yup.object({
   regras_renegociacao: Yup.string().required("o campo regras de renegociação é obrigatório."),
 });
 
+export const validateAdesaoSchema = Yup.object({
+  aluno_id: Yup.string().required("o campo aluno é obrigatório."),
+  turma_id: Yup.string().required("o campo turma é obrigatório."),
+  status: Yup.string().required("o campo ano de status é obrigatório."),
+});
+
 export const validateTarefaSchema = Yup.object({
   nome: Yup.string().required("o campo nome é obrigatório."),
   responsaveis: Yup.array().required("o campo responsáveis é obrigatório."),

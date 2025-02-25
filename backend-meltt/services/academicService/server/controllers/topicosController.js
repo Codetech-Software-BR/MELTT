@@ -47,17 +47,17 @@ class topicosController {
   };
 
   createTopico(req, res) {
-    const { turma_id, aluno_id, titulo, descricao } = req.body;
+    const { turma_id, titulo, descricao, usuario_id } = req.body;
     const query =
-      "INSERT INTO topicos (turma_id, aluno_id, titulo, descricao) VALUES (?, ?, ?, ?)";
-    db.query(query, [turma_id, aluno_id, titulo, descricao], (err, result) => {
+      "INSERT INTO topicos (turma_id, titulo, descricao) VALUES (?, ?, ?)";
+    db.query(query, [turma_id, titulo, descricao], (err, result) => {
       if (err) return res.status(500).json(err);
 
       const mensagem = `Novo Tópico criado: ${titulo}`;
       const tipo = 'ALUNO';
       const notificacaoQuery = "INSERT INTO notificacoes (usuario_id, tipo, mensagem) VALUES (?, ?, ?)";
 
-      db.query(notificacaoQuery, [aluno_id, tipo, mensagem], (err) => {
+      db.query(notificacaoQuery, [usuario_id, tipo, mensagem], (err) => {
         if (err) return res.status(500).json(err);
         res.status(201).json({ id: result.insertId, ...req.body });
       })
