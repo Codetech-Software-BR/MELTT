@@ -232,6 +232,7 @@ app.post("/api/external/bling/oauth", async (req, res) => {
 
     const response = await axios.post(url, data, config);
     const { access_token, refresh_token } = response.data;
+    tokenManager.setTokens({ access_token, refresh_token });
 
     return res.json({
       access_token,
