@@ -12,9 +12,9 @@ const router = express.Router();
 
 // Rotas
 router.post('/register', async (req, res) => {
-  const { aluno_id, email, senha, tipo } = req.body;
-  console.log('req.body', req.body)
-  if (!aluno_id | !email || !senha || !tipo) {
+  const { aluno_id, email, documento = null, senha, tipo, id_bling = null } = req.body;
+
+  if (!aluno_id || !email || !senha || !tipo) {
     return res.status(400).json({ error: 'Nome, E-mail, Senha e Tipo são obrigatórios' });
   }
 
@@ -23,13 +23,16 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ error: 'E-mail já cadastrado' });
   }
 
+  console.log(user)
   try {
-    const user = await createUser({ aluno_id, email, senha, tipo });
+    const user = await createUser({ aluno_id, email, documento, senha, tipo, id_bling });
+    console.log('createUser', user)
     res.status(201).json({ user, message: "Usuário gerado com sucesso!" });
   } catch (error) {
     res.status(500).json({ error: 'Houve um erro realizar seu cadastro. Tente novamente mais tarde' });
   }
 });
+
 
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;

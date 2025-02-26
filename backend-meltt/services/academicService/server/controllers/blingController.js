@@ -24,7 +24,6 @@ class BlingController {
           },
         }
       );
-
       return res.json(response.data);
     } catch (error) {
       console.error("Erro ao comunicar com Bling:", error.response?.data || error.message);

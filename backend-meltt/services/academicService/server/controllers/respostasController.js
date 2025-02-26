@@ -47,10 +47,10 @@ class RespostasController {
   };
 
   createResposta(req, res) {
-    const { topico_id, aluno_id, resposta } = req.body;
+    const { topico_id, usuario_id, resposta } = req.body;
     const query =
-      "INSERT INTO respostas (topico_id, aluno_id, resposta) VALUES (?, ?, ?)";
-    db.query(query, [topico_id, aluno_id, resposta], (err, result) => {
+      "INSERT INTO respostas (topico_id, usuario_id, resposta) VALUES (?, ?, ?)";
+    db.query(query, [topico_id, usuario_id, resposta], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(201).json({ id: result.insertId, ...req.body });
     });
@@ -58,10 +58,10 @@ class RespostasController {
 
   updateResposta(req, res) {
     const id = req.params.id;
-    const { topico_id, aluno_id, resposta } = req.body;
+    const { topico_id, usuario_id, resposta } = req.body;
     const query =
-      "UPDATE respostas SET topico_id = ?, aluno_id = ?, resposta = ? = ? WHERE id = ?";
-    db.query(query, [topico_id, aluno_id, resposta, id], (err) => {
+      "UPDATE respostas SET topico_id = ?, usuario_id = ?, resposta = ? = ? WHERE id = ?";
+    db.query(query, [topico_id, usuario_id, resposta, id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Topico atualizado com sucesso!" });
     });
