@@ -85,7 +85,7 @@ export const router = createBrowserRouter([
         element: <DashboardAlunosPage/>,
       },
       {
-        path: "/dashboard/alunos",
+        path: "/dashboard/usuarios",
         element: <DashboardAlunosPage/>,
       },
       {
@@ -97,15 +97,15 @@ export const router = createBrowserRouter([
         element: <DashboardTurmasPage/>,
       },
       {
-        path: "/alunos",
+        path: "/usuarios",
         element: <AlunosPage />,
       },
       {
-        path: "/alunos/edit/:id?",
+        path: "/usuarios/edit/:id?",
         element: <AlunosPageEdit />,
       },
       {
-        path: "/alunos/view/:id?",
+        path: "/usuarios/view/:id?",
         element: <AlunosPageView />,
       },
       {
@@ -153,7 +153,7 @@ export const router = createBrowserRouter([
         element: <TopicoViewPage />,
       },
       {
-        path: "/alunos",
+        path: "/usuarios",
         element: <AlunosPage />,
       },
       {
