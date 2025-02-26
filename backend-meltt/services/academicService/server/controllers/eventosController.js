@@ -44,7 +44,7 @@ class EventosController {
       "INSERT INTO eventos (nome, token, turma_id ) VALUES (?, ?, ?)";
     db.query(
       query,
-      [nome, token, token, turma_id],
+      [nome, token, turma_id],
       (err, result) => {
         if (err) return res.status(500).json(err);
         res.status(201).json({ id: result.insertId, ...req.body });

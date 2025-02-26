@@ -97,7 +97,7 @@ export default function CustomDrawer(props: Props) {
 
   const fetchNotificacoes = async () => {
     try {
-      const response = await apiGetData("academic", "/notificacoes");
+      const response = await apiGetData("academic", `/notificacoes?id=${decoded?.id}`);
       setNotificacoes(response);
     } catch (error) {
       toast.error("Erro ao buscar notificações");

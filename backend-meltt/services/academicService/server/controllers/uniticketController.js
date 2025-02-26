@@ -21,7 +21,7 @@ class UniticketController {
         "Erro ao comunicar com UNITICKET:",
         error.response?.data || error.message
       );
-      return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+      return res.status(500).json({ error: error.response?.data || error.message });
     }
   }
 
@@ -44,7 +44,7 @@ class UniticketController {
         "Erro ao comunicar com UNITICKET:",
         error.response?.data || error.message
       );
-      return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+      return res.status(500).json({ error: error.response?.data || error.message });
     }
   }
 
@@ -67,7 +67,7 @@ class UniticketController {
         "Erro ao comunicar com UNITICKET:",
         error.response?.data || error.message
       );
-      return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+      return res.status(500).json({ error: error.response?.data || error.message });
     }
   }
 
@@ -90,7 +90,7 @@ class UniticketController {
         "Erro ao comunicar com UNITICKET:",
         error.response?.data || error.message
       );
-      return res.status(500).json({ error: "Erro ao comunicar com UNITICKET" });
+      return res.status(500).json({ error: error.response?.data || error.message });
     }
   }
 }

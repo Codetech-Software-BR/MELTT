@@ -38,6 +38,7 @@ import AdesaoEditPage from "../pages/adesoes/edit";
 import EventosCompradoresPage from "../pages/eventos/compradores";
 import EventosParticipantesPage from "../pages/eventos/participantes";
 import EventosTicketsPage from "../pages/eventos/tickets";
+import EventosNewPage from "../pages/eventos/new";
 
 export const router = createBrowserRouter([
   {
@@ -187,6 +188,10 @@ export const router = createBrowserRouter([
       {
         path: "/eventos",
         element: <EventosPage/>,
+      },
+      {
+        path: "eventos/new",
+        element: <EventosNewPage/>
       },
       {
         path: "/eventos/particiantes/:id",

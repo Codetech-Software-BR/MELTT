@@ -1,5 +1,6 @@
 import {
   Avatar,
+  Button,
   IconButton,
   Link,
   Paper,
@@ -17,7 +18,7 @@ import toast from "react-hot-toast";
 import { apiDeleteData, apiGetData } from "../../services/api";
 import { FaEye, FaMoneyBillWave } from "react-icons/fa6";
 import { eventsColumns } from "./table/columns";
-import { IoTicket } from "react-icons/io5";
+import { IoAdd, IoTicket } from "react-icons/io5";
 
 const EventosPage = () => {
   const navigate = useNavigate();
@@ -114,6 +115,14 @@ const EventosPage = () => {
         my={2}
       >
         <h2 className="text-2xl text-default font-extrabold"></h2>
+        <Button
+          variant="contained"
+          color="secondary"
+          endIcon={<IoAdd />}
+          onClick={() => navigate('/eventos/new')}
+          >
+          Novo Evento
+        </Button>
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
