@@ -18,7 +18,7 @@ import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
 import { studentsColumns } from "./table/columns";
 import { useNavigate } from "react-router-dom";
-import { apiDeleteData, apiGetData } from "../../services/api";
+import { apiDeleteData, apiGetData, apiPutData } from "../../services/api";
 import { IoMdAdd } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
@@ -94,7 +94,7 @@ const AlunosPage = () => {
   const onClickDelete = async (id: number) => {
     setLoadingDelete(true);
     try {
-      const response = await apiDeleteData("academic", `/usuarios/${id}`);
+      const response = await apiPutData("academic", `/usuarios/${id}/inativar`);
       if (response.id) {
         fetchAlunos();
         toast.success("Aluno excluído com sucesso");
