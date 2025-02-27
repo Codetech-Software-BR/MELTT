@@ -22,8 +22,8 @@ export const menuListAdmin = [
     icon: <MdBookmarkAdded size={22} />,
   },
   {
-    title: "Alunos",
-    route: "/alunos",
+    title: "Usuários",
+    route: "/usuarios",
     icon: <FaUsers size={22}  />,
   },
   {

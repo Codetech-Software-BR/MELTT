@@ -1,11 +1,15 @@
 import {
   Button,
   FormControl,
+  FormControlLabel,
+  FormGroup,
+  FormLabel,
   InputLabel,
   MenuItem,
   Paper,
   Select,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -142,7 +146,7 @@ const AlunosPageEdit = () => {
                 <Stack padding={2} gap={2} width={"100%"}>
                   <Stack direction={"column"}>
                     <Typography fontFamily={"Poppins"} fontWeight={600}>
-                      Dados do Aluno
+                      Dados do Usuário
                     </Typography>
                     <Typography
                       fontFamily={"Poppins"}
@@ -166,6 +170,27 @@ const AlunosPageEdit = () => {
                     />
                     <TextField
                       fullWidth
+                      label="Email"
+                      name="email"
+                      placeholder="email@example.com"
+                      size="small"
+                      value={values.email}
+                      error={Boolean(errors.email)}
+                      onChange={handleChange}
+                    />
+                  </Stack>
+                  <Stack width={"100%"} direction={"row"} gap={2}>
+                    <TextField
+                      fullWidth
+                      label="Telefone Celular"
+                      name="telefone"
+                      placeholder="(XX) XXXXX-XXXX"
+                      size="small"
+                      value={values.telefone}
+                      onChange={handleChange}
+                    />
+                    <TextField
+                      fullWidth
                       label="Documento"
                       name="documento"
                       placeholder="RG ou CPF"
@@ -175,40 +200,44 @@ const AlunosPageEdit = () => {
                       onChange={handleChange}
                     />
                   </Stack>
-                  <Stack width={"100%"} direction={"row"} gap={2}>
-                    <TextField
-                      label="Telefone Celular"
-                      name="telefone"
-                      placeholder="(XX) XXXXX-XXXX"
-                      size="small"
-                      value={values.telefone}
+                  <FormControl fullWidth size="small">
+                    <InputLabel
+                      id="turma-label"
+                      sx={{
+                        backgroundColor: "white",
+                        px: 0.5,
+                      }}
+                    >
+                      Turma
+                    </InputLabel>
+                    <Select
+                      labelId="turma-label"
+                      name="turma_id"
+                      value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
+                      disabled={loadingTurmas}
                       onChange={handleChange}
-                    />
-                    <FormControl fullWidth size="small">
-                      <InputLabel
-                        id="turma-label"
-                        sx={{
-                          backgroundColor: "white",
-                          px: 0.5,
-                        }}
-                      >
-                        Turma
-                      </InputLabel>
-                      <Select
-                        labelId="turma-label"
-                        name="turma_id"
-                        value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
-                        disabled={loadingTurmas}
+                    >
+                      {turmas.map((turma: { id: number, nome: string }) => (
+                        <MenuItem key={turma.id} value={turma.id}>
+                          {turma.nome}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend">Status de Atividade</FormLabel>
+                    <FormGroup aria-label="position" row>
+                      <FormControlLabel
+                        checked={true}
                         onChange={handleChange}
-                      >
-                        {turmas.map((turma: { id: number, nome: string }) => (
-                          <MenuItem key={turma.id} value={turma.id}>
-                            {turma.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Stack>
+                        name="ativo"
+                        value={values.ativo}
+                        control={<Switch color="primary" />}
+                        label="Ativo"
+                        labelPlacement="start"
+                      />
+                    </FormGroup>
+                  </FormControl>
                 </Stack>
                 <Stack
                   width={"100%"}
@@ -222,7 +251,7 @@ const AlunosPageEdit = () => {
                     color="primary"
                     variant="outlined"
                     size="small"
-                    onClick={() => navigate("/alunos")}
+                    onClick={() => navigate("/usuarios")}
                     sx={{ width: 120, borderRadius: 2, fontFamily: "Poppins" }}
                   >
                     Voltar

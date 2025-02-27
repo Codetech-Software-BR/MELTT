@@ -40,6 +40,7 @@ const AlunosPage = () => {
   const [turmas, setTurmas] = useState([]);
   const [loadingTurmas, setLoadingTurmas] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
+  const [page, setPage] = useState(1);
 
   const [students, setStudents] = useState([]);
 
@@ -54,7 +55,7 @@ const AlunosPage = () => {
   const fetchAlunos = async () => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/alunos");
+      const response = await apiGetData("academic", "/usuarios");
       setTotalPages(response.totalPages);
       setStudents(response.data);
     } catch (error) {
@@ -66,18 +67,18 @@ const AlunosPage = () => {
 
   const onClickRowView = (row: any) => {
     dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
-    navigate(`/alunos/view/${row.id}`);
+    navigate(`/usuarios/view/${row.id}`);
   };
 
   const onClickRowEdit = (row: any) => {
     dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
-    navigate(`/alunos/edit/${row.id}`);
+    navigate(`/usuarios/edit/${row.id}`);
   };
 
   const onClickDelete = async (id: number) => {
     setLoadingDelete(true);
     try {
-      const response = await apiDeleteData("academic", `/alunos/${id}`);
+      const response = await apiDeleteData("academic", `/usuarios/${id}`);
       if (response.id) {
         fetchAlunos();
         toast.success("Aluno excluído com sucesso");
@@ -109,13 +110,16 @@ const AlunosPage = () => {
           </Link>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.documento}
+          {row.email}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           {row.telefone}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {turmas.find((turma: any) => turma.id === row.turma_id)?.nome}
+          {row.documento}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins", color: `${row.ativo ? "green" : "grey"}` }}>
+          {row.ativo ? "Sim" : "Não"}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <IconButton size="small" onClick={() => onClickRowView(row)}>
@@ -157,7 +161,7 @@ const AlunosPage = () => {
           variant="contained"
           endIcon={<IoMdAdd />}
           onClick={() => {
-            navigate("/alunos/edit");
+            navigate("/usuarios/edit");
           }}
           sx={{ borderRadius: 2 }}
         >
@@ -197,6 +201,7 @@ const AlunosPage = () => {
               <LoadingTable />
             ) : students.length > 0 ? (
               <BasicTable
+                page={page}
                 totalPages={totalPages}
                 columns={studentsColumns}
                 rows={students}
@@ -208,7 +213,7 @@ const AlunosPage = () => {
                 pronoum={"he"}
                 pageName="aluno"
                 disabledButton={false}
-                onClickAction={() => navigate("/alunos/edit")}
+                onClickAction={() => navigate("/usuarios/edit")}
               />
             )}
           </Paper>
