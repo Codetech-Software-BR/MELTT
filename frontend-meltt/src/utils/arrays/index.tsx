@@ -12,14 +12,19 @@ export const menuListAdmin = [
     icon: <IoContract />
   },
   {
-    title: "Turmas",
-    route: "/turmas",
-    icon: <FaGraduationCap size={22} />,
-  },
-  {
     title: "Adesões",
     route: "/adesoes",
     icon: <MdBookmarkAdded size={22} />,
+  },
+  {
+    title: "Tarefas",
+    route: "/tarefas",
+    icon: <LuNetwork size={22} />,
+  },
+  {
+    title: "Turmas",
+    route: "/turmas",
+    icon: <FaGraduationCap size={22} />,
   },
   {
     title: "Alunos",
@@ -31,16 +36,16 @@ export const menuListAdmin = [
     route: "/pagamentos",
     icon: <MdOutlinePayments size={22}  />,
   },
+  {
+    title: "Eventos",
+    route: "/eventos",
+    icon: <MdEmojiEvents size={22} />,
+  },
   // {
   //   title: "Contratos e eventos",
   //   route: "/fornecedores",
   //   icon: <MdEmojiEvents size={22} />,
   // },
-  {
-    title: "Tarefas",
-    route: "/tarefas",
-    icon: <LuNetwork size={22} />,
-  },
   {
     title: "Fornecedores",
     route: "/fornecedores",

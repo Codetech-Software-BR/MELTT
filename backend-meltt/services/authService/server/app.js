@@ -231,8 +231,9 @@ app.post("/api/external/bling/oauth", async (req, res) => {
     };
 
     const response = await axios.post(url, data, config);
+    console.log('response', response.data);
     const { access_token, refresh_token } = response.data;
-    tokenManager.setTokens({ access_token, refresh_token });
+    // tokenManager.setTokens({ access_token, refresh_token });
 
     return res.json({
       access_token,
@@ -247,7 +248,7 @@ app.post("/api/external/bling/oauth", async (req, res) => {
 
 app.post("/api/external/bling/refresh", async (req, res) => {
   const { refresh_token } = req.body; 
-
+  console.log('refresh_token', refresh_token);
   if (!refresh_token) {
     return res.status(400).json({ error: "refresh_token é obrigatório" });
   }
@@ -269,7 +270,8 @@ app.post("/api/external/bling/refresh", async (req, res) => {
     };
 
     const response = await axios.post(url, data, config);
-    const { access_token, refresh_token: new_refresh_token } = response.data;
+    console.log('response', response.data);
+    // const { access_token, refresh_token: new_refresh_token } = response.data;
 
     return res.json({
       access_token,
