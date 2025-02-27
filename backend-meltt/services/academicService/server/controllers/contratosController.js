@@ -19,9 +19,6 @@ class ContratosController {
         const total = countResult[0].total;
         const totalPages = Math.ceil(total / limit);
 
-        console.log(totalPages);
-        console.log(total);
-
         res.status(200).json({
           page,
           totalPages,
@@ -29,6 +26,8 @@ class ContratosController {
           itemsPerPage: limit,
           data: results,
         });
+
+        console.log('results', results);
       });
     });
   };

@@ -59,6 +59,7 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
       localStorage.removeItem("@meltt-user-token");
       localStorage.removeItem("bling-access-token");
       localStorage.removeItem("bling-refresh-token");
+      window.location.href = "/login";
       // window.location.reload();
       // alert('Faça Login no Bling NOVAMENTE para acessar a plataforma, se necessário saia do Bling e faça Login novamente.')
       // let refreshRequest =  apiPostData("authentication", `/external/bling/refresh`, {

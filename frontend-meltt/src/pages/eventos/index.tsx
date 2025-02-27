@@ -15,10 +15,12 @@ import LoadingTable from "../../components/loadingTable";
 import BasicTable from "../../components/table";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { apiDeleteData, apiGetData } from "../../services/api";
-import { FaEye, FaMoneyBillWave } from "react-icons/fa6";
+import { apiGetData } from "../../services/api";
+import { FaMoneyBillWave, FaPeopleGroup } from "react-icons/fa6";
 import { eventsColumns } from "./table/columns";
 import { IoAdd, IoTicket } from "react-icons/io5";
+import { BiUser } from "react-icons/bi";
+import { FaCheckCircle } from "react-icons/fa";
 
 const EventosPage = () => {
   const navigate = useNavigate();
@@ -27,7 +29,6 @@ const EventosPage = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
   const [eventos, setEventos] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
@@ -93,6 +94,16 @@ const EventosPage = () => {
             <Tooltip title="Ver Tickets" arrow>
               <IconButton size="small" onClick={() => onClickRowView(row, 'tickets')}>
                 <IoTicket color="#2d1c63" size={22} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ver Participantes" arrow>
+              <IconButton size="small" onClick={() => onClickRowView(row, 'participantes')}>
+                <FaPeopleGroup color="#2d1c63" size={22} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Ver Checkins" arrow>
+              <IconButton size="small" onClick={() => onClickRowView(row, 'checkins')}>
+                <FaCheckCircle color="#2d1c63" size={22} />
               </IconButton>
             </Tooltip>
           </Stack>

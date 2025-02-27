@@ -228,7 +228,7 @@ const PagamentosPage = () => {
             p: 1,
             flexGrow: 1,
             width: "100%",
-            height: "calc(100vh - 170px)",
+            height: "calc(100vh - 70px)",
             borderRadius: 4,
           }}
         >

@@ -194,7 +194,7 @@ export const router = createBrowserRouter([
         element: <EventosNewPage/>
       },
       {
-        path: "/eventos/particiantes/:id",
+        path: "/eventos/particiPantes/:id",
         element: <EventosParticipantesPage/>,
       },
       {
