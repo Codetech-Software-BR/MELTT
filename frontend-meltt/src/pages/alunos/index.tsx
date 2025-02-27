@@ -1,13 +1,18 @@
 import {
   Button,
   CircularProgress,
+  FormControl,
   IconButton,
+  InputLabel,
   Link,
+  MenuItem,
   Paper,
+  Select,
   Slide,
   Stack,
   TableCell,
   TableRow,
+  SelectChangeEvent,
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
@@ -22,6 +27,7 @@ import { MdModeEdit } from "react-icons/md";
 import { FaTrashAlt } from "react-icons/fa";
 import { useAlunoContext } from "../../providers/alunoContext";
 import { FaEye } from "react-icons/fa6";
+import { BiSearch } from "react-icons/bi";
 
 interface Student {
   id: number;
@@ -41,6 +47,11 @@ const AlunosPage = () => {
   const [loadingTurmas, setLoadingTurmas] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+  const [status, setStatus] = useState(1);
+
+  const handleChangeStatus = (event: SelectChangeEvent<number>) => {
+    setStatus(event.target.value as number);
+  };
 
   const [students, setStudents] = useState([]);
 
@@ -55,7 +66,12 @@ const AlunosPage = () => {
   const fetchAlunos = async () => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", "/usuarios");
+      let response;
+      if (status === 2) {
+        response = await apiGetData("academic", `/usuarios`);
+      } else {
+        response = await apiGetData("academic", `/usuarios?ativo=${status}`);
+      }
       setTotalPages(response.totalPages);
       setStudents(response.data);
     } catch (error) {
@@ -121,7 +137,7 @@ const AlunosPage = () => {
         <TableCell align="left" sx={{ fontFamily: "Poppins", color: `${row.ativo ? "green" : "grey"}` }}>
           {row.ativo ? "Sim" : "Não"}
         </TableCell>
-        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+        <TableCell align="center" sx={{ fontFamily: "Poppins" }}>
           <IconButton size="small" onClick={() => onClickRowView(row)}>
             <FaEye color="#2d1c63" size={22} />
           </IconButton>
@@ -179,6 +195,24 @@ const AlunosPage = () => {
             borderRadius: 4,
           }}
         >
+          <Stack direction={'row'} alignItems={'center'} gap={2} py={1}>
+            <FormControl sx={{ width: '20%' }}>
+              <InputLabel sx={{ p: 0.3, bgcolor: '#fff' }}>Status de Atividade</InputLabel>
+              <Select
+                size="small"
+                value={status ?? 1}
+                label="status"
+                onChange={handleChangeStatus}
+              >
+                <MenuItem value={1}>Ativos</MenuItem>
+                <MenuItem value={0}>Inativos</MenuItem>
+                <MenuItem value={2}>Todos</MenuItem>
+              </Select>
+            </FormControl>
+            <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchAlunos}>
+              Buscar
+            </Button>
+          </Stack>
           <Paper
             elevation={0}
             sx={{

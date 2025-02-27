@@ -6,13 +6,29 @@ class UsuarioController {
         const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
         const offset = (page - 1) * limit; // Calcula o deslocamento
 
-        const query = "SELECT * FROM usuarios LIMIT ? OFFSET ?";
+        const ativo = req.query.ativo; // Captura o parâmetro "ativo" da query string
 
-        db.query(query, [limit, offset], (err, results) => {
+        let query = "SELECT * FROM usuarios";
+        let countQuery = "SELECT COUNT(*) AS total FROM usuarios";
+        let queryParams = [];
+
+        // Se "ativo" estiver presente, adiciona a condição WHERE
+        if (ativo !== undefined) {
+            query += " WHERE ativo = ?";
+            countQuery += " WHERE ativo = ?";
+            queryParams.push(parseInt(ativo)); // Converte para número
+        }
+
+        query += " LIMIT ? OFFSET ?";
+        queryParams.push(limit, offset);
+
+        console.log(query);
+        console.log(queryParams);
+
+        db.query(query, queryParams, (err, results) => {
             if (err) return res.status(500).json({ error: err.message });
 
-            // Consulta para contar o total de registros
-            db.query("SELECT COUNT(*) AS total FROM usuarios", (err, countResult) => {
+            db.query(countQuery, queryParams.slice(0, -2), (err, countResult) => {
                 if (err) return res.status(500).json({ error: err.message });
 
                 const total = countResult[0].total;
@@ -27,9 +43,10 @@ class UsuarioController {
                 });
             });
         });
-    };
+    }
 
     createUsuario(req, res) {
+        console.log(req.body);
         const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
         const query =
             "INSERT INTO usuarios (email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -37,6 +54,8 @@ class UsuarioController {
             query,
             [email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id],
             (err, result) => {
+                console.log(err);
+                console.log(result);
                 if (err) return res.status(500).json(err);
                 res.status(201).json({ id: result.insertId, ...req.body });
             }

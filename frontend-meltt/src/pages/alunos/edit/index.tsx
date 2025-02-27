@@ -3,7 +3,6 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
-  FormLabel,
   InputLabel,
   MenuItem,
   Paper,
@@ -51,6 +50,8 @@ const AlunosPageEdit = () => {
   const [loadingAluno, setLoadingAluno] = useState(false);
   const [loadingTurmas, setLoadingTurmas] = useState(false);
 
+  const tiposUsuario = ["ADMIN", "ALUNO", "ASSOCIACAO"];
+
   const getAlunosInitialValue = Object.keys(initialValuesAluno).reduce(
     (acc, key) => {
       const typedKey = key as keyof typeof initialValuesAluno;
@@ -72,22 +73,29 @@ const AlunosPageEdit = () => {
   };
 
   const onSubmitAluno = async (values: any) => {
+    const { senha, confirmar_senha, ativo, ...rest } = values;
+    if (senha !== confirmar_senha) {
+      toast.error("As senhas não conferem");
+      return;
+    }
+    delete values.confirmar_senha;
+    values = { ...rest, senha, ativo: ativo ? 1 : 0 };
     console.log("values", values);
     setLoadingAluno(true);
     try {
       if (id) {
-        const response = await apiPutData("academic", `/alunos/${id}`, values);
+        const response = await apiPutData("academic", `/usuarios/${id}`, values);
         console.log("response", response);
         if (response.value?.id) {
           toast.success("Aluno atualizado com sucesso");
-          navigate("/alunos");
+          navigate("/usuarios");
         }
       } else {
-        const response = await apiPostData("academic", "/alunos", values);
+        const response = await apiPostData("academic", "/usuarios", values);
 
         if (response.id) {
           toast.success("Aluno salvo com sucesso");
-          navigate("/alunos");
+          navigate("/usuarios");
         }
       }
     } catch (error) {
@@ -162,31 +170,31 @@ const AlunosPageEdit = () => {
                       fullWidth
                       label="Nome"
                       name="nome"
-                      placeholder="nome completo do aluno"
+                      placeholder="Digite seu nome"
                       size="small"
-                      value={values.nome}
+                      value={values.nome ?? ""}
                       error={Boolean(errors.nome)}
                       onChange={handleChange}
                     />
-                    <TextField
-                      fullWidth
-                      label="Email"
-                      name="email"
-                      placeholder="email@example.com"
-                      size="small"
-                      value={values.email}
-                      error={Boolean(errors.email)}
-                      onChange={handleChange}
-                    />
-                  </Stack>
-                  <Stack width={"100%"} direction={"row"} gap={2}>
                     <TextField
                       fullWidth
                       label="Telefone Celular"
                       name="telefone"
                       placeholder="(XX) XXXXX-XXXX"
                       size="small"
-                      value={values.telefone}
+                      value={values.telefone ?? ""}
+                      onChange={handleChange}
+                    />
+                  </Stack>
+                  <Stack width={"100%"} direction={"row"} gap={2}>
+                    <TextField
+                      fullWidth
+                      label="Email"
+                      name="email"
+                      placeholder="email@example.com"
+                      size="small"
+                      value={values.email ?? ""}
+                      error={Boolean(errors.email)}
                       onChange={handleChange}
                     />
                     <TextField
@@ -195,49 +203,99 @@ const AlunosPageEdit = () => {
                       name="documento"
                       placeholder="RG ou CPF"
                       size="small"
-                      value={values.documento}
+                      value={values.documento ?? ""}
                       error={Boolean(errors.documento)}
                       onChange={handleChange}
                     />
                   </Stack>
-                  <FormControl fullWidth size="small">
-                    <InputLabel
-                      id="turma-label"
-                      sx={{
-                        backgroundColor: "white",
-                        px: 0.5,
-                      }}
-                    >
-                      Turma
-                    </InputLabel>
-                    <Select
-                      labelId="turma-label"
-                      name="turma_id"
-                      value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
-                      disabled={loadingTurmas}
+                  <Stack width={"100%"} direction={"row"} gap={2}>
+                    <TextField
+                      fullWidth
+                      label="Senha"
+                      name="senha"
+                      placeholder="Digite sua senha"
+                      size="small"
+                      value={values.senha ?? ""}
+                      error={Boolean(errors.senha)}
                       onChange={handleChange}
-                    >
-                      {turmas.map((turma: { id: number, nome: string }) => (
-                        <MenuItem key={turma.id} value={turma.id}>
-                          {turma.nome}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                  <FormControl component="fieldset">
-                    <FormLabel component="legend">Status de Atividade</FormLabel>
-                    <FormGroup aria-label="position" row>
-                      <FormControlLabel
-                        checked={true}
+                    />
+                    <TextField
+                      sx={{ width: "100%" }}
+                      label="Confirmar Senha"
+                      name="confirmar_senha"
+                      placeholder="Digite sua senha novamente"
+                      size="small"
+                      value={values.confirmar_senha ?? ""}
+                      error={Boolean(errors.confirmar_senha)}
+                      onChange={handleChange}
+                    />
+
+                  </Stack>
+                  <Stack width={"100%"} direction={"row"} gap={2}>
+                    <FormControl sx={{ width: "50%" }} size="small">
+                      <InputLabel
+                        id="turma-label"
+                        sx={{
+                          backgroundColor: "white",
+                          px: 0.5,
+                        }}
+                      >
+                        Turma
+                      </InputLabel>
+                      <Select
+                        labelId="turma-label"
+                        name="turma_id"
+                        value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
+                        disabled={loadingTurmas}
                         onChange={handleChange}
-                        name="ativo"
-                        value={values.ativo}
-                        control={<Switch color="primary" />}
-                        label="Ativo"
-                        labelPlacement="start"
-                      />
-                    </FormGroup>
-                  </FormControl>
+                      >
+                        {turmas.map((turma: { id: number, nome: string }) => (
+                          <MenuItem key={turma.id} value={turma.id}>
+                            {turma.nome}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormControl sx={{ width: "50%" }} size="small">
+                      <InputLabel
+                        id="tipo"
+                        sx={{
+                          backgroundColor: "white",
+                          px: 0.5,
+                        }}
+                      >
+                        Tipo de Usuário
+                      </InputLabel>
+                      <Select
+                        labelId="tipo"
+                        name="tipo"
+                        value={values.tipo ?? ""}
+                        disabled={loadingTurmas}
+                        onChange={handleChange}
+                      >
+                        {tiposUsuario.map((tipo: string) => (
+                          <MenuItem key={tipo} value={tipo}>
+                            {tipo}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Stack>
+                  <Paper elevation={0} sx={{ width: "50%", padding: 0, margin: 0, alignSelf: "start" }}>
+                    <FormControl component="fieldset">
+                      <FormGroup aria-label="position" row>
+                        <FormControlLabel
+                          checked={values.ativo}
+                          onChange={handleChange}
+                          name="ativo"
+                          value={values.ativo}
+                          control={<Switch color="primary" />}
+                          label="Ativo"
+                          labelPlacement="start"
+                        />
+                      </FormGroup>
+                    </FormControl>
+                  </Paper >
                 </Stack>
                 <Stack
                   width={"100%"}

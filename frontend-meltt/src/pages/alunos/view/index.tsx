@@ -130,6 +130,7 @@ const AlunosPageView = () => {
                   </Stack>
                   <Stack width={"100%"} direction={"row"} gap={10}>
                     <TextDetails
+                      
                       text="Nome Completo"
                       details={stateAluno.alunoSelecionado?.nome}
                     />
@@ -151,7 +152,7 @@ const AlunosPageView = () => {
                       text="Nível de Acesso"
                       details={stateAluno.alunoSelecionado?.tipo}
                     />
-                    {stateAluno.alunoSelecionado?.tipo === "aluno" && (
+                    {stateAluno.alunoSelecionado?.tipo === "ALUNO" && (
                       <>
                         <TextDetails
                           text="Faculdade"
