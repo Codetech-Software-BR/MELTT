@@ -49,8 +49,11 @@ export default function BasicTable({
         <Table sx={{ width: "100%", height: "30vh" }} aria-label="simple table">
           <TableHead sx={{ bgcolor: "#EFEBFB", padding: 0 }}>
             <TableRow>
-              {columns.map((column: TableColumnsType) => (
-                <TableCell key={column.key} sx={{ fontFamily: "Poppins" }}>{column.label}</TableCell>
+              {columns.map((column: TableColumnsType, index) => (
+                <TableCell key={column.key} sx={{
+                  fontFamily: "Poppins",
+                  textAlign: index === columns.length - 1 ? "center" : "left" // Alinha o último ao centro
+                }}>{column.label}</TableCell>
               ))}
             </TableRow>
           </TableHead>

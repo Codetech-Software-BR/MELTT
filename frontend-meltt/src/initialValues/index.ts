@@ -34,9 +34,14 @@ export const initialValuesTarefa = {
 
 export const initialValuesAluno = {
   nome: "",
+  email: "",
   documento: "",
+  senha: "",
+  confirmar_senha: "",
   telefone: "",
-  turma_id: '',
+  turma_id: "",
+  tipo: "",
+  ativo: true,
 }
 
 export const initialValuesFaculdade = {

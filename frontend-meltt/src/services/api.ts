@@ -170,7 +170,7 @@ export const apiPostData = (serviceType: string, url: string, data: any, headers
 export const apiPatchData = (serviceType: string, url: string, data: any, headers?: any) =>
   apiRequest(serviceType, "PATCH", url, data, null, headers);
 
-export const apiPutData = (serviceType: string, url: string, data: any, headers?: any) =>
+export const apiPutData = (serviceType: string, url: string, data?: any, headers?: any) =>
   apiRequest(serviceType, "PUT", url, data, null, headers);
 
 export const apiDeleteData = (serviceType: string, url: string, data?: any, headers?: any) =>
