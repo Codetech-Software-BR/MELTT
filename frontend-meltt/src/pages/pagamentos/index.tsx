@@ -184,7 +184,7 @@ const PagamentosPage = () => {
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <Stack direction={'row'} alignItems={'center'} gap={2}>
             <Tooltip title="Visualizar Boleto">
-              <IconButton size="small" onClick={() => window.location.href = row.linkBoleto}>
+              <IconButton size="small" onClick={() => window.open(row.linkBoleto, "_blank")}>
                 <FaEye color="#2d1c63" size={22} />
               </IconButton>
             </Tooltip>

@@ -41,7 +41,7 @@ const EventosPage = () => {
       setTotalPages(response.totalPages);
       setEventos(response.data);
     } catch (error) {
-      toast.error("Erro ao buscar eventos");
+      toast.error("Nenhuma informação encontrada para eventos");
     }
     setLoading(false);
   };
@@ -82,7 +82,7 @@ const EventosPage = () => {
           </Stack>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.turma_id}
+          {row.data_formatura ?? 'data não informada'} 
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <Stack direction={'row'} gap={1}>

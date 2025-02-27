@@ -15,7 +15,7 @@ class BlingController {
       params.append("tipoFiltroData", "V");
 
       const dataInicialCalculada = subMonths(new Date(), 2); // 2 meses atrás
-      const dataFinalCalculada = addMonths(new Date(), 2); // 2 meses à frente
+      const dataFinalCalculada = addMonths(new Date(), 3); // 2 meses à frente
 
       const dataInicialFormatada = format(dataInicialCalculada, 'yyyy-MM-dd');
       const dataFinalFormatada = format(dataFinalCalculada, 'yyyy-MM-dd');

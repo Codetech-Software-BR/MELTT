@@ -39,6 +39,7 @@ import EventosCompradoresPage from "../pages/eventos/compradores";
 import EventosParticipantesPage from "../pages/eventos/participantes";
 import EventosTicketsPage from "../pages/eventos/tickets";
 import EventosNewPage from "../pages/eventos/new";
+import EventosCheckinsPage from "../pages/eventos/checkins";
 
 export const router = createBrowserRouter([
   {
@@ -194,7 +195,7 @@ export const router = createBrowserRouter([
         element: <EventosNewPage/>
       },
       {
-        path: "/eventos/particiPantes/:id",
+        path: "/eventos/participantes/:id",
         element: <EventosParticipantesPage/>,
       },
       {
@@ -204,6 +205,10 @@ export const router = createBrowserRouter([
       {
         path: "/eventos/compradores/:id",
         element: <EventosCompradoresPage/>,
+      },
+      {
+        path: "/eventos/checkins/:id",
+        element: <EventosCheckinsPage/>,
       },
       {
         path: "/tarefas",

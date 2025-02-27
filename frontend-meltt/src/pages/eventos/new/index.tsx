@@ -17,6 +17,7 @@ const EventosNewPage = () => {
     nome: "",
     token: "",
     turma_id: "",
+    data_formatura: ""
   })
 
   const fetchTurmas = async () => {
@@ -138,6 +139,16 @@ const EventosNewPage = () => {
                     </Select>
                   </FormControl>
                 </Stack>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  size="small"
+                  name="data_formatura"
+                  label="Data da formatura"
+                  placeholder='dd/mm/aaaa'
+                  value={values.data_formatura}
+                  onChange={(e) => setValues({ ...values, data_formatura: e.target.value })}
+                />
               </Stack>
             </Box>
             <Stack

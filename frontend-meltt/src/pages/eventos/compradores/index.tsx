@@ -1,8 +1,5 @@
 import {
-  Avatar,
-  Button,
   Chip,
-  CircularProgress,
   IconButton,
   Link,
   Paper,
@@ -14,10 +11,8 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FaEye } from "react-icons/fa6";
 import BasicTable from "../../../components/table";
 import LoadingTable from "../../../components/loadingTable";
-import { eventsColumns } from "../table/columns";
 import { apiGetData } from "../../../services/api";
 import { eventBuyersColumns } from "../table/columns/buyers";
 import { BiArrowBack } from "react-icons/bi";
@@ -83,7 +78,7 @@ const EventosCompradoresPage = () => {
       }
 
     } catch (error) {
-      toast.error("Erro ao buscar eventos");
+      toast.error("Nenhuma informação encontrada para eventos");
     }
     setLoading(false);
   };

@@ -1,8 +1,6 @@
 import {
-  Avatar,
   Chip,
   IconButton,
-  Link,
   Paper,
   Slide,
   Stack,
@@ -14,9 +12,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import BasicTable from "../../../components/table";
 import LoadingTable from "../../../components/loadingTable";
-import { eventsColumns } from "../table/columns";
 import { apiGetData } from "../../../services/api";
 import { BiArrowBack } from "react-icons/bi";
+import { eventsParticipantesColumns } from "../table/columns/particiantes";
 
 const EventosParticipantesPage = () => {
   const navigate = useNavigate();
@@ -38,7 +36,7 @@ const EventosParticipantesPage = () => {
       setTotalPages(response.totalPages);
       setEventos(response.data);
     } catch (error) {
-      toast.error("Erro ao buscar eventos");
+      toast.error("Nenhuma informação encontrada para eventos");
     }
     setLoading(false);
   };
@@ -73,6 +71,9 @@ const EventosParticipantesPage = () => {
           {row.document.type} - {row.document.number}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          {row.email}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <Chip color={row.checked_in == 0 ? 'warning' : 'success'} label={row.checked_in == 0 ? 'Checkin Não efetuado' : 'Checkin efetuado'}/>
         </TableCell>
 
@@ -97,7 +98,7 @@ const EventosParticipantesPage = () => {
           <IconButton onClick={() => navigate(-1)}>
             <BiArrowBack />
           </IconButton>
-          <h2 className="text-2xl text-default font-extrabold">Checkins feitos no evento</h2>
+          <h2 className="text-2xl text-default font-extrabold">Participantes do evento</h2>
         </Stack>
         
       </Stack>
@@ -134,7 +135,7 @@ const EventosParticipantesPage = () => {
               <LoadingTable />
             ) : eventos.length > 0 ? (
               <BasicTable
-                columns={eventsColumns}
+                columns={eventsParticipantesColumns}
                 rows={eventos}
                 loading={loading}
                 dataRow={dataRow}

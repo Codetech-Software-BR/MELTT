@@ -1,8 +1,5 @@
 import {
-  Avatar,
-  Button,
   Chip,
-  CircularProgress,
   IconButton,
   Link,
   Paper,
@@ -11,24 +8,14 @@ import {
   TableCell,
   TableRow,
 } from "@mui/material";
-import { IoMdAdd } from "react-icons/io";
 import { useNavigate, useParams } from "react-router-dom";
-// import LoadingTable from "../../components/loadingTable";
-// import BasicTable from "../../components/table";
-// import NoTableData from "../../components/noData";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-// import { apiDeleteData, apiGetData } from "../../services/api";
-import { FaEye } from "react-icons/fa6";
-import { MdModeEdit } from "react-icons/md";
-import { FaTrashAlt } from "react-icons/fa";
 import BasicTable from "../../../components/table";
 import LoadingTable from "../../../components/loadingTable";
-import { eventsColumns } from "../table/columns";
 import { apiGetData } from "../../../services/api";
 import { eventTicketsColumns } from "../table/columns/tickets";
 import { BiArrowBack } from "react-icons/bi";
-// import { eventsColumns } from "./table/columns";
 
 const EventosTicketsPage = () => {
   const navigate = useNavigate();
@@ -50,7 +37,7 @@ const EventosTicketsPage = () => {
       const response = await apiGetData("academic", `/uniticket/tickets?access_token=${id}`);
       setEventTickets(response.data);
     } catch (error) {
-      toast.error("Erro ao buscar eventos");
+      toast.error("Nenhuma informação encontrada para eventos");
     }
     setLoading(false);
   };
@@ -64,9 +51,6 @@ const EventosTicketsPage = () => {
     //   setPage(value);
   };
 
-  const onClickRowView = (row: any) => {
-    navigate(`/eventos/view/${row.id}`);
-  };
 
   const dataRow = (row: any) => {
     return (

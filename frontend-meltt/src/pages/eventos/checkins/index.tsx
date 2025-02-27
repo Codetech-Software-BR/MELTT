@@ -1,8 +1,5 @@
 import {
-  Avatar,
-  Button,
   Chip,
-  CircularProgress,
   IconButton,
   Link,
   Paper,
@@ -14,15 +11,14 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { FaEye } from "react-icons/fa6";
 import BasicTable from "../../../components/table";
 import LoadingTable from "../../../components/loadingTable";
-import { eventsColumns } from "../table/columns";
 import { apiGetData } from "../../../services/api";
 import { eventBuyersColumns } from "../table/columns/buyers";
 import { BiArrowBack } from "react-icons/bi";
+import { eventCheckinsColumns } from "../table/columns/checkins";
 
-const EventosCompradoresPage = () => {
+const EventosCheckinsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -30,76 +26,39 @@ const EventosCompradoresPage = () => {
   const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [eventBuyers, setEventBuyers] = useState([]);
+  const [eventCheckins, setEventCheckins] = useState([]);
   const [totalAmount, setTotalAmount] = useState("");
   const [totalPaidAmount, setTotalPaidAmount] = useState("");
 
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventBuyers = async (page: number) => {
+  const fetchEventCheckins = async (page: number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", `/uniticket/buyers?access_token=${id}`);
+      const response = await apiGetData("academic", `/uniticket/checkins?access_token=${id}`);
       if (response && response.data && Array.isArray(response.data)) {
-        const totalAmount = response.data.reduce((sum: number, item: any) => {
-          if (item.order && item.order.total_amount) {
-            const amount = parseFloat(item.order.total_amount);
-            if (!isNaN(amount)) {
-              return sum + amount;
-            }
-          }
-          return sum;
-        }, 0);
-
-        const totalPaidAmount = response.data.reduce((sum: number, item: any) => {
-          if (item.order && item.order.total_amount && item.order.status === 'finalizado') {
-            const amount = parseFloat(item.order.total_amount);
-            if (!isNaN(amount)) {
-              return sum + amount;
-            }
-          }
-          return sum;
-        }, 0);
-
-        const formattedTotalAmount = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(totalAmount);
-
-        const formattedTotalPaidAmount = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(totalPaidAmount);
-
-        console.log('Total adquirido com vendas de ingressos:', formattedTotalAmount);
-        console.log('Valor pago com status finalizado:', formattedTotalPaidAmount);
-
-        setEventBuyers(response.data);
-        setTotalAmount(formattedTotalAmount);
-        setTotalPaidAmount(formattedTotalPaidAmount);
+        
+        setEventCheckins(response.data);
       } else {
         toast.error("Estrutura inesperada em response.data");
       }
 
     } catch (error) {
-      toast.error("Erro ao buscar eventos");
+      toast.error("Nenhuma informação encontrada para eventos");
     }
     setLoading(false);
   };
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
-      fetchEventBuyers(value);
+      fetchEventCheckins(value);
     } catch (error) {
       toast.error("Erro ao buscar Turmas");
     }
     setPage(value);
   };
 
-  const onClickRowView = (row: any) => {
-    navigate(`/eventos/view/${row.id}`);
-  };
 
   const dataRow = (row: any) => {
     return (
@@ -139,7 +98,7 @@ const EventosCompradoresPage = () => {
 
 
   useEffect(() => {
-    fetchEventBuyers(1);
+    fetchEventCheckins(1);
     setOnLoad(true);
   }, []);
 
@@ -155,7 +114,7 @@ const EventosCompradoresPage = () => {
           <IconButton size="small" onClick={() => navigate('/eventos')}>
             <BiArrowBack />
           </IconButton>
-          <h2 className="text-lg text-default font-extrabold">Quantidade de Compradores: {eventBuyers.length}</h2>
+          <h2 className="text-lg text-default font-extrabold">Checkins do evento</h2>
         </Stack>
         <Stack direction={'row'} gap={1}>
           <Chip color="secondary" label={`Valor Movimentado: ${totalAmount}`} />
@@ -193,10 +152,10 @@ const EventosCompradoresPage = () => {
           >
             {loading ? (
               <LoadingTable />
-            ) : eventBuyers.length > 0 ? (
+            ) : eventCheckins.length > 0 ? (
               <BasicTable
-                columns={eventBuyersColumns}
-                rows={eventBuyers}
+                columns={eventCheckinsColumns}
+                rows={eventCheckins}
                 loading={loading}
                 dataRow={dataRow}
                 page={page}
@@ -205,7 +164,7 @@ const EventosCompradoresPage = () => {
               />
             ) : (
               <Stack width={'100%'} mt={20} alignItems={'center'} textAlign={'center'}>
-                <h2 className="font-light">nenhuma informação de compradores para este evento.</h2>
+                <h2 className="font-light">nenhuma informação de checkins para este evento.</h2>
               </Stack>
             )}
           </Paper>
@@ -215,4 +174,4 @@ const EventosCompradoresPage = () => {
   );
 };
 
-export default EventosCompradoresPage;
+export default EventosCheckinsPage;
