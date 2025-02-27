@@ -57,8 +57,6 @@ export const menuListAdmin = [
     icon: <FaChartSimple size={22} />,
     subRoutes: [
       { title: "Fornecedores", route: "/dashboard/fornecedor", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Turmas", route: "/dashboard/turma", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Adesão", route: "/dashboard/adesao", icon: <FaCircle size={8} className="text-white" /> },
     ],
   },
   // {

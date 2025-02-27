@@ -1,18 +1,13 @@
 import {
-  Paper,
   Slide,
   Stack,
-  TableCell,
-  TableRow,
   Typography,
 } from "@mui/material";
 import { getToken } from "../../utils/token";
 import { CustomJwtPayload } from "../../components/customDrawer";
 import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
-import { HiOutlineClipboardDocument } from "react-icons/hi2";
 import { apiGetData } from "../../services/api";
-import { format } from "date-fns";
 import BoxDashboardValues from "../../components/box/dashboardValues";
 import CustomLineChart from "../../components/charts/line";
 import toast from "react-hot-toast";
@@ -27,7 +22,7 @@ interface ChartData {
   valor_pago: number;
 }
 
-const DashboardAlunosPage = () => {
+const DashboardPagamentosPage = () => {
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
@@ -187,4 +182,4 @@ const DashboardAlunosPage = () => {
   );
 };
 
-export default DashboardAlunosPage;
+export default DashboardPagamentosPage;
