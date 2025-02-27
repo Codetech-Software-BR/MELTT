@@ -18,7 +18,6 @@ import TurmasPageNew from "../pages/turmas/new";
 import PaginaDaTurmaPage from "../pages/turmas/view/paginaDaTurma";
 import PaginadaTurmaCriarTopicoPage from "../pages/turmas/view/paginaDaTurma/topico/new";
 import TopicoViewPage from "../pages/turmas/view/paginaDaTurma/topico/view";
-import DashboardAlunosPage from "../pages/dashboards";
 import DashboardFornecedoresPage from "../pages/dashboards/fornecedores";
 import DashboardTurmasPage from "../pages/dashboards/turmas";
 import ViewPagamentoPage from "../pages/pagamentos/view";
@@ -40,6 +39,7 @@ import EventosParticipantesPage from "../pages/eventos/participantes";
 import EventosTicketsPage from "../pages/eventos/tickets";
 import EventosNewPage from "../pages/eventos/new";
 import EventosCheckinsPage from "../pages/eventos/checkins";
+import DashboardPagamentosPage from "../pages/dashboards";
 
 export const router = createBrowserRouter([
   {
@@ -84,11 +84,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "/dashboard",
-        element: <DashboardAlunosPage/>,
+        element: <DashboardPagamentosPage/>,
       },
       {
         path: "/dashboard/alunos",
-        element: <DashboardAlunosPage/>,
+        element: <DashboardPagamentosPage/>,
       },
       {
         path: "/dashboard/fornecedor",
