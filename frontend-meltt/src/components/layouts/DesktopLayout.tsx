@@ -26,7 +26,7 @@ type DesktopLayoutProps = {
 };
 const DesktopLayout = ({ children }: DesktopLayoutProps) => {
   const { pathname } = useLocation();
-  const pathNameTransform = pathname.split("/")[1];
+  const pathNameTransform = pathname.split("/")[1]; // Quando converto a rota /usuarios, é omitido o acento agudo
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
