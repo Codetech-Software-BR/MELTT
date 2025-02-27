@@ -32,6 +32,7 @@ import { getToken } from "../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../components/customDrawer";
 import CustomModal from "../../components/modal";
+import { Turma } from "../../types";
 
 interface Student {
   id: number;
@@ -60,6 +61,9 @@ const PagamentosPage = () => {
   const [loading, setLoading] = useState(false);
   const [payments, setPayments] = useState([]);
   const [payment, setPayment] = useState<Student | null>(null);
+  const [turmas, setTurmas] = useState([]);
+
+  const [turmaId, setTurmaId] = useState<number | null>(null);
 
   const [onLoad, setOnLoad] = useState(false);
   const [loadingSaveNewUser, setLoadingSaveNewUser] = useState(false);
@@ -88,6 +92,15 @@ const PagamentosPage = () => {
     }
     setLoading(false);
   };
+
+  const fetchTurmas = async () => {
+    try {
+      let response = await apiGetData("academic", "/turmas");
+      setTurmas(response.data);
+    } catch (error) {
+      toast.error("Erro ao buscar Turmas");
+    }
+  }
 
   const fetchWithFilters = async () => {
     setLoading(true);
@@ -121,18 +134,21 @@ const PagamentosPage = () => {
     setLoadingSaveNewUser(true);
 
     let dataObj = {
-      nome: payment?.contato.nome,
-      documento: payment?.contato.numeroDocumento,
       email: `${payment?.contato.numeroDocumento}@meltt.com.br`,
       senha: payment?.contato.id.toString(),
-      id_bling: payment?.contato.id.toString(),
       tipo: "ALUNO",
+      documento: payment?.contato.numeroDocumento,
+      nome: payment?.contato.nome,
+      id_bling: payment?.contato.id.toString(),
+      ativo: 1,
+      telefone: null,
+      turma_id: turmaId,
     };
 
     try {
-      const response = await apiPostData("authentication", "/users/register", { ...dataObj });
-      if (response.user) {
-        toast.success(`Usuário criado com sucesso. E-mail: ${payment?.contato.numeroDocumento}@meltt.com.br  | Senha: ${payment?.id}`, {
+      const response = await apiPostData("academic", "/usuarios", { ...dataObj });
+      if (response.id) {
+        toast.success(`Usuário criado com sucesso. E-mail: ${payment?.contato.numeroDocumento}@meltt.com.br  | Senha: ${payment?.contato.numeroDocumento}`, {
           duration: 20000,
           icon: "👏",
         });
@@ -192,8 +208,9 @@ const PagamentosPage = () => {
               <Tooltip title="Criar Usuário para Aluno">
                 <IconButton
                   size="small"
-                  onClick={() => {
+                  onClick={async () => {
                     setPayment(row)
+                    await fetchTurmas()
                     setOpenModalCreateUser(true)
                   }}>
                   <FaUserGraduate size={20} />
@@ -306,6 +323,7 @@ const PagamentosPage = () => {
             fullWidth
             value={payment?.contato.nome}
             size="small"
+            disabled
           />
           <TextField
             label="Documento(CPF)"
@@ -315,12 +333,22 @@ const PagamentosPage = () => {
             value={payment?.contato.numeroDocumento}
             disabled
           />
+          <FormControl fullWidth>
+            <InputLabel sx={{ p: 0.3, bgcolor: "#fff" }}>
+              Turma do Aluno
+            </InputLabel>
+          <Select variant="outlined" value={turmaId} onChange={(e) => setTurmaId(e.target.value as number)}>
+            {turmas.map((turma: Turma) => (
+              <MenuItem key={turma.id} value={turma.id}>{turma.nome} - {turma.identificador}</MenuItem>
+            ))}
+          </Select>
+          </FormControl>
           <TextField
             label="Senha do Aluno"
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.id}
+            value={payment?.contato.numeroDocumento}
             disabled
           />
           <TextField

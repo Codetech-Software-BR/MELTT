@@ -23,7 +23,6 @@ router.post('/register', async (req, res) => {
     return res.status(400).json({ error: 'E-mail já cadastrado' });
   }
 
-  console.log(user)
   try {
     const user = await createUser({ aluno_id, email, documento, senha, tipo, id_bling });
     console.log('createUser', user)
@@ -39,8 +38,11 @@ router.post('/login', async (req, res) => {
   try {
     const user = await findUserByEmail(email);
     console.log('user', user);
-    if (!user || !(await verifyPassword(user.senha, senha))) {
-      return res.status(401).json({ error: 'E-mail ou Senha incorretos' });
+    if (!user) {
+      return res.status(401).json({ error: 'E-mail não cadastrado' });
+    }
+    if(user.senha !== senha) {
+      return res.status(401).json({ error: 'Senha incorreta' });
     }
     const token = generateToken(user);
     res.json({ token });
