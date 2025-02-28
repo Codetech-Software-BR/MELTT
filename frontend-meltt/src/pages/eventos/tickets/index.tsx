@@ -21,17 +21,25 @@ const EventosTicketsPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
-
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
-  const [eventTickets, setEventTickets] = useState([]);
+  interface EventTicket {
+    id: number;
+    name: string;
+    lastname: string;
+    gender: string;
+    lot_name: string;
+    ticket_type: string;
+    ticket_code: string;
+    email: string;
+    event_name: string;
+  }
+
+  const [eventTickets, setEventTickets] = useState<EventTicket[]>([]);
 
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventos = async (page: number) => {
+  const fetchEventos = async (_: number) => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/uniticket/tickets?access_token=${id}`);
@@ -42,7 +50,7 @@ const EventosTicketsPage = () => {
     setLoading(false);
   };
 
-  const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
+  const handleChangePagination = (_: React.ChangeEvent<unknown>) => {
     //   try {
     //     fetchEventos(value);
     //   } catch (error) {
@@ -149,8 +157,8 @@ const EventosTicketsPage = () => {
                 rows={eventTickets}
                 loading={loading}
                 dataRow={dataRow}
-                page={page}
-                totalPages={totalPages}
+                page={1}
+                totalPages={1}
                 handleChangePagination={handleChangePagination}
               />
             ) : (

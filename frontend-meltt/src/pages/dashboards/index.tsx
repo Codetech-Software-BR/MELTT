@@ -3,9 +3,6 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { getToken } from "../../utils/token";
-import { CustomJwtPayload } from "../../components/customDrawer";
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { apiGetData } from "../../services/api";
 import BoxDashboardValues from "../../components/box/dashboardValues";
@@ -23,13 +20,8 @@ interface ChartData {
 }
 
 const DashboardPagamentosPage = () => {
-  const token = getToken();
-  const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
-  const [loading, setLoading] = useState(false);
   const [onLoad, setOnLoad] = useState(false);
-  const [listStudents, setStudents] = useState<any[]>([]);
-  const [listAtividades, setListAtividades] = useState<any[]>([]);
 
   const [valorEmAberto, setValorEmAberto] = useState(0);
   const [valorRecebido, setValorRecebido] = useState(0);
@@ -106,8 +98,6 @@ const DashboardPagamentosPage = () => {
   })
 
   useEffect(() => {
-    setLoading(false);
-
     setOnLoad(true);
   }, []);
 

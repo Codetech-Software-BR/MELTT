@@ -21,7 +21,7 @@ import { IoMdAdd } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
-import { format, set } from "date-fns";
+import { format } from "date-fns";
 import { MdModeEdit } from "react-icons/md";
 import { tarefasColumns } from "./table/columns";
 import { useTarefaContext } from "../../providers/tarefaContext";
@@ -34,13 +34,13 @@ const TarefasPage = () => {
   const [loading, setLoading] = useState(false);
   const [turmas, setTurmas] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [responsaveis, setResponsaveis] = useState([]);
+  const [responsaveis, setResponsaveis] = useState<{ tarefa_id: number; usuario_nome: string }[]>([]);
   const [usuarios, setUsuarios] = useState([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
   const handleClick = (event: React.MouseEvent, rowId: number) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(event.currentTarget as HTMLElement);
     setSelectedRowId(rowId);
   };
 
@@ -48,8 +48,6 @@ const TarefasPage = () => {
     setAnchorEl(null);
     setSelectedRowId(null);
   };
-
-  const open = Boolean(anchorEl);
 
   const fetchResponsaveis = async () => {
     try {
@@ -105,7 +103,7 @@ const TarefasPage = () => {
 
 
   const dataRow = (row: Tarefa) => {
-    const responsaveisFiltrados = responsaveis.filter((r) => r.tarefa_id === row.id);
+    const responsaveisFiltrados = responsaveis.filter((r) => r.tarefa_id === Number(row.id));
     return (
       <TableRow
         key={row.id}
@@ -122,7 +120,7 @@ const TarefasPage = () => {
         <TableCell align="left">
           <Chip
             label={responsaveisFiltrados[0]?.usuario_nome || "Nenhum disponível"}
-            onClick={(event) => handleClick(event, row.id)} // Ajuste aqui!
+            onClick={(event) => handleClick(event, Number(row.id))}
             variant="outlined"
             icon={<IoMdAdd />}
             sx={{ flexDirection: "row-reverse", paddingRight: 2 }}
@@ -245,31 +243,6 @@ const TarefasPage = () => {
           </Paper>
         </Paper>
       </Slide>
-      {/* <Modal
-        open={openModalDetails}
-        onClose={() => setOpenModalDetails(false)}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 400,
-          bgcolor: 'background.paper',
-          borderRadius: 2,
-          boxShadow: 24,
-          p: 3,
-        }}>
-          <Typography color="textPrimary" variant="h6" component="h2">
-            Text in a modal
-          </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-          </Typography>
-        </Box>
-      </Modal> */}
     </Stack>
   );
 };

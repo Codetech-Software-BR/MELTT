@@ -114,14 +114,6 @@ export const router = createBrowserRouter([
         path: "/adesoes/edit/:id?",
         element: <AdesaoEditPage/>
       },
-      // {
-      //   path: "/faculdades",
-      //   element: <FaculdadesPage />,
-      // },
-      // {
-      //   path: "/faculdades/edit/:id?",
-      //   element: <FaculdadesPageEdit />,
-      // },
       {
         path: "/turmas",
         element: <TurmasPage />,
@@ -134,10 +126,6 @@ export const router = createBrowserRouter([
         path: "/turmas/edit/:id",
         element: <TurmasEditPage />,
       },
-      // {
-      //   path: "/turmas/view/:id",
-      //   element: <TurmasPageEdit />,
-      // },
       {
         path: "/turmas/view/:id/pagina-turma",
         element: <PaginaDaTurmaPage />,
@@ -174,10 +162,6 @@ export const router = createBrowserRouter([
         path: "/fornecedores/edit/:id?",
         element: <FornecedoresEditPage/>
       },
-      // {
-      //   path: "/fornecedores/edit/:id?",
-      //   element: <FornecedoresEditPage/>
-      // },
       {
         path: "/contratos-envio",
         element: <ContratosEnvioPage/>,

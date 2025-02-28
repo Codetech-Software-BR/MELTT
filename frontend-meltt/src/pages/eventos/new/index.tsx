@@ -8,7 +8,6 @@ import toast from 'react-hot-toast';
 
 const EventosNewPage = () => {
   const navigate = useNavigate();
-  const [onLoad, setOnLoad] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
@@ -31,7 +30,6 @@ const EventosNewPage = () => {
 
   useEffect(() => {
     fetchTurmas();
-    setOnLoad(true);
   }, []);
 
   const handleSubmit = (e: any) => {
@@ -131,7 +129,7 @@ const EventosNewPage = () => {
                       variant="outlined"
                       sx={{ width: "100%" }}
                     >
-                      {turmas.map((turma: any, index) => (
+                      {turmas.map((turma: {id: string, nome: string}) => (
                         <MenuItem key={turma.id} value={turma.id}>
                           {turma.nome}
                         </MenuItem>

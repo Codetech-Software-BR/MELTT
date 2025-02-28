@@ -8,7 +8,6 @@ import { getToken } from "../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../components/customDrawer";
 import toast from "react-hot-toast";
-import { Turma } from "../../types";
 
 type Estatuto = {
   Url: string;

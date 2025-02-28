@@ -191,6 +191,9 @@ const FornecedoresPage = () => {
                 rows={fornecedores}
                 loading={loading}
                 dataRow={dataRow}
+                page={1}
+                totalPages={1}
+                handleChangePagination={() => {}}
               />
             ) : (
               <NoTableData

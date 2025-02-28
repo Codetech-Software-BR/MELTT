@@ -160,6 +160,9 @@ const TurmasPageView = () => {
                   rows={alunos}
                   loading={loadingAlunos}
                   dataRow={dataRow}
+                  page={1}
+                  totalPages={1}
+                  handleChangePagination={() => {}}
                 />
               ) : (
                 <NoTableData

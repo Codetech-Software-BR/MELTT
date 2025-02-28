@@ -8,18 +8,13 @@ import { initialValuesAdesao } from '../../../initialValues';
 import { useAdesaoContext } from '../../../providers/adesaoContext';
 import { validateAdesaoSchema } from '../../../utils/validationSchemas';
 import toast from 'react-hot-toast';
-import { apiGetData, apiPostData, apiPutData } from '../../../services/api';
+import { apiGetData, apiPostData } from '../../../services/api';
 
 const AdesaoEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { stateAdesao } = useAdesaoContext();
   const [savingAdesao, setSavingAdesao] = useState(false);
-
-  console.log('id', id)
-
-  const [loadingAlunos, setLoadingAlunos] = useState(false);
-  const [loadingTurmas, setLoadingTurmas] = useState(false);
 
   const [alunos, setAlunos] = useState([]);
   const [turmas, setTurmas] = useState([]);

@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 import BasicTable from "../../../components/table";
 import LoadingTable from "../../../components/loadingTable";
 import { apiGetData } from "../../../services/api";
-import { eventBuyersColumns } from "../table/columns/buyers";
 import { BiArrowBack } from "react-icons/bi";
 import { eventCheckinsColumns } from "../table/columns/checkins";
 
@@ -23,17 +22,14 @@ const EventosCheckinsPage = () => {
   const { id } = useParams();
 
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [eventCheckins, setEventCheckins] = useState([]);
-  const [totalAmount, setTotalAmount] = useState("");
-  const [totalPaidAmount, setTotalPaidAmount] = useState("");
 
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventCheckins = async (page: number) => {
+  const fetchEventCheckins = async () => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/uniticket/checkins?access_token=${id}`);
@@ -52,7 +48,7 @@ const EventosCheckinsPage = () => {
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
-      fetchEventCheckins(value);
+      fetchEventCheckins();
     } catch (error) {
       toast.error("Erro ao buscar Turmas");
     }
@@ -98,7 +94,7 @@ const EventosCheckinsPage = () => {
 
 
   useEffect(() => {
-    fetchEventCheckins(1);
+    fetchEventCheckins();
     setOnLoad(true);
   }, []);
 
@@ -115,10 +111,6 @@ const EventosCheckinsPage = () => {
             <BiArrowBack />
           </IconButton>
           <h2 className="text-lg text-default font-extrabold">Checkins do evento</h2>
-        </Stack>
-        <Stack direction={'row'} gap={1}>
-          <Chip color="secondary" label={`Valor Movimentado: ${totalAmount}`} />
-          <Chip color="success" label={`Valor Total Pago: ${totalPaidAmount}`} />
         </Stack>
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
@@ -159,7 +151,7 @@ const EventosCheckinsPage = () => {
                 loading={loading}
                 dataRow={dataRow}
                 page={page}
-                totalPages={totalPages}
+                totalPages={1}
                 handleChangePagination={handleChangePagination}
               />
             ) : (

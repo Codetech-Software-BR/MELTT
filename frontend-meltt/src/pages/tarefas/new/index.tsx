@@ -104,7 +104,7 @@ const TarefasNewPage = () => {
             validationSchema={validateTarefaSchema}
             onSubmit={(values: any) => onSubmitTarefa(values)}
           >
-            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
+            {({ values, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%]"
                 onSubmit={handleSubmit}

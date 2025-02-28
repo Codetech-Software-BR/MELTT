@@ -29,7 +29,7 @@ const EventosParticipantesPage = () => {
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventsParticipants = async (page: number) => {
+  const fetchEventsParticipants = async (_: number) => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/uniticket/participants?access_token=${id}`);

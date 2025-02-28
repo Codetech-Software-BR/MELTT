@@ -22,7 +22,6 @@ const EventosCompradoresPage = () => {
   const { id } = useParams();
 
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
   const [eventBuyers, setEventBuyers] = useState([]);
@@ -32,7 +31,7 @@ const EventosCompradoresPage = () => {
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventBuyers = async (page: number) => {
+  const fetchEventBuyers = async (_: number) => {
     setLoading(true);
     try {
       const response = await apiGetData("academic", `/uniticket/buyers?access_token=${id}`);
@@ -92,9 +91,6 @@ const EventosCompradoresPage = () => {
     setPage(value);
   };
 
-  const onClickRowView = (row: any) => {
-    navigate(`/eventos/view/${row.id}`);
-  };
 
   const dataRow = (row: any) => {
     return (
@@ -195,7 +191,7 @@ const EventosCompradoresPage = () => {
                 loading={loading}
                 dataRow={dataRow}
                 page={page}
-                totalPages={totalPages}
+                totalPages={1}
                 handleChangePagination={handleChangePagination}
               />
             ) : (
