@@ -55,7 +55,7 @@ async function verifyPassword(storedPassword, password) {
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email },
+    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email, turma_id: user.turma_id, id_bling: user.id_bling },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
   );
@@ -93,8 +93,11 @@ app.post("/api/users/login", async (req, res) => {
   try {
     const user = await findUserByEmail(email);
     console.log("user", user);
-    if (!user || !(await verifyPassword(user.senha, senha))) {
-      return res.status(401).json({ error: "E-mail ou Senha incorretos" });
+    if (!user) {
+      return res.status(401).json({ error: "E-mail não cadastrado" });
+    }
+    if (user.senha !== senha) {
+      return res.status(401).json({ error: "Senha incorreta" });
     }
     const token = generateToken(user);
     res.json({ token });

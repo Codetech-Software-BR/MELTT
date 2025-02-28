@@ -73,6 +73,8 @@ const AlunosPageEdit = () => {
   };
 
   const onSubmitAluno = async (values: any) => {
+    console.log("aqui");
+    
     const { senha, confirmar_senha, ativo, ...rest } = values;
     if (senha !== confirmar_senha) {
       toast.error("As senhas não conferem");

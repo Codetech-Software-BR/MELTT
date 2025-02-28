@@ -13,6 +13,10 @@ import {
   TableCell,
   TableRow,
   SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
@@ -48,6 +52,24 @@ const AlunosPage = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState(1);
+  const [open, setOpen] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+
+  function handleOpen(id: number) {
+    console.log(id)
+    setSelectedRowId(id);
+    setOpen(true)
+  };
+
+  function handleClose() {
+    setSelectedRowId(null);
+    setOpen(false)
+  };
+
+  const handleDelete = () => {
+    onClickDelete(selectedRowId);
+    handleClose();
+  };
 
   const handleChangeStatus = (event: SelectChangeEvent<number>) => {
     setStatus(event.target.value as number);
@@ -91,8 +113,12 @@ const AlunosPage = () => {
     navigate(`/usuarios/edit/${row.id}`);
   };
 
-  const onClickDelete = async (id: number) => {
+  const onClickDelete = async (id: number | null) => {
     setLoadingDelete(true);
+    if (id === null) {
+      toast.error("Erro ao desativar aluno");
+      return;
+    }
     try {
       const response = await apiPutData("academic", `/usuarios/${id}/inativar`);
       if (response.id) {
@@ -111,6 +137,8 @@ const AlunosPage = () => {
       <TableRow
         key={row.id}
         sx={{
+          backgroundColor: row.id === selectedRowId ? "#eeeeee" : "inherit",
+          transition: "background-color 0.3s",
           "&:last-child td, &:last-child th": { border: 0 },
           " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
         }}
@@ -144,13 +172,26 @@ const AlunosPage = () => {
           <IconButton size="small" onClick={() => onClickRowEdit(row)}>
             <MdModeEdit color="#2d1c63" size={22} />
           </IconButton>
-          <IconButton size="small" onClick={() => onClickDelete(row.id)}>
-            {loadingDelete ? (
-              <CircularProgress color="secondary" size={10} />
-            ) : (
-              <FaTrashAlt color="red" />
-            )}
-          </IconButton>
+          {row.ativo === 1 && (
+            <>
+              <IconButton size="small" onClick={() => handleOpen(row.id)}>
+                {loadingDelete ? <CircularProgress color="secondary" size={10} /> : <FaTrashAlt color="red" />}
+              </IconButton>
+
+              <Dialog open={open} onClose={handleClose} BackdropProps={{
+                sx: { backgroundColor: "rgba(0, 0, 0, 0.1)" }, // Ajusta a opacidade do fundo
+              }} PaperProps={{
+                sx: { boxShadow: "none" }, // Remove a sombra do Dialog
+              }}>
+                <DialogTitle>Confirmar desativação?</DialogTitle>
+                <DialogContent>Tem certeza que deseja desativar este usuário?</DialogContent>
+                <DialogActions>
+                  <Button onClick={handleClose} color="primary">Cancelar</Button>
+                  <Button onClick={() => handleDelete(row.id)} color="error" autoFocus>Desativar</Button>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
         </TableCell>
       </TableRow>
     );

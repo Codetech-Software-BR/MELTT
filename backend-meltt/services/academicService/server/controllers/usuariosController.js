@@ -45,7 +45,7 @@ class UsuarioController {
         });
     }
 
-    createUsuario(req, res) {
+     createUsuario(req, res) {
         console.log(req.body);
         const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
         const query =

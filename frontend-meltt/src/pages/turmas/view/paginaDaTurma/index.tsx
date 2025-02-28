@@ -198,9 +198,8 @@ const PaginaDaTurmaPage = () => {
           <TabContext value={tabView}>
             <TabList onChange={onChangeTab} aria-label="lab API tabs example">
               <Tab label="Postagens" value={"0"} />
-              {/* <Tab label="Arquivos da Turma" value={"1"} /> */}
             </TabList>
-            <TabPanel value={"0"}>
+            <TabPanel value={"0"} sx={{mt: 4}}>
               <Stack direction={"column"} mt={-4} gap={1}>
                 <Stack
                   direction={"row"}
