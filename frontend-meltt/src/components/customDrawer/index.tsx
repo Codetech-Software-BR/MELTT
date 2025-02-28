@@ -19,6 +19,8 @@ export interface CustomJwtPayload extends JwtPayload {
   nome?: string;
   email?: string;
   tipo?: string;
+  turma_id?: string;
+  id_bling?: string;
 }
 import {
   menuListAdmin,
@@ -26,8 +28,8 @@ import {
   menuListAssociacao,
 } from "../../utils/arrays";
 import IconLogout from "../../assets/icons/logout";
-import { Routes, useLocation, useNavigate } from "react-router-dom";
-import { getToken, removeToken } from "../../utils/token";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getToken, removeAllTokens } from "../../utils/token";
 import { IoSettings } from "react-icons/io5";
 import { DrawerMenuListType } from "../../types";
 import { FaBell } from "react-icons/fa6";
@@ -79,7 +81,7 @@ export default function CustomDrawer(props: Props) {
     setAnchorElNotifications(null);
   };
 
-  console.log('openProfileImage', props.openProfileImage)
+  console.log('decoded', decoded);
 
   const openPopoverSettings = Boolean(anchorElSettings);
   const openPopoverNotifications = Boolean(anchorElNotifications);
@@ -97,7 +99,7 @@ export default function CustomDrawer(props: Props) {
 
   const fetchNotificacoes = async () => {
     try {
-      const response = await apiGetData("academic", "/notificacoes");
+      const response = await apiGetData("academic", `/notificacoes?id=${decoded?.id}`);
       setNotificacoes(response);
     } catch (error) {
       toast.error("Erro ao buscar notificações");
@@ -117,8 +119,11 @@ export default function CustomDrawer(props: Props) {
       justifyContent={"space-between"}
       width={280}
       height={"100%"}
-      bgcolor={"#2D1C63"}
+      // bgcolor={"#2D1C63"}
       role="presentation"
+      sx={{
+        background: "linear-gradient(135deg, #2D1C63 30%, #1B0E40 100%)"
+      }}
     >
       <Stack direction={"column"} gap={4} ml={2}>
         <Stack pt={8} px={3} ml={4}>
@@ -135,7 +140,18 @@ export default function CustomDrawer(props: Props) {
               >
                 <ListItemButton
                   selected={location.pathname.includes(item.route)}
-                  sx={{ borderRadius: "32px 0 0 32px" }}
+                  sx={{
+                    borderRadius: "32px 0 0 32px",
+                    ...(location.pathname === item.route ||
+                      routeSelected === item.route ||
+                      routeSelected.includes(item.route)
+                      ? {
+                        backgroundColor: "#fff",
+                        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+                        // transform: "scale(0.95)",
+                      }
+                      : {}),
+                  }}
                   onClick={() => {
                     setRouteSelected(item.route);
                     navigate(item.route);
@@ -183,7 +199,8 @@ export default function CustomDrawer(props: Props) {
                             sx={{
                               ml: 4,
                               fontSize: 14,
-                              ...(location.pathname === subItem.route || routeSelected === subItem.route
+                              ...(location.pathname === subItem.route ||
+                                routeSelected === subItem.route
                                 ? { color: "white", fontWeight: 700 }
                                 : { color: "#eee" }),
                             }}
@@ -198,13 +215,14 @@ export default function CustomDrawer(props: Props) {
               )}
             </React.Fragment>
           ))}
+
         </List>
       </Stack>
       <List>
         <ListItem disablePadding>
           <ListItemButton
             onClick={() => {
-              removeToken();
+              removeAllTokens();
               navigate("/login");
             }}
           >

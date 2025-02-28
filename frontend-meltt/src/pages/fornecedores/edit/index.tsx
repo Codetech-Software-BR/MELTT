@@ -136,7 +136,6 @@ const FornecedoresEditPage = () => {
                     >
                       <TextField
                         variant="outlined"
-                        focused
                         size="small"
                         name="nome"
                         label="Nome da Empresa"
@@ -150,7 +149,6 @@ const FornecedoresEditPage = () => {
                       <TextField
                         variant="outlined"
                         size="small"
-                        focused
                         name="tipo_servico"
                         label="Tipo de Serviço"
                         value={values.tipo_servico}
@@ -162,7 +160,6 @@ const FornecedoresEditPage = () => {
                     </Stack>
                     <TextField
                         variant="outlined"
-                        focused
                         size="small"
                         name="responsavel"
                         label="Nome do Responsável"
@@ -179,7 +176,6 @@ const FornecedoresEditPage = () => {
                     >
                       <TextField
                         variant="outlined"
-                        focused
                         size="small"
                         name="valor_cotado"
                         label="Valor cotado"
@@ -228,7 +224,6 @@ const FornecedoresEditPage = () => {
                       <TextField
                         variant="outlined"
                         size="small"
-                        focused
                         name="telefone"
                         label="Telefone para contato"
                         value={values.telefone}
@@ -240,7 +235,6 @@ const FornecedoresEditPage = () => {
                       <TextField
                         variant="outlined"
                         size="small"
-                        focused
                         name="cnpj"
                         label="CNPJ"
                         value={values.cnpj}

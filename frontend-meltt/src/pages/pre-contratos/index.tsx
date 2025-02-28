@@ -68,13 +68,15 @@ const PreContratoPage = () => {
     try {
       const response = await apiGetData("academic", "pre-contrato");
       if (!response) return;
-
+  
       setColumns(prev => {
         const updatedColumns = { ...initialColumns };
         response.data?.forEach((preContrato: Item) => {
           const statusKey = preContrato.status;
           if (updatedColumns[statusKey]) {
-            updatedColumns[statusKey].items.push(preContrato);
+            if (!updatedColumns[statusKey].items.some(item => item.id === preContrato.id)) {
+              updatedColumns[statusKey].items.push(preContrato);
+            }
           }
         });
         return updatedColumns;
@@ -83,6 +85,7 @@ const PreContratoPage = () => {
       toast.error("Erro ao carregar pré-contratos");
     }
   }, []);
+  
 
 
   useEffect(() => {

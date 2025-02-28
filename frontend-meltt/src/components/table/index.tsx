@@ -10,6 +10,7 @@ import { ReactNode } from "react";
 
 type BasicTableProps = {
   page: number;
+  totalPages: number;
   columns: TableColumnsType[];
   rows: any[];
   dataRow: (row: any) => ReactNode;
@@ -20,6 +21,7 @@ type BasicTableProps = {
 
 export default function BasicTable({
   page,
+  totalPages,
   columns,
   rows,
   dataRow,
@@ -47,8 +49,11 @@ export default function BasicTable({
         <Table sx={{ width: "100%", height: "30vh" }} aria-label="simple table">
           <TableHead sx={{ bgcolor: "#EFEBFB", padding: 0 }}>
             <TableRow>
-              {columns.map((column: TableColumnsType) => (
-                <TableCell key={column.key} sx={{ fontFamily: "Poppins" }}>{column.label}</TableCell>
+              {columns.map((column: TableColumnsType, index) => (
+                <TableCell key={column.key} sx={{
+                  fontFamily: "Poppins",
+                  textAlign: index === columns.length - 1 ? "center" : "left" // Alinha o último ao centro
+                }}>{column.label}</TableCell>
               ))}
             </TableRow>
           </TableHead>
@@ -63,7 +68,7 @@ export default function BasicTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Pagination count={rows.length} page={page} onChange={handleChangePagination} sx={{ mt: 2 }} color="primary" />
+      <Pagination count={totalPages} page={page} onChange={handleChangePagination} sx={{ mt: 2 }} color="primary" />
     </div>
   );
 }

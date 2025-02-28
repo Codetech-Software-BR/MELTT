@@ -15,16 +15,33 @@ export const initialValuesTurma = {
   regras_adesao: "",
   regras_rescisao: "",
   regras_renegociacao: "",
+  planos_formatura: [],
 };
+
+export const initialValuesAdesao = {
+  aluno_id: "",
+  turma_id: "",
+  status: "",
+  data_assinatura: "",
+  observacoes: "",
+}
+
+export const initialValuesTarefa = {
+  nome: "",
+  responsaveis: [],
+  atribuido_por: ""
+}
 
 export const initialValuesAluno = {
   nome: "",
   email: "",
+  documento: "",
+  senha: "",
+  confirmar_senha: "",
   telefone: "",
-  plano: "",
-  faculdade: "",
-  turma_id: null,
-  formatura_paga: false,
+  turma_id: "",
+  tipo: "",
+  ativo: true,
 }
 
 export const initialValuesFaculdade = {

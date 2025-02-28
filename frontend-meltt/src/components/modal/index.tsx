@@ -29,7 +29,7 @@ type CustomModalProps = {
   openModal: boolean;
   handleCloseModal: () => void;
   loadingSave?: boolean;
-  onSubmit: () => void;
+  onSubmit: (e?: any) => void;
   children: React.ReactNode;
 };
 

@@ -55,7 +55,7 @@ async function verifyPassword(storedPassword, password) {
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email },
+    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email, turma_id: user.turma_id, id_bling: user.id_bling },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
   );
@@ -93,8 +93,11 @@ app.post("/api/users/login", async (req, res) => {
   try {
     const user = await findUserByEmail(email);
     console.log("user", user);
-    if (!user || !(await verifyPassword(user.senha, senha))) {
-      return res.status(401).json({ error: "E-mail ou Senha incorretos" });
+    if (!user) {
+      return res.status(401).json({ error: "E-mail não cadastrado" });
+    }
+    if (user.senha !== senha) {
+      return res.status(401).json({ error: "Senha incorreta" });
     }
     const token = generateToken(user);
     res.json({ token });
@@ -187,7 +190,6 @@ app.delete("/api/users/:id", authMiddleware, async (req, res) => {
 
 app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
   const { tipo } = req.query;
-  console.log("tipo", tipo);
 
   if (!tipo) {
     return res.status(400).json({ error: "O parâmetro 'tipo' é obrigatório" });
@@ -198,7 +200,7 @@ app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
     console.log("users", users);
 
     if (users.length === 0) {
-      return res.status(404).json({ error: "Nenhum usuário encontrado para este TIPO" });
+      return res.status(404).json({ error: `Nenhum usuário encontrado para o tipo ${tipo}` });
     }
 
     res.json({ result: users });
@@ -232,7 +234,9 @@ app.post("/api/external/bling/oauth", async (req, res) => {
     };
 
     const response = await axios.post(url, data, config);
+    console.log('response', response.data);
     const { access_token, refresh_token } = response.data;
+    // tokenManager.setTokens({ access_token, refresh_token });
 
     return res.json({
       access_token,
@@ -246,38 +250,42 @@ app.post("/api/external/bling/oauth", async (req, res) => {
 });
 
 app.post("/api/external/bling/refresh", async (req, res) => {
-  const { code } = req.query;
+  const { refresh_token } = req.body; 
+  console.log('refresh_token', refresh_token);
+  if (!refresh_token) {
+    return res.status(400).json({ error: "refresh_token é obrigatório" });
+  }
 
   try {
     const url = "https://www.bling.com.br/Api/v3/oauth/token"; 
     const username = process.env.CLIENT_ID;
-    const password = process.env.CLIENT_SECRET; 
+    const password = process.env.CLIENT_SECRET;
 
     const data = new URLSearchParams();
-    if(code) {
-      data.append("grant_type", "refresh_token");
-      data.append("refresh_token", code); 
-    }
+    data.append("grant_type", "refresh_token");
+    data.append("refresh_token", refresh_token);
 
     const config = {
       headers: {
-        Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString(
-          "base64"
-        )}`,
+        Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded",
       },
     };
 
     const response = await axios.post(url, data, config);
-    const { access_token, refresh_token } = response.data;
+    console.log('response', response.data);
+    // const { access_token, refresh_token: new_refresh_token } = response.data;
 
     return res.json({
       access_token,
-      refresh_token,
+      refresh_token: new_refresh_token,
     });
   } catch (error) {
-    console.error("Erro ao obter tokens: ", error);
-    return res.status(500).json({ error: "Erro ao obter tokens de acesso" });
+    console.error("Erro ao atualizar token:", error.response?.data || error.message);
+    return res.status(500).json({ 
+      error: "Erro ao atualizar token",
+      details: error.response?.data || error.message 
+    });
   }
 });
 

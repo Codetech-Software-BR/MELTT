@@ -13,8 +13,8 @@ const getBaseURL = (serviceType: string): string => {
   }
 };
 
-let isBlingRefreshing = false;
-let blingRefreshSubscribers: ((token: string) => void)[] = [];
+// let isBlingRefreshing = false;
+// let blingRefreshSubscribers: ((token: string) => void)[] = [];
 const createApiInstance = (serviceType: string): AxiosInstance => {
   const api = axios.create({
     baseURL: getBaseURL(serviceType),
@@ -48,6 +48,30 @@ const createApiInstance = (serviceType: string): AxiosInstance => {
     },
     (error) => Promise.reject(error)
   );
+
+  api.interceptors.response.use((response) => response, (error) => {
+    console.log('error', error.response.data.status)
+    if(error.response.data.status === 401) {
+      toast.error("Sessão do Bling expirada. Faça Login Novamente. Se necessário, deslogue do Bling e logue novamente!", {
+        duration: 10000,
+        icon: '🔒'
+      });
+      localStorage.removeItem("@meltt-user-token");
+      localStorage.removeItem("bling-access-token");
+      localStorage.removeItem("bling-refresh-token");
+      window.location.href = "/login";
+      // window.location.reload();
+      // alert('Faça Login no Bling NOVAMENTE para acessar a plataforma, se necessário saia do Bling e faça Login novamente.')
+      // let refreshRequest =  apiPostData("authentication", `/external/bling/refresh`, {
+      //   refresh_token: refreshToken
+      // })
+      // console.log('refreshRequest', refreshRequest.then((res) => res))
+      // refreshRequest.then((res) => {
+      //   localStorage.setItem("bling-access-token", res.data.access_token)
+      //   localStorage.setItem("bling-refresh-token", res.data.refresh_token)
+      // })
+    }
+  })
 
   // api.interceptors.response.use(
   //   (response) => response,
@@ -130,7 +154,7 @@ export const apiRequest = async (
 
   try {
     const response = await api(config);
-    return response.data;
+    return response?.data ? response.data : response;
   } catch (error: any) {
     console.error("API request error:", error);
     throw error;
@@ -146,7 +170,7 @@ export const apiPostData = (serviceType: string, url: string, data: any, headers
 export const apiPatchData = (serviceType: string, url: string, data: any, headers?: any) =>
   apiRequest(serviceType, "PATCH", url, data, null, headers);
 
-export const apiPutData = (serviceType: string, url: string, data: any, headers?: any) =>
+export const apiPutData = (serviceType: string, url: string, data?: any, headers?: any) =>
   apiRequest(serviceType, "PUT", url, data, null, headers);
 
 export const apiDeleteData = (serviceType: string, url: string, data?: any, headers?: any) =>

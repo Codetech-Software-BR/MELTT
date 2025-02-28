@@ -39,6 +39,7 @@ const TurmasPage = () => {
   const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [openModalDetails, setOpenModalDetails] = useState(false);
 
@@ -47,11 +48,21 @@ const TurmasPage = () => {
 
   const fetchTurmas = async (page: number) => {
     setLoading(true);
-    try {
-      const response = await apiGetData("academic", `/turmas?page=${page}`);
-      setTurmas(response.data);
-    } catch (error) {
-      toast.error("Erro ao buscar turmas");
+    if (decoded?.tipo === "ADMIN") {
+      try {
+        const response = await apiGetData("academic", `/turmas?page=${page}`);
+        setTotalPages(response.totalPages);
+        setTurmas(response.data);
+      } catch (error) {
+        toast.error("Erro ao buscar turmas");
+      }
+    } if (decoded?.tipo === 'ALUNO') {
+      try {
+        const response = await apiGetData("academic", `/turmas/${decoded?.turma_id}`);
+        setTurmas(response);
+      } catch (error) {
+        toast.error("Erro ao buscar turmas");
+      }
     }
 
     setLoading(false);
@@ -225,8 +236,9 @@ const TurmasPage = () => {
           >
             {loading ? (
               <LoadingTable />
-            ) : turmas.length > 0 ? (
+            ) : turmas?.length > 0 ? (
               <BasicTable
+                totalPages={totalPages}
                 columns={turmasColumns}
                 rows={turmas}
                 loading={loading}

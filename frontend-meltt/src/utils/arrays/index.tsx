@@ -1,10 +1,10 @@
-import { LuPartyPopper } from "react-icons/lu";
-import { FaChartSimple, FaFileSignature, FaGraduationCap, FaMoneyBill1Wave, FaUsers } from "react-icons/fa6";
-import { FaCircle, FaHardHat } from "react-icons/fa";
-import { MateriaType } from "../../types";
-import { BiSolidParty, BiSupport } from "react-icons/bi";
+import { LuNetwork, LuPartyPopper } from "react-icons/lu";
+import { FaChartSimple, FaGraduationCap, FaMoneyBill1Wave, FaRegHandshake, FaUsers } from "react-icons/fa6";
+import { FaCircle } from "react-icons/fa";
+import { BiSupport } from "react-icons/bi";
 import { IoContract } from "react-icons/io5";
 import { MdBookmarkAdded, MdEmojiEvents, MdOutlinePayments } from "react-icons/md";
+import { HiDocumentCheck } from "react-icons/hi2";
 
 export const menuListAdmin = [
   {
@@ -13,18 +13,23 @@ export const menuListAdmin = [
     icon: <IoContract />
   },
   {
-    title: "Turmas",
-    route: "/turmas",
-    icon: <FaGraduationCap size={22} />,
-  },
-  {
     title: "Adesões",
     route: "/adesoes",
     icon: <MdBookmarkAdded size={22} />,
   },
   {
-    title: "Alunos",
-    route: "/alunos",
+    title: "Tarefas",
+    route: "/tarefas",
+    icon: <LuNetwork size={22} />,
+  },
+  {
+    title: "Turmas",
+    route: "/turmas",
+    icon: <FaGraduationCap size={22} />,
+  },
+  {
+    title: "Usuários",
+    route: "/usuarios",
     icon: <FaUsers size={22}  />,
   },
   {
@@ -33,12 +38,22 @@ export const menuListAdmin = [
     icon: <MdOutlinePayments size={22}  />,
   },
   {
-    title: "Contratos e eventos",
-    route: "/fornecedores",
+    title: "Eventos",
+    route: "/eventos",
     icon: <MdEmojiEvents size={22} />,
     subRoutes: [
       {title: "Fornecedores", route: "/fornecedores/servico", icon: <FaCircle size={8} className="text-white" />},
     ]
+  },
+  // {
+  //   title: "Contratos e eventos",
+  //   route: "/fornecedores",
+  //   icon: <MdEmojiEvents size={22} />,
+  // },
+  {
+    title: "Fornecedores",
+    route: "/fornecedores",
+    icon: <FaRegHandshake size={22} />,
   },
   {
     title: "Relatórios",
@@ -46,8 +61,6 @@ export const menuListAdmin = [
     icon: <FaChartSimple size={22} />,
     subRoutes: [
       { title: "Fornecedores", route: "/dashboard/fornecedor", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Turmas", route: "/dashboard/turma", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Adesão", route: "/dashboard/adesao", icon: <FaCircle size={8} className="text-white" /> },
     ],
   },
   // {
@@ -82,11 +95,11 @@ export const menuListAssociacao = [
 
 
 export const menuListAluno = [
-  // {
-  //   title: "Turma",
-  //   route: "/turmas",
-  //   icon: <FaGraduationCap size={22} />,
-  // },
+  {
+    title: "Minha Turma",
+    route: "/turmas",
+    icon: <FaGraduationCap size={22} />,
+  },
   {
     title: "Pagamentos",
     route: "/pagamentos",
@@ -97,11 +110,11 @@ export const menuListAluno = [
     route: "/eventos",
     icon: <LuPartyPopper size={22} />,
   },
-  // {
-  //   title: "Suporte",
-  //   route: "/suporte",
-  //   icon: <BiSupport size={22} />,
-  // },
+  {
+    title: "Estatuto",
+    route: "/estatuto",
+    icon: <HiDocumentCheck size={22} />,
+  }
 ];
 
 
