@@ -1,35 +1,87 @@
 import { LoadingButton } from "@mui/lab";
-import { Button, Paper, Stack, Typography } from "@mui/material";
+import { Button, CircularProgress, Paper, Stack, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { FaSignature } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
-import { apiGetData } from "../../services/api";
+import { apiGetData, apiPostData } from "../../services/api";
 import { getToken } from "../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../components/customDrawer";
 import toast from "react-hot-toast";
+import { Turma } from "../../types";
+
+type Estatuto = {
+  Url: string;
+  Name: string;
+  LastModified: string;
+}
 
 const EstatutosPage = () => {
   const navigate = useNavigate();
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
-  const [contratos, setContrato] = useState();
+
+  const [loading, setLoading] = useState(false);
+  const [loadingSign, setLoadingSign] = useState(false);	
+
+  const [estatuto, setEstatuto] = useState<Estatuto[]>();
+  const [signed, setSigned] = useState<boolean>(false);
 
   const fetchEstatuto = async () => {
+    setLoading(true);
+    let identificadorTurma = ""
     try {
-      const result = await apiGetData("academic", `/s3/uploads/turmas/getByTurma?turma_id=${decoded?.turma_id}`);
-      // console.log('result', result)
-      // setContrato(result);
+      const response = await apiGetData("academic", `/turmas/${decoded?.turma_id}`);
+      identificadorTurma = response[0].identificador;
+    } catch (error) {
+      toast.error("Erro ao buscar turma");
+    }
+    try {
+      const result = await apiGetData("academic", `/s3/uploads/turmas/getByTurma?turma_id=${identificadorTurma}`);
+      setEstatuto(result.files)
     } catch (error) {
       toast.error("Erro ao buscar contrato");
     }
+    setLoading(false);
+  }
+
+  const fetchAssinaturaEstatuto =  async () => {
+    try {
+      let response = await apiGetData("academic", `/assinatura-estatuto/usuario/${decoded?.id}`);
+      if(response.length > 0) {
+        setSigned(true);
+      }
+    } catch (error) {
+      toast.error("Não foi possível confirmar a assinatura do contrato");
+    }
+  }
+
+  const onClickSign = async () => {
+    setLoadingSign(true);
+    let dataObj = {
+      id_usuario: decoded?.id,
+      id_turma: decoded?.turma_id,
+      email: decoded?.email,
+      nome: decoded?.nome
+    }
+
+    try {
+      const response = await apiPostData("academic", "/assinatura-estatuto", {...dataObj})
+      console.log('response', response)
+      if(response.id) {
+        toast.success("Contrato assinado com sucesso");
+        navigate(-1);
+      }
+    } catch (error) {
+      toast.error("Erro ao assinar contrato");
+    }
+    setLoadingSign(false);
   }
 
   useEffect(() => {
+    fetchAssinaturaEstatuto();
     fetchEstatuto();
   }, [])
-
-  // console.log(contratos);
 
   return (
     <Stack
@@ -76,13 +128,24 @@ const EstatutosPage = () => {
               color="textSecondary"
               variant={"body2"}
             >
-              Leia o Contrato e estando de acordo, <b>assine clicando no botão abaixo</b>:
+              Leia o Contrato do Estatuto e estando de acordo, <b>assine clicando no botão abaixo</b>:
             </Typography>
-            <iframe
-              src="https://drive.google.com/file/d/1f2a4P6JX7Z7uQ4g3Z6JwHvQ1b7Nk6z9x/preview"
-              width="100%"
-              height="100%"
-            ></iframe>
+            {loading
+              ? <Stack
+                height={'100%'}
+                width={'100%'}
+                alignItems={'center'}
+                justifyContent={'center'}
+              >
+                Carregando Estatuto...
+                <CircularProgress color="secondary" size={22}/>
+              </Stack>
+              : <iframe
+                src={estatuto?.[0]?.Url}
+                width="100%"
+                height="85%"
+              ></iframe>
+            }
             <Stack
               direction={"row"}
               alignItems={"center"}
@@ -100,10 +163,13 @@ const EstatutosPage = () => {
               <LoadingButton
                 variant="contained"
                 color="primary"
-                endIcon={<FaSignature/> }
-                sx={{ fontFamily: "Poppins", width: 150 }}
+                endIcon={<FaSignature />}
+                loading={loadingSign}
+                onClick={onClickSign}
+                disabled={signed}
+                sx={{ fontFamily: "Poppins", width: 210 }}
               >
-                Assinar
+                {signed ? "Contrato já assinado" : "Assinar Contrato"}
               </LoadingButton>
             </Stack>
           </Stack>
