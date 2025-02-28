@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPatchData, apiPostData } from "../../../services/api";
+import { apiGetData, apiPatchData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
 import { LoadingButton } from "@mui/lab";
