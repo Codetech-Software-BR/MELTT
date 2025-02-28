@@ -154,7 +154,7 @@ export const apiRequest = async (
 
   try {
     const response = await api(config);
-    return response.data;
+    return response?.data ? response.data : response;
   } catch (error: any) {
     console.error("API request error:", error);
     throw error;

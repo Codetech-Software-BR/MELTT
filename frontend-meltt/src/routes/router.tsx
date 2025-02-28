@@ -40,6 +40,7 @@ import EventosTicketsPage from "../pages/eventos/tickets";
 import EventosNewPage from "../pages/eventos/new";
 import EventosCheckinsPage from "../pages/eventos/checkins";
 import DashboardPagamentosPage from "../pages/dashboards";
+import EstatutosPage from "../pages/estatutos";
 
 export const router = createBrowserRouter([
   {
@@ -229,6 +230,10 @@ export const router = createBrowserRouter([
       {
         path: "/contratos",
         element: <ContratosPage/>
+      },
+      {
+        path: "/estatuto",
+        element: <EstatutosPage/>
       },
       {
         path: "/suporte",

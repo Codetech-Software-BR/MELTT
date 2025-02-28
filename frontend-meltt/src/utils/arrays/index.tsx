@@ -4,6 +4,7 @@ import { FaCircle } from "react-icons/fa";
 import { BiSupport } from "react-icons/bi";
 import { IoContract } from "react-icons/io5";
 import { MdBookmarkAdded, MdEmojiEvents, MdOutlinePayments } from "react-icons/md";
+import { HiDocumentCheck } from "react-icons/hi2";
 
 export const menuListAdmin = [
   {
@@ -106,11 +107,11 @@ export const menuListAluno = [
     route: "/eventos",
     icon: <LuPartyPopper size={22} />,
   },
-  // {
-  //   title: "Suporte",
-  //   route: "/suporte",
-  //   icon: <BiSupport size={22} />,
-  // },
+  {
+    title: "Estatuto",
+    route: "/estatuto",
+    icon: <HiDocumentCheck size={22} />,
+  }
 ];
 
 
