@@ -48,10 +48,10 @@ class BlingController {
           vencimento, 
           situacao, 
           dataEmissao, 
-          linkBoleto 
+          linkBoleto,
         } = conta;
         
-        const { id: blingContactId } = conta.contato;
+        const { id: blingContactId, numeroDocumento } = conta.contato;
 
         try {
           const [result] = await db.promise().query(`
@@ -62,9 +62,10 @@ class BlingController {
               vencimento, 
               situacao, 
               dataEmissao, 
-              linkBoleto
+              linkBoleto,
+              numeroDocumento
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           `, [
             blingPaymentId,
             blingContactId,
@@ -72,7 +73,8 @@ class BlingController {
             vencimento,
             situacao,
             dataEmissao,
-            linkBoleto || null // Ensure empty values become NULL
+            linkBoleto || null,
+            numeroDocumento
           ]);
 
           if (result.affectedRows === 1) {
