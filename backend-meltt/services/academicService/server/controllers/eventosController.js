@@ -39,12 +39,12 @@ class EventosController {
   };
 
   createEventos(req, res) {
-    const { nome_evento, descricao_evento, valor_ingresso, foto_evento, token } = req.body;
+    const { nome, token, turma_id, data_formatura } = req.body;
     const query =
-      "INSERT INTO eventos (nome_evento, descricao_evento, valor_ingresso, foto_evento, token ) VALUES (?, ?, ?, ?)";
+      "INSERT INTO eventos (nome, token, turma_id, data_formatura ) VALUES (?, ?, ?, ?)";
     db.query(
       query,
-      [nome_evento, descricao_evento, valor_ingresso, foto_evento, token],
+      [nome, token, turma_id, data_formatura],
       (err, result) => {
         if (err) return res.status(500).json(err);
         res.status(201).json({ id: result.insertId, ...req.body });
@@ -54,12 +54,12 @@ class EventosController {
 
   updateEventos(req, res) {
     const id = req.params.id;
-    const { nome_evento, descricao_evento, valor_ingresso, foto_evento } = req.body;
-    const updateQuery = `UPDATE eventos SET nome_evento = ?, descricao_evento = ?, valor_ingresso = ?, foto_evento = ? WHERE id = ?`;
+    const { nome, token, turma_id, data_formatura} = req.body;
+    const updateQuery = `UPDATE eventos SET nome = ?, token = ?, turma_id = ?, data_formatura = ? WHERE id = ?`;
 
     db.query(
       updateQuery,
-      [nome_evento, descricao_evento, valor_ingresso, foto_evento, id],
+      [nome, token, turma_id, id],
       (err) => {
         if (err) return res.status(500).json(err);
 

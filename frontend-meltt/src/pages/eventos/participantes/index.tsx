@@ -1,29 +1,24 @@
 import {
-  Avatar,
-  Button,
+  Chip,
   IconButton,
-  Link,
   Paper,
   Slide,
   Stack,
   TableCell,
   TableRow,
-  Tooltip,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import LoadingTable from "../../components/loadingTable";
-import BasicTable from "../../components/table";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { apiGetData } from "../../services/api";
-import { FaMoneyBillWave, FaPeopleGroup } from "react-icons/fa6";
-import { eventsColumns } from "./table/columns";
-import { IoAdd, IoTicket } from "react-icons/io5";
-import { BiUser } from "react-icons/bi";
-import { FaCheckCircle } from "react-icons/fa";
+import BasicTable from "../../../components/table";
+import LoadingTable from "../../../components/loadingTable";
+import { apiGetData } from "../../../services/api";
+import { BiArrowBack } from "react-icons/bi";
+import { eventsParticipantesColumns } from "../table/columns/particiantes";
 
-const EventosPage = () => {
+const EventosParticipantesPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -34,10 +29,10 @@ const EventosPage = () => {
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventos = async (page: number) => {
+  const fetchEventsParticipants = async (page: number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", `/eventos?page=${page}`);
+      const response = await apiGetData("academic", `/uniticket/participants?access_token=${id}`);
       setTotalPages(response.totalPages);
       setEventos(response.data);
     } catch (error) {
@@ -48,16 +43,14 @@ const EventosPage = () => {
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
-      fetchEventos(value);
+      fetchEventsParticipants(value);
     } catch (error) {
       toast.error("Erro ao buscar Turmas");
     }
     setPage(value);
   };
 
-  const onClickRowView = (row: any, route: string) => {
-    navigate(`/eventos/${route}/${row.token}`);
-  };
+
 
   const dataRow = (row: any) => {
     return (
@@ -68,52 +61,28 @@ const EventosPage = () => {
           " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
         }}
       >
-        <TableCell component="th" scope="row">
-          <Stack direction="row" alignItems="center" gap={2}>
-            <Avatar src={"https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} alt="foto evento" sizes="32px" />
-            <Link
-              color="primary"
-              underline="always"
-              onClick={() => onClickRowView(row, 'compradores')}
-              sx={{ fontFamily: "Poppins" }}
-            >
-              {row.nome}
-            </Link>
-          </Stack>
+        <TableCell component="th" scope="row" sx={{ fontFamily: "Poppins" }}>
+          {row.access_code}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.data_formatura ?? 'data não informada'} 
+          {row.name}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          <Stack direction={'row'} gap={1}>
-            <Tooltip title="Ver compradores" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'compradores')}>
-                <FaMoneyBillWave color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Tickets" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'tickets')}>
-                <IoTicket color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Participantes" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'participantes')}>
-                <FaPeopleGroup color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Checkins" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'checkins')}>
-                <FaCheckCircle color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-          </Stack>
+          {row.document.type} - {row.document.number}
         </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          {row.email}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          <Chip color={row.checked_in == 0 ? 'warning' : 'success'} label={row.checked_in == 0 ? 'Checkin Não efetuado' : 'Checkin efetuado'}/>
+        </TableCell>
+
       </TableRow>
     );
   };
 
   useEffect(() => {
-    fetchEventos(1);
+    fetchEventsParticipants(1);
     setOnLoad(true);
   }, []);
 
@@ -125,15 +94,13 @@ const EventosPage = () => {
         justifyContent={"space-between"}
         my={2}
       >
-        <h2 className="text-2xl text-default font-extrabold"></h2>
-        <Button
-          variant="contained"
-          color="secondary"
-          endIcon={<IoAdd />}
-          onClick={() => navigate('/eventos/new')}
-          >
-          Novo Evento
-        </Button>
+        <Stack direction={'row'} alignItems={'center'} gap={1}>
+          <IconButton onClick={() => navigate(-1)}>
+            <BiArrowBack />
+          </IconButton>
+          <h2 className="text-2xl text-default font-extrabold">Participantes do evento</h2>
+        </Stack>
+        
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
@@ -168,7 +135,7 @@ const EventosPage = () => {
               <LoadingTable />
             ) : eventos.length > 0 ? (
               <BasicTable
-                columns={eventsColumns}
+                columns={eventsParticipantesColumns}
                 rows={eventos}
                 loading={loading}
                 dataRow={dataRow}
@@ -188,4 +155,4 @@ const EventosPage = () => {
   );
 };
 
-export default EventosPage;
+export default EventosParticipantesPage;

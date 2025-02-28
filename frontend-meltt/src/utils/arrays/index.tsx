@@ -12,35 +12,40 @@ export const menuListAdmin = [
     icon: <IoContract />
   },
   {
-    title: "Turmas",
-    route: "/turmas",
-    icon: <FaGraduationCap size={22} />,
-  },
-  {
     title: "Adesões",
     route: "/adesoes",
     icon: <MdBookmarkAdded size={22} />,
   },
   {
+    title: "Tarefas",
+    route: "/tarefas",
+    icon: <LuNetwork size={22} />,
+  },
+  {
+    title: "Turmas",
+    route: "/turmas",
+    icon: <FaGraduationCap size={22} />,
+  },
+  {
     title: "Usuários",
     route: "/usuarios",
-    icon: <FaUsers size={22}  />,
+    icon: <FaUsers size={22} />,
   },
   {
     title: "Pagamentos",
     route: "/pagamentos",
-    icon: <MdOutlinePayments size={22}  />,
+    icon: <MdOutlinePayments size={22} />,
+  },
+  {
+    title: "Eventos",
+    route: "/eventos",
+    icon: <MdEmojiEvents size={22} />,
   },
   // {
   //   title: "Contratos e eventos",
   //   route: "/fornecedores",
   //   icon: <MdEmojiEvents size={22} />,
   // },
-  {
-    title: "Tarefas",
-    route: "/tarefas",
-    icon: <LuNetwork size={22} />,
-  },
   {
     title: "Fornecedores",
     route: "/fornecedores",
@@ -52,8 +57,6 @@ export const menuListAdmin = [
     icon: <FaChartSimple size={22} />,
     subRoutes: [
       { title: "Fornecedores", route: "/dashboard/fornecedor", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Turmas", route: "/dashboard/turma", icon: <FaCircle size={8} className="text-white" /> },
-      { title: "Adesão", route: "/dashboard/adesao", icon: <FaCircle size={8} className="text-white" /> },
     ],
   },
   // {
@@ -194,11 +197,11 @@ export const graduationYearsList = [
   {
     value: "2029",
     label: "2029"
-  }, 
+  },
   {
     value: "2030",
     label: "2030"
-  }, 
+  },
   {
     value: "2031",
     label: "2031"
@@ -206,11 +209,11 @@ export const graduationYearsList = [
   {
     value: "2032",
     label: "2032"
-  }, 
+  },
   {
     value: "2033",
     label: "2033"
-  }, 
+  },
   {
     value: "2034",
     label: "2034"
@@ -218,7 +221,7 @@ export const graduationYearsList = [
   {
     value: "2035",
     label: "2035"
-  }, 
+  },
   {
     value: "2036",
     label: "2036"

@@ -1,6 +1,5 @@
 import {
-  Avatar,
-  Button,
+  Chip,
   IconButton,
   Link,
   Paper,
@@ -8,38 +7,43 @@ import {
   Stack,
   TableCell,
   TableRow,
-  Tooltip,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import LoadingTable from "../../components/loadingTable";
-import BasicTable from "../../components/table";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { apiGetData } from "../../services/api";
-import { FaMoneyBillWave, FaPeopleGroup } from "react-icons/fa6";
-import { eventsColumns } from "./table/columns";
-import { IoAdd, IoTicket } from "react-icons/io5";
-import { BiUser } from "react-icons/bi";
-import { FaCheckCircle } from "react-icons/fa";
+import BasicTable from "../../../components/table";
+import LoadingTable from "../../../components/loadingTable";
+import { apiGetData } from "../../../services/api";
+import { eventBuyersColumns } from "../table/columns/buyers";
+import { BiArrowBack } from "react-icons/bi";
+import { eventCheckinsColumns } from "../table/columns/checkins";
 
-const EventosPage = () => {
+const EventosCheckinsPage = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
   const [loading, setLoading] = useState(false);
-  const [eventos, setEventos] = useState([]);
+  const [eventCheckins, setEventCheckins] = useState([]);
+  const [totalAmount, setTotalAmount] = useState("");
+  const [totalPaidAmount, setTotalPaidAmount] = useState("");
 
   const [onLoad, setOnLoad] = useState(false);
 
 
-  const fetchEventos = async (page: number) => {
+  const fetchEventCheckins = async (page: number) => {
     setLoading(true);
     try {
-      const response = await apiGetData("academic", `/eventos?page=${page}`);
-      setTotalPages(response.totalPages);
-      setEventos(response.data);
+      const response = await apiGetData("academic", `/uniticket/checkins?access_token=${id}`);
+      if (response && response.data && Array.isArray(response.data)) {
+        
+        setEventCheckins(response.data);
+      } else {
+        toast.error("Estrutura inesperada em response.data");
+      }
+
     } catch (error) {
       toast.error("Nenhuma informação encontrada para eventos");
     }
@@ -48,16 +52,13 @@ const EventosPage = () => {
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
-      fetchEventos(value);
+      fetchEventCheckins(value);
     } catch (error) {
       toast.error("Erro ao buscar Turmas");
     }
     setPage(value);
   };
 
-  const onClickRowView = (row: any, route: string) => {
-    navigate(`/eventos/${route}/${row.token}`);
-  };
 
   const dataRow = (row: any) => {
     return (
@@ -70,50 +71,34 @@ const EventosPage = () => {
       >
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" gap={2}>
-            <Avatar src={"https://images.pexels.com/photos/1587927/pexels-photo-1587927.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} alt="foto evento" sizes="32px" />
             <Link
               color="primary"
               underline="always"
-              onClick={() => onClickRowView(row, 'compradores')}
               sx={{ fontFamily: "Poppins" }}
             >
-              {row.nome}
+              {row.name}
             </Link>
           </Stack>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.data_formatura ?? 'data não informada'} 
+          {row.cpf}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          <Stack direction={'row'} gap={1}>
-            <Tooltip title="Ver compradores" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'compradores')}>
-                <FaMoneyBillWave color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Tickets" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'tickets')}>
-                <IoTicket color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Participantes" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'participantes')}>
-                <FaPeopleGroup color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Checkins" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'checkins')}>
-                <FaCheckCircle color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-          </Stack>
+          {row.phone}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          <Chip color={row.order.status === 'finalizado' ? 'success' : 'secondary'} label={row.order.status} />
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          R$ {row.order.total_amount}
         </TableCell>
       </TableRow>
     );
   };
 
+
   useEffect(() => {
-    fetchEventos(1);
+    fetchEventCheckins(1);
     setOnLoad(true);
   }, []);
 
@@ -125,15 +110,16 @@ const EventosPage = () => {
         justifyContent={"space-between"}
         my={2}
       >
-        <h2 className="text-2xl text-default font-extrabold"></h2>
-        <Button
-          variant="contained"
-          color="secondary"
-          endIcon={<IoAdd />}
-          onClick={() => navigate('/eventos/new')}
-          >
-          Novo Evento
-        </Button>
+        <Stack direction={'row'} alignItems={'center'} gap={1}>
+          <IconButton size="small" onClick={() => navigate('/eventos')}>
+            <BiArrowBack />
+          </IconButton>
+          <h2 className="text-lg text-default font-extrabold">Checkins do evento</h2>
+        </Stack>
+        <Stack direction={'row'} gap={1}>
+          <Chip color="secondary" label={`Valor Movimentado: ${totalAmount}`} />
+          <Chip color="success" label={`Valor Total Pago: ${totalPaidAmount}`} />
+        </Stack>
       </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
@@ -166,10 +152,10 @@ const EventosPage = () => {
           >
             {loading ? (
               <LoadingTable />
-            ) : eventos.length > 0 ? (
+            ) : eventCheckins.length > 0 ? (
               <BasicTable
-                columns={eventsColumns}
-                rows={eventos}
+                columns={eventCheckinsColumns}
+                rows={eventCheckins}
                 loading={loading}
                 dataRow={dataRow}
                 page={page}
@@ -177,8 +163,8 @@ const EventosPage = () => {
                 handleChangePagination={handleChangePagination}
               />
             ) : (
-              <Stack width={'100%'} height={'100%'} alignItems={'center'}>
-                <h2 className="font-light">Não há eventos cadastrados</h2>
+              <Stack width={'100%'} mt={20} alignItems={'center'} textAlign={'center'}>
+                <h2 className="font-light">nenhuma informação de checkins para este evento.</h2>
               </Stack>
             )}
           </Paper>
@@ -188,4 +174,4 @@ const EventosPage = () => {
   );
 };
 
-export default EventosPage;
+export default EventosCheckinsPage;
