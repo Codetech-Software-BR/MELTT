@@ -166,7 +166,7 @@ const TurmasPageNew = () => {
             validationSchema={validateTurmaSchema}
             onSubmit={(values: any) => onSubmitTurma(values)}
           >
-            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
+            {({ values, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%]"
                 onSubmit={handleSubmit}

@@ -36,7 +36,6 @@ const TurmasPage = () => {
   const [page, setPage] = useState(1);
   const [onLoad, setOnLoad] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
 
   const [turmas, setTurmas] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -68,7 +67,7 @@ const TurmasPage = () => {
     setLoading(false);
   };
 
-  const handleChangePagination = (event: React.ChangeEvent<unknown>, value: number) => {
+  const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {
       fetchTurmas(value);
     } catch (error) {
@@ -77,20 +76,6 @@ const TurmasPage = () => {
     setPage(value);
   };
 
-  // const onClickDelete = async (row: Turma) => {
-  //   setLoadingDelete(true);
-  //   try {
-  //     const response = await apiDeleteData("academic", `/turmas/${row.id}`);
-  //     if (response.message.includes("deletado")) {
-  //       fetchTurmas();
-  //       toast.success("Turma excluída com sucesso");
-  //     }
-  //     console.log("response", response);
-  //   } catch (error) {
-  //     toast.error("Erro ao excluir turma");
-  //   }
-  //   setLoadingDelete(false);
-  // };
 
   const dataRowAdmin = (row: Turma) => {
     return (
@@ -117,11 +102,7 @@ const TurmasPage = () => {
                 dispatchTurma({ type: "SET_TURMA_SELECIONADA", payload: row });
                 navigate(`/turmas/edit/${row.id}`)
               }}>
-                {loadingDelete ? (
-                  <CircularProgress color="secondary" size={12} />
-                ) : (
-                  <MdModeEdit color="#2d1c63" size={22} />
-                )}
+                <MdModeEdit color="#2d1c63" size={22} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Ver Estatuto">

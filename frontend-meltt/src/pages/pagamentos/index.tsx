@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { apiGetData, apiPostData } from "../../services/api";
 import { EnumStudentBasicEducation } from "../../utils/enums";
 import toast from "react-hot-toast";
@@ -53,7 +52,6 @@ interface Student {
 }
 
 const PagamentosPage = () => {
-  const navigate = useNavigate();
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
@@ -70,7 +68,7 @@ const PagamentosPage = () => {
 
   const [page, setPage] = useState(1);
   const [filterSituation, setFilterSituation] = useState<string | null>(null);
-  const [filterDate, setFilterDate] = useState<string | null>(null);
+  // const [filterDate, setFilterDate] = useState<string | null>(null);
 
   const fetchPagamentos = async (page: number) => {
     setLoading(true);
@@ -82,9 +80,9 @@ const PagamentosPage = () => {
         if (filterSituation) {
           params.append("situacoes", filterSituation);
         }
-        if (filterDate) {
-          params.append("dataInicial", filterDate);
-        }
+        // if (filterDate) {
+        //   params.append("dataInicial", filterDate);
+        // }
 
         const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
         setPayments(response.data);
@@ -98,9 +96,9 @@ const PagamentosPage = () => {
         if (filterSituation) {
           params.append("situacoes", filterSituation);
         }
-        if (filterDate) {
-          params.append("dataInicial", filterDate);
-        }
+        // if (filterDate) {
+        //   params.append("dataInicial", filterDate);
+        // }
 
         const response = await apiGetData("academic", `/pagamentos/idBling/${decoded?.id_bling}`);
         setPayments(response);
@@ -128,7 +126,7 @@ const PagamentosPage = () => {
       if (filterSituation) {
         params.append("situacoes", filterSituation);
       }
-      if (filterDate) params.append("dataInicial", filterDate);
+      // if (filterDate) params.append("dataInicial", filterDate);
 
       const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
       setPayments(response.data);
@@ -148,7 +146,7 @@ const PagamentosPage = () => {
     setPage(value);
   };
 
-  const onSubmitNewUser = async (values: Student) => {
+  const onSubmitNewUser = async (_: Student) => {
     setLoadingSaveNewUser(true);
 
     let dataObj = {

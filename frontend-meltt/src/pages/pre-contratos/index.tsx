@@ -69,7 +69,7 @@ const PreContratoPage = () => {
       const response = await apiGetData("academic", "pre-contrato");
       if (!response) return;
   
-      setColumns(prev => {
+      setColumns(_ => {
         const updatedColumns = { ...initialColumns };
         response.data?.forEach((preContrato: Item) => {
           const statusKey = preContrato.status;

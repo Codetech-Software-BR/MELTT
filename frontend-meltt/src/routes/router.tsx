@@ -19,7 +19,6 @@ import PaginaDaTurmaPage from "../pages/turmas/view/paginaDaTurma";
 import PaginadaTurmaCriarTopicoPage from "../pages/turmas/view/paginaDaTurma/topico/new";
 import TopicoViewPage from "../pages/turmas/view/paginaDaTurma/topico/view";
 import DashboardFornecedoresPage from "../pages/dashboards/fornecedores";
-import DashboardTurmasPage from "../pages/dashboards/turmas";
 import ViewPagamentoPage from "../pages/pagamentos/view";
 import AlunosPageView from "../pages/alunos/view";
 import ContratosPage from "../pages/contratos";
@@ -94,10 +93,6 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/fornecedor",
         element: <DashboardFornecedoresPage/>,
-      },
-      {
-        path: "/dashboard/turma",
-        element: <DashboardTurmasPage/>,
       },
       {
         path: "/usuarios",

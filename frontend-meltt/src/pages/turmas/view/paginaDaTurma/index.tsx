@@ -12,14 +12,11 @@ import {
   ListSubheader,
   Stack,
   Tab,
-  Tabs,
   Typography,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { IoMdCloudDownload } from "react-icons/io";
 import { IoAdd } from "react-icons/io5";
-import { MdCloudUpload } from "react-icons/md";
 import { useNavigate, useParams } from "react-router-dom";
 import { SlMagnifier } from "react-icons/sl";
 import { apiGetData } from "../../../../services/api";
@@ -31,11 +28,10 @@ import { TbTrash } from "react-icons/tb";
 import { getToken } from "../../../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../../../components/customDrawer";
-import { downloadArquivo } from "../../../../utils/functions";
 import { FiMessageCircle } from "react-icons/fi";
 import { BiArrowBack } from "react-icons/bi";
-import { LoadingButton, TabContext, TabList, TabPanel } from "@mui/lab";
-import { FaSignature } from "react-icons/fa6";
+import { TabContext, TabList, TabPanel } from "@mui/lab";
+
 
 const PaginaDaTurmaPage = () => {
   const { id } = useParams();
@@ -52,12 +48,11 @@ const PaginaDaTurmaPage = () => {
 
   const [turma, setTurma] = useState<Turma[]>([]);
   const [topicos, setTopicos] = useState([]);
-  const [arquivosTurmas, setArquivosTurmas] = useState([]);
 
   const [file, setFile] = useState<File | null>(null);
 
-  const onChangeTab = (event: React.SyntheticEvent, newValue: string) => {
-    setTabView(newValue);
+  const onChangeTab = (_: React.SyntheticEvent, newValue: string) => {
+    setTabView(newValue)
   };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -113,9 +108,9 @@ const PaginaDaTurmaPage = () => {
   const fetchArquivos = async () => {
     try {
       await apiGetData("academic", `/turmas/arquivos/turma/${id}`).then(
-        (data) => {
-          setArquivosTurmas(data);
-        }
+        (data) => data
+          // setArquivosTurmas(data);
+        
       );
     } catch (error: any) {
       toast.error(error.response.data.message);

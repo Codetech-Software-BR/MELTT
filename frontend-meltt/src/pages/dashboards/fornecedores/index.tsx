@@ -172,6 +172,9 @@ const DashboardFornecedoresPage = () => {
                       rows={listFornecedores}
                       loading={false}
                       dataRow={dataRowFornecedores}
+                      handleChangePagination={() => { }}
+                      page={1}
+                      totalPages={1}
                     />
                   ) : (
                     <Stack

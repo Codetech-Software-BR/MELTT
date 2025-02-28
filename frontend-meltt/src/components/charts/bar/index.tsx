@@ -17,7 +17,7 @@ import {
     valor_cotado: string;
   }
   
-  const CustomTooltip = ({ payload, label }: { payload?: any; label?: any }) => {
+  const CustomTooltip = ({ payload }: { payload?: any }) => {
     if (!payload || payload.length === 0) return null;
   
     const registro = payload[0]?.payload as FornecedorData;

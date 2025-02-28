@@ -22,7 +22,7 @@ import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
 import { studentsColumns } from "./table/columns";
 import { useNavigate } from "react-router-dom";
-import { apiDeleteData, apiGetData, apiPutData } from "../../services/api";
+import { apiGetData, apiPutData } from "../../services/api";
 import { IoMdAdd } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
@@ -36,7 +36,9 @@ import { BiSearch } from "react-icons/bi";
 interface Student {
   id: number;
   name: Key | null | undefined;
+  email: string
   nome: string;
+  ativo: boolean | number;
   telefone: string;
   documento: string;
   turma_id: number;
@@ -48,7 +50,6 @@ const AlunosPage = () => {
   const [loading, setLoading] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
   const [turmas, setTurmas] = useState([]);
-  const [loadingTurmas, setLoadingTurmas] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState(1);
@@ -80,9 +81,7 @@ const AlunosPage = () => {
   const [onLoad, setOnLoad] = useState(false);
 
   const fetchTurmas = async () => {
-    setLoadingTurmas(true);
     await apiGetData("academic", `/turmas`).then((response) => setTurmas(response.data));
-    setLoadingTurmas(false);
   };
 
   const fetchAlunos = async () => {
@@ -102,6 +101,10 @@ const AlunosPage = () => {
 
     setLoading(false);
   };
+
+  const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+  }
 
   const onClickRowView = (row: any) => {
     dispatchAluno({ type: "SET_ALUNO_SELECIONADO", payload: row });
@@ -187,7 +190,7 @@ const AlunosPage = () => {
                 <DialogContent>Tem certeza que deseja desativar este usuário?</DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose} color="primary">Cancelar</Button>
-                  <Button onClick={() => handleDelete(row.id)} color="error" autoFocus>Desativar</Button>
+                  <Button onClick={() => handleDelete()} color="error" autoFocus>Desativar</Button>
                 </DialogActions>
               </Dialog>
             </>
@@ -282,6 +285,7 @@ const AlunosPage = () => {
                 rows={students}
                 loading={loading}
                 dataRow={dataRow}
+                handleChangePagination={handleChangePagination}
               />
             ) : (
               <NoTableData

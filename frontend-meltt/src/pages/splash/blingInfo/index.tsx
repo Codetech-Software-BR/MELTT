@@ -11,7 +11,6 @@ import MelttLogo from "../../../assets/logo/melttLogo";
 import { useEffect, useState } from "react";
 import { apiPostData } from "../../../services/api";
 import toast from "react-hot-toast";
-import { redirectToBlingURLAuth } from "../../../utils/functions";
 import {
   setBlingAccessToken,
   setBlingRefreshToken,

@@ -1,10 +1,8 @@
 import {
   Button,
   Chip,
-  CircularProgress,
   IconButton,
   Link,
-  MenuItem,
   Paper,
   Slide,
   Stack,
@@ -12,16 +10,13 @@ import {
   TableRow,
 } from "@mui/material";
 import BasicTable from "../../components/table";
-import { Key, useEffect, useState } from "react";
-// import { studentsColumns } from "./table/columns";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiDeleteData, apiGetData } from "../../services/api";
+import { apiGetData } from "../../services/api";
 import { IoMdAdd } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
-import { MdModeEdit } from "react-icons/md";
-import { FaTrashAlt } from "react-icons/fa";
 import { FaEye, FaFileSignature } from "react-icons/fa6";
 import { useAdesaoContext } from "../../providers/adesaoContext";
 import { adesoesColumns } from "./table/columns";
@@ -43,8 +38,6 @@ const AdesoesPage = () => {
   const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(false);
-  const [loadingDelete, setLoadingDelete] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
 
   const [adesoes, setAdesoes] = useState<Adesao[]>([]);
   const [adesoesPendentes, setAdesoesPendentes] = useState<[]>([]);
