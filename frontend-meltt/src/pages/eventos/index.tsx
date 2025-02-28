@@ -9,6 +9,7 @@ import {
   TableCell,
   TableRow,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import LoadingTable from "../../components/loadingTable";
@@ -23,6 +24,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import { getToken } from "../../utils/token";
 import { jwtDecode } from "jwt-decode";
 import { CustomJwtPayload } from "../../components/customDrawer";
+import MelttLogo from "../../assets/logo/melttLogo";
 
 const EventosPage = () => {
   const navigate = useNavigate();
@@ -194,8 +196,10 @@ const EventosPage = () => {
                 handleChangePagination={handleChangePagination}
               />
             ) : (
-              <Stack width={'100%'} height={'100%'} alignItems={'center'}>
-                <h2 className="font-light">Não há eventos cadastrados</h2>
+              <Stack width={'100%'} alignItems={'center'} sx={{ mt: 20 }}>
+                <MelttLogo />
+                <Typography color="primary" variant="body2" sx={{ fontFamily: "Poppins" }}>Não há eventos para mostrar...</Typography>
+                <Typography color="textSecondary" variant="caption" sx={{ fontFamily: "Poppins" }}>tente novamente mais tarde</Typography>
               </Stack>
             )}
           </Paper>
