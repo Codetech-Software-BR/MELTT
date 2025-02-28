@@ -23,8 +23,6 @@ class BlingController {
       params.append("dataInicial", dataInicialFormatada);
       params.append("dataFinal", dataFinalFormatada);
       if (situacoes) params.append("situacoes[]", situacoes);
-      if (dataInicial) params.append("dataInicial", "2025-01-01");
-      if (dataFinal) params.append("dataFinal", dataFinal);
 
       const response = await axios.get(
         `https://www.bling.com.br/Api/v3/contas/receber?${params.toString()}`,
@@ -37,59 +35,69 @@ class BlingController {
       );
 
       const contasReceber = response.data.data;
-      
+
       let insertedCount = 0;
       let duplicateCount = 0;
 
       for (const conta of contasReceber) {
-        const { 
+        const {
           id: blingPaymentId,
-          valor, 
-          vencimento, 
-          situacao, 
-          dataEmissao, 
+          valor,
+          vencimento,
+          situacao,
+          dataEmissao,
           linkBoleto,
         } = conta;
-        
+
         const { id: blingContactId, numeroDocumento } = conta.contato;
 
         try {
-          const [result] = await db.promise().query(`
-            INSERT IGNORE INTO pagamentos (
-              bling_payment_id,
-              id_bling, 
-              valor, 
-              vencimento, 
-              situacao, 
-              dataEmissao, 
-              linkBoleto,
-              numeroDocumento
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          `, [
-            blingPaymentId,
-            blingContactId,
-            valor,
-            vencimento,
-            situacao,
-            dataEmissao,
-            linkBoleto || null,
-            numeroDocumento
-          ]);
-
-          if (result.affectedRows === 1) {
-            insertedCount++;
-          } else {
+          const [existing] = await db.promise().query(
+            'SELECT 1 FROM pagamentos WHERE bling_payment_id = ?',
+            [blingPaymentId]
+          );
+          if(existing.length > 0) {
             duplicateCount++;
+            continue
           }
-          
+
+          if (existing.length === 0) {
+            await db.promise().query(`
+              INSERT INTO pagamentos (
+                bling_payment_id,
+                id_bling, 
+                valor, 
+                vencimento, 
+                situacao, 
+                dataEmissao, 
+                linkBoleto,
+                numeroDocumento
+              )
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            `, [
+              blingPaymentId,
+              blingContactId,
+              valor,
+              vencimento,
+              situacao,
+              dataEmissao,
+              linkBoleto || null,
+              numeroDocumento
+            ]);
+            insertedCount++;
+          }
+
         } catch (queryErr) {
           console.error("Database error:", queryErr);
           continue;
         }
       }
 
-      return res.json({ 
+      console.log('Parâmetros da requisição:', params.toString());
+      console.log('Total de registros recebidos:', contasReceber.length);
+      console.log('Registro exemplo:', JSON.stringify(contasReceber[0]));
+
+      return res.json({
         message: "Dados salvos com sucesso",
         data: contasReceber,
         inserted: insertedCount,
