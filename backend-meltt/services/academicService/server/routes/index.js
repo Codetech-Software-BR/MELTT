@@ -1,6 +1,5 @@
 import express from "express";
 
-import alunosRoutes from "./alunoRoutes.js";
 import turmasRoutes from "./turmasRoutes.js";
 import faculdadesRoutes from "./faculdadesRoutes.js";
 import contratosRoutes from "./contratosRoutes.js";
@@ -21,7 +20,6 @@ import pagamentosRoutes from "./pagamentosRoutes.js";
 
 const router = express.Router();
 
-router.use("/alunos", alunosRoutes);
 router.use("/turmas", turmasRoutes);
 router.use("/faculdades", faculdadesRoutes);
 router.use("/contratos", contratosRoutes);

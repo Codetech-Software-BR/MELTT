@@ -40,6 +40,7 @@ import EventosTicketsPage from "../pages/eventos/tickets";
 import EventosNewPage from "../pages/eventos/new";
 import EventosCheckinsPage from "../pages/eventos/checkins";
 import DashboardPagamentosPage from "../pages/dashboards";
+import EstatutosPage from "../pages/estatutos";
 
 export const router = createBrowserRouter([
   {
@@ -87,7 +88,7 @@ export const router = createBrowserRouter([
         element: <DashboardPagamentosPage/>,
       },
       {
-        path: "/dashboard/alunos",
+        path: "/dashboard/usuarios",
         element: <DashboardPagamentosPage/>,
       },
       {
@@ -99,15 +100,15 @@ export const router = createBrowserRouter([
         element: <DashboardTurmasPage/>,
       },
       {
-        path: "/alunos",
+        path: "/usuarios",
         element: <AlunosPage />,
       },
       {
-        path: "/alunos/edit/:id?",
+        path: "/usuarios/edit/:id?",
         element: <AlunosPageEdit />,
       },
       {
-        path: "/alunos/view/:id?",
+        path: "/usuarios/view/:id?",
         element: <AlunosPageView />,
       },
       {
@@ -155,7 +156,7 @@ export const router = createBrowserRouter([
         element: <TopicoViewPage />,
       },
       {
-        path: "/alunos",
+        path: "/usuarios",
         element: <AlunosPage />,
       },
       {
@@ -229,6 +230,10 @@ export const router = createBrowserRouter([
       {
         path: "/contratos",
         element: <ContratosPage/>
+      },
+      {
+        path: "/estatuto",
+        element: <EstatutosPage/>
       },
       {
         path: "/suporte",

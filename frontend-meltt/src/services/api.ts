@@ -154,7 +154,7 @@ export const apiRequest = async (
 
   try {
     const response = await api(config);
-    return response.data;
+    return response?.data ? response.data : response;
   } catch (error: any) {
     console.error("API request error:", error);
     throw error;
@@ -170,7 +170,7 @@ export const apiPostData = (serviceType: string, url: string, data: any, headers
 export const apiPatchData = (serviceType: string, url: string, data: any, headers?: any) =>
   apiRequest(serviceType, "PATCH", url, data, null, headers);
 
-export const apiPutData = (serviceType: string, url: string, data: any, headers?: any) =>
+export const apiPutData = (serviceType: string, url: string, data?: any, headers?: any) =>
   apiRequest(serviceType, "PUT", url, data, null, headers);
 
 export const apiDeleteData = (serviceType: string, url: string, data?: any, headers?: any) =>

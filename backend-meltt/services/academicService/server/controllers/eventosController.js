@@ -38,6 +38,14 @@ class EventosController {
     });
   };
 
+  getEventosByTurmaId(req, res) {
+    const id = req.params.id;
+    db.query("SELECT * FROM eventos WHERE turma_id = ?", [id], (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(200).json(result);
+    });
+  };
+
   createEventos(req, res) {
     const { nome, token, turma_id, data_formatura } = req.body;
     const query =

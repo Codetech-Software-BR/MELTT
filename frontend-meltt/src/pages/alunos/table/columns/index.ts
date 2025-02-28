@@ -1,7 +1,8 @@
 export const studentsColumns = [
-  { label: "Aluno", key: "nome" },
-  { label: "Documento", key: "documento" },
+  { label: "Nome", key: "nome" },
+  { label: "Email", key: "email" },
   { label: "Telefone", key: "celular" },
-  { label: "Turma", key: "turma" },
+  { label: "Documento", key: "documento" },
+  { label: "Ativo", key: "turma" },
   { label: "Ações", key: "acoes" },
 ];

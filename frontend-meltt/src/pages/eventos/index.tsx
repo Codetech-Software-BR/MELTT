@@ -19,11 +19,15 @@ import { apiGetData } from "../../services/api";
 import { FaMoneyBillWave, FaPeopleGroup } from "react-icons/fa6";
 import { eventsColumns } from "./table/columns";
 import { IoAdd, IoTicket } from "react-icons/io5";
-import { BiUser } from "react-icons/bi";
 import { FaCheckCircle } from "react-icons/fa";
+import { getToken } from "../../utils/token";
+import { jwtDecode } from "jwt-decode";
+import { CustomJwtPayload } from "../../components/customDrawer";
 
 const EventosPage = () => {
   const navigate = useNavigate();
+  const token = getToken();
+  const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -36,12 +40,21 @@ const EventosPage = () => {
 
   const fetchEventos = async (page: number) => {
     setLoading(true);
-    try {
-      const response = await apiGetData("academic", `/eventos?page=${page}`);
-      setTotalPages(response.totalPages);
-      setEventos(response.data);
-    } catch (error) {
-      toast.error("Nenhuma informação encontrada para eventos");
+    if (decoded?.tipo === 'ADMIN') {
+      try {
+        const response = await apiGetData("academic", `/eventos?page=${page}`);
+        setTotalPages(response.totalPages);
+        setEventos(response.data);
+      } catch (error) {
+        toast.error("Nenhuma informação encontrada para eventos");
+      }
+    } if (decoded?.tipo === 'ALUNO') {
+      try {
+        const response = await apiGetData("academic", `/eventos/turma/${decoded.turma_id}`);
+        setEventos(response);
+      } catch (error) {
+        toast.error("Nenhuma informação encontrada para eventos");
+      }
     }
     setLoading(false);
   };
@@ -82,20 +95,24 @@ const EventosPage = () => {
           </Stack>
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
-          {row.data_formatura ?? 'data não informada'} 
+          {row.data_formatura ?? 'data não informada'}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           <Stack direction={'row'} gap={1}>
-            <Tooltip title="Ver compradores" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'compradores')}>
-                <FaMoneyBillWave color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Ver Tickets" arrow>
-              <IconButton size="small" onClick={() => onClickRowView(row, 'tickets')}>
-                <IoTicket color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
+            {decoded?.tipo === 'ADMIN' && (
+              <Tooltip title="Ver compradores" arrow>
+                <IconButton size="small" onClick={() => onClickRowView(row, 'compradores')}>
+                  <FaMoneyBillWave color="#2d1c63" size={22} />
+                </IconButton>
+              </Tooltip>
+            )}
+            {decoded?.tipo === 'ADMIN' && (
+              <Tooltip title="Ver Tickets" arrow>
+                <IconButton size="small" onClick={() => onClickRowView(row, 'tickets')}>
+                  <IoTicket color="#2d1c63" size={22} />
+                </IconButton>
+              </Tooltip>
+            )}
             <Tooltip title="Ver Participantes" arrow>
               <IconButton size="small" onClick={() => onClickRowView(row, 'participantes')}>
                 <FaPeopleGroup color="#2d1c63" size={22} />
@@ -131,7 +148,7 @@ const EventosPage = () => {
           color="secondary"
           endIcon={<IoAdd />}
           onClick={() => navigate('/eventos/new')}
-          >
+        >
           Novo Evento
         </Button>
       </Stack>
