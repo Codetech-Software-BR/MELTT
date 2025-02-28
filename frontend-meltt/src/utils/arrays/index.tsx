@@ -91,11 +91,11 @@ export const menuListAssociacao = [
 
 
 export const menuListAluno = [
-  // {
-  //   title: "Turma",
-  //   route: "/turmas",
-  //   icon: <FaGraduationCap size={22} />,
-  // },
+  {
+    title: "Minha Turma",
+    route: "/turmas",
+    icon: <FaGraduationCap size={22} />,
+  },
   {
     title: "Pagamentos",
     route: "/pagamentos",

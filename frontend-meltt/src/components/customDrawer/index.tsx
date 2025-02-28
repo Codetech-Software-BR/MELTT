@@ -19,6 +19,8 @@ export interface CustomJwtPayload extends JwtPayload {
   nome?: string;
   email?: string;
   tipo?: string;
+  turma_id?: string;
+  id_bling?: string;
 }
 import {
   menuListAdmin,
@@ -79,7 +81,7 @@ export default function CustomDrawer(props: Props) {
     setAnchorElNotifications(null);
   };
 
-  console.log('openProfileImage', props.openProfileImage)
+  console.log('decoded', decoded);
 
   const openPopoverSettings = Boolean(anchorElSettings);
   const openPopoverNotifications = Boolean(anchorElNotifications);

@@ -25,7 +25,7 @@ import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
 import { MdOutlinePayments } from "react-icons/md";
 import { FaEye, FaUserGraduate } from "react-icons/fa6";
-import { pagamentosColumns } from "./table/columns";
+import { pagamentosColumns, pagamentosStudentColumns } from "./table/columns";
 import { format } from "date-fns";
 import { BiSearch } from "react-icons/bi";
 import { getToken } from "../../utils/token";
@@ -74,21 +74,39 @@ const PagamentosPage = () => {
 
   const fetchPagamentos = async (page: number) => {
     setLoading(true);
-    try {
-      const params = new URLSearchParams();
+    if (decoded?.tipo === 'ADMIN') {
+      try {
+        const params = new URLSearchParams();
 
-      params.append("pagina", page.toString());
-      if (filterSituation) {
-        params.append("situacoes", filterSituation);
-      }
-      if (filterDate) {
-        params.append("dataInicial", filterDate);
-      }
+        params.append("pagina", page.toString());
+        if (filterSituation) {
+          params.append("situacoes", filterSituation);
+        }
+        if (filterDate) {
+          params.append("dataInicial", filterDate);
+        }
 
-      const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
-      setPayments(response.data);
-    } catch (error) {
-      toast.error("Erro ao buscar Pagamento");
+        const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
+        setPayments(response.data);
+      } catch (error) {
+        toast.error("Erro ao buscar Pagamento");
+      }
+    } if (decoded?.tipo === 'ALUNO') {
+      try {
+        const params = new URLSearchParams();
+
+        if (filterSituation) {
+          params.append("situacoes", filterSituation);
+        }
+        if (filterDate) {
+          params.append("dataInicial", filterDate);
+        }
+
+        const response = await apiGetData("academic", `/pagamentos/idBling/${decoded?.id_bling}`);
+        setPayments(response);
+      } catch (error) {
+        toast.error("Erro ao buscar Pagamento");
+      }
     }
     setLoading(false);
   };
@@ -223,6 +241,52 @@ const PagamentosPage = () => {
     );
   };
 
+  const dataRowStudent = (row: any) => {
+    return (
+      <TableRow
+        key={row.id}
+        sx={{
+          "&:last-child td, &:last-child th": { border: 0 },
+          " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
+        }}
+      >
+        <TableCell component="th" scope="row">
+          <Link
+            color="primary"
+            underline="always"
+            sx={{ fontFamily: "Poppins" }}
+          >
+            {row.id_bling}
+          </Link>
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          R$ {row.valor}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          {row.vencimento ? format(new Date(row.vencimento), "dd/MM/yyyy") : ""}
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          <Chip
+            label={row.situacao === 2 ? "Pago" : row.situacao === 1 ? 'Em Aberto' : 'Cancelado'}
+            color={row.situacao === 2 ? "success" : row.situacao === 1 ? "warning" : "error"}
+            variant="filled"
+            icon={<MdOutlinePayments />}
+            sx={{ padding: 1 }}
+          />
+        </TableCell>
+        <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
+          <Stack direction={'row'} alignItems={'center'} gap={2}>
+            <Tooltip title="Visualizar Boleto">
+              <IconButton size="small" onClick={() => window.open(row.linkBoleto, "_blank")}>
+                <FaEye color="#2d1c63" size={22} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        </TableCell>
+      </TableRow>
+    );
+  }
+
   useEffect(() => {
     fetchPagamentos(1);
     setOnLoad(true);
@@ -249,23 +313,25 @@ const PagamentosPage = () => {
             borderRadius: 4,
           }}
         >
-          <Stack direction={'row'} alignItems={'center'} gap={2} p={2}>
-            <FormControl sx={{ width: '20%' }}>
-              <InputLabel sx={{ p: 0.3, bgcolor: '#fff' }}>filtrar por Status</InputLabel>
-              <Select
-                value={filterSituation}
-                label="status"
-                onChange={(e) => setFilterSituation(e.target.value)}
-              >
-                <MenuItem value={2}>Pago</MenuItem>
-                <MenuItem value={1}>Em Aberto</MenuItem>
-                <MenuItem value={5}>Cancelado</MenuItem>
-              </Select>
-            </FormControl>
-            <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchWithFilters}>
-              Buscar
-            </Button>
-          </Stack>
+          {decoded?.tipo === 'ADMIN' && (
+            <Stack direction={'row'} alignItems={'center'} gap={2} p={2}>
+              <FormControl sx={{ width: '20%' }}>
+                <InputLabel sx={{ p: 0.3, bgcolor: '#fff' }}>filtrar por Status</InputLabel>
+                <Select
+                  value={filterSituation}
+                  label="status"
+                  onChange={(e) => setFilterSituation(e.target.value)}
+                >
+                  <MenuItem value={2}>Pago</MenuItem>
+                  <MenuItem value={1}>Em Aberto</MenuItem>
+                  <MenuItem value={5}>Cancelado</MenuItem>
+                </Select>
+              </FormControl>
+              <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchWithFilters}>
+                Buscar
+              </Button>
+            </Stack>
+          )}
           <Paper
             elevation={0}
             sx={{
@@ -286,12 +352,12 @@ const PagamentosPage = () => {
           >
             {loading ? (
               <LoadingTable />
-            ) : payments.length > 0 ? (
+            ) : payments?.length > 0 ? (
               <BasicTable
-                columns={pagamentosColumns}
+                columns={decoded?.tipo === 'ADMIN' ? pagamentosColumns : pagamentosStudentColumns}
                 rows={payments}
                 loading={loading}
-                dataRow={dataRow}
+                dataRow={decoded?.tipo === 'ADMIN' ? dataRow : dataRowStudent}
                 page={page}
                 totalPages={payments.length}
                 handleChangePagination={handleChangePagination}
@@ -299,9 +365,9 @@ const PagamentosPage = () => {
             ) : (
               <NoTableData
                 pronoum={"he"}
-                pageName="aluno"
+                pageName="pagamento"
                 disabledButton={false}
-                onClickAction={() => navigate("/alunos/edit")}
+                onClickAction={() => { }}
               />
             )}
           </Paper>
@@ -337,11 +403,11 @@ const PagamentosPage = () => {
             <InputLabel sx={{ p: 0.3, bgcolor: "#fff" }}>
               Turma do Aluno
             </InputLabel>
-          <Select variant="outlined" value={turmaId} onChange={(e) => setTurmaId(e.target.value as number)}>
-            {turmas.map((turma: Turma) => (
-              <MenuItem key={turma.id} value={turma.id}>{turma.nome} - {turma.identificador}</MenuItem>
-            ))}
-          </Select>
+            <Select variant="outlined" value={turmaId} onChange={(e) => setTurmaId(e.target.value as number)}>
+              {turmas.map((turma: Turma) => (
+                <MenuItem key={turma.id} value={turma.id}>{turma.nome} - {turma.identificador}</MenuItem>
+              ))}
+            </Select>
           </FormControl>
           <TextField
             label="Senha do Aluno"

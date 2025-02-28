@@ -55,7 +55,7 @@ async function verifyPassword(storedPassword, password) {
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email },
+    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email, turma_id: user.turma_id, id_bling: user.id_bling },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
   );
