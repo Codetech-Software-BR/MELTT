@@ -3,7 +3,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { apiGetData } from "../../services/api";
 import BoxDashboardValues from "../../components/box/dashboardValues";
 import CustomLineChart from "../../components/charts/line";
@@ -32,7 +32,7 @@ const DashboardPagamentosPage = () => {
   const [listCancelado, setListCancelado] = useState<ChartDataArray>([]);
 
 
-  const fetchPagamentosBySituacao = async (situacao: number) => {
+  const fetchPagamentosBySituacao = useCallback(async (situacao: number) => {
     try {
       const response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
 
@@ -87,7 +87,7 @@ const DashboardPagamentosPage = () => {
       toast.error("Erro ao buscar pagamentos");
       throw error;
     }
-  }
+  }, [])
 
   useEffect(() => {
     Promise.all([
@@ -95,7 +95,7 @@ const DashboardPagamentosPage = () => {
       fetchPagamentosBySituacao(2),
       fetchPagamentosBySituacao(5)
     ])
-  })
+  },[])
 
   useEffect(() => {
     setOnLoad(true);
