@@ -42,13 +42,13 @@ class S3Service {
     }
   }
 
-  async listFiles(bucketName, prefix) {
+  async listFiles(bucketName, bucketRegion, prefix) {
     const listParams = { Bucket: bucketName, Prefix: prefix || "" };
     try {
       const data = await this.s3Client.listObjectsV2(listParams).promise();
       return data.Contents?.map((item) => ({
         Key: item.Key,
-        Url: `https://${bucketName}.s3.amazonaws.com/${item.Key}`,
+        Url: `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${item.Key}`,
         Name: item.Key.split("/").pop(),
         LastModified: item.LastModified,
       })) || [];
@@ -64,7 +64,7 @@ class s3Controller {
 
   async getAllContratosTurma(req, res) {
     try {
-      const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, req.params.prefix);
+      const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, process.env.AWS_S3_REGION, req.params.prefix);
       res.status(200).json({ message: "Lista de contratos recuperados com sucesso", files });
     } catch (error) {
       res.status(500).json({ error: `Erro ao listar arquivos: ${error.message}` });
@@ -73,17 +73,16 @@ class s3Controller {
 
   async getContratosByTurma(req, res) {
     try {
-      const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, `turmas/${req.params.turma_id}`);
-      res.status(200).json({ message: "Lista de arquivos recuperados com sucesso", files });
+      const files = await s3Service.listFiles(process.env.AWS_BUCKET_TURMAS, process.env.AWS_S3_REGION, `turmas/${req.query.turma_id}`);
+      res.status(200).json({ message: "Lista de Contratos recuperados com sucesso", files });
     } catch (error) {
-      res.status(500).json({ error: `Erro ao listar os arquivos: ${error.message}` });
+      res.status(500).json({ error: `Erro ao listar os contratos: ${error.message}` });
     }
   }
 
   async getUploadTurmaContractUrl(req, res) {
     try {
       const { fileName, fileType, turmaId } = req.query;
-      console.log('turma brabra', turmaId)
   
       if (!fileName || !fileType || !turmaId) {
         return res.status(400).json({ error: "fileName, fileType e turmaId são obrigatórios" });
