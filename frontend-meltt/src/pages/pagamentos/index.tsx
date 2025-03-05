@@ -126,7 +126,6 @@ const PagamentosPage = () => {
       if (filterSituation) {
         params.append("situacoes", filterSituation);
       }
-      // if (filterDate) params.append("dataInicial", filterDate);
 
       const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
       setPayments(response.data);
@@ -357,7 +356,7 @@ const PagamentosPage = () => {
                 loading={loading}
                 dataRow={decoded?.tipo === 'ADMIN' ? dataRow : dataRowStudent}
                 page={page}
-                totalPages={payments.length}
+                totalPages={80}
                 handleChangePagination={handleChangePagination}
               />
             ) : (

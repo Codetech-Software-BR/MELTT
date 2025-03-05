@@ -89,8 +89,6 @@ const TarefasPage = () => {
     fetchResponsaveis();
   }, [])
 
-  console.log("usuarios", usuarios);
-  console.log("responsaveis", responsaveis);
 
   const handleChangePagination = (_: React.ChangeEvent<unknown>, value: number) => {
     try {

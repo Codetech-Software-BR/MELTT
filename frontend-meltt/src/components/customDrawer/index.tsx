@@ -81,8 +81,6 @@ export default function CustomDrawer(props: Props) {
     setAnchorElNotifications(null);
   };
 
-  console.log('decoded', decoded);
-
   const openPopoverSettings = Boolean(anchorElSettings);
   const openPopoverNotifications = Boolean(anchorElNotifications);
   const idPopoverSettings = openPopoverSettings ? "simple-popover" : undefined;

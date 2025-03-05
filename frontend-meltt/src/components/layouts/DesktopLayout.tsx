@@ -36,7 +36,6 @@ const DesktopLayout = ({ children }: DesktopLayoutProps) => {
 
   const [profilePicture, setProfilePicture] = useState<string>("");
 
-  console.log('openprofilepicture', openProfileImage);
   const onSubmitTeacher = async (values: any) => {
     setLoadingSavePassword(true);
     // const { senha } = values;

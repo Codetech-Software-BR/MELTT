@@ -51,11 +51,12 @@ class BlingController {
           linkBoleto,
         } = conta;
         
-        const { id: blingContactId, numeroDocumento } = conta.contato;
+        const { id: blingContactId, numeroDocumento: numeroDoc } = conta.contato;
+        let numeroDocumento = numeroDoc;
 
         try {
           const [result] = await db.promise().query(`
-            INSERT IGNORE INTO pagamentos (
+            INSERT INTO pagamentos (
               bling_payment_id,
               id_bling, 
               valor, 
@@ -65,8 +66,15 @@ class BlingController {
               linkBoleto,
               numeroDocumento
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-          `, [
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?) 
+             ON DUPLICATE KEY UPDATE
+              valor = VALUES(valor),
+              vencimento = VALUES(vencimento),
+              situacao = VALUES(situacao),
+              dataEmissao = VALUES(dataEmissao),
+              linkBoleto = VALUES(linkBoleto),
+              numeroDocumento = VALUES(numeroDocumento)
+           `, [
             blingPaymentId,
             blingContactId,
             valor,
