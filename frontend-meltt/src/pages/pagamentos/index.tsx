@@ -357,7 +357,7 @@ const PagamentosPage = () => {
             variant="outlined"
             focused
             fullWidth
-            value={payment?.contato.nome}
+            value={payment?.nome ?? ""}
             size="small"
             disabled
           />
@@ -366,7 +366,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.contato.numeroDocumento}
+            value={payment?.numeroDocumento}
             disabled
           />
           <FormControl fullWidth>
@@ -384,7 +384,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.contato.numeroDocumento}
+            value={payment?.numeroDocumento}
             disabled
           />
           <TextField
@@ -392,7 +392,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={`${payment?.contato.numeroDocumento}@meltt.com.br`}
+            value={`${payment?.numeroDocumento}@meltt.com.br`}
             disabled
           />
           <TextField
