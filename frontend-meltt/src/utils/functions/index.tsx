@@ -65,5 +65,5 @@ export const downloadArquivo = (
 
 export const redirectToBlingURLAuth = () => {
   window.location.href =
-    "https://www.bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=7e9a74126bb1db1435568436cc17923fad5b8179&state=bc09091c1ad9b85420276dbae4f660ab";
+    "https://www.bling.com.br/Api/v3/oauth/authorize?response_type=code&client_id=7e9a74126bb1db1435568436cc17923fad5b8179&state=537b5ee05f8a74082d677776b95cb0e9";
 };
