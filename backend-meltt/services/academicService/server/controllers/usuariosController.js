@@ -7,6 +7,7 @@ class UsuarioController {
         const offset = (page - 1) * limit; // Calcula o deslocamento
 
         const ativo = req.query.ativo; // Captura o parâmetro "ativo" da query string
+        const nome = req.query.nome;
 
         let query = "SELECT * FROM usuarios";
         let countQuery = "SELECT COUNT(*) AS total FROM usuarios";
@@ -17,6 +18,17 @@ class UsuarioController {
             query += " WHERE ativo = ?";
             countQuery += " WHERE ativo = ?";
             queryParams.push(parseInt(ativo)); // Converte para número
+        }
+
+        if (nome) {
+            if (queryParams.length > 0) {
+                query += " AND nome LIKE ?";
+                countQuery += " AND nome LIKE ?";
+            } else {
+                query += " WHERE nome LIKE ?";
+                countQuery += " WHERE nome LIKE ?";
+            }
+            queryParams.push(`${nome}%`); // Busca o nome que começa com o valor de "nome"
         }
 
         query += " LIMIT ? OFFSET ?";
@@ -45,7 +57,7 @@ class UsuarioController {
         });
     }
 
-     createUsuario(req, res) {
+    createUsuario(req, res) {
         console.log(req.body);
         const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
         const query =
