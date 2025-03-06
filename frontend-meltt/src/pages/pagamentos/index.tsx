@@ -49,7 +49,6 @@ interface Student {
 }
 
 const PagamentosPage = () => {
-  const navigate = useNavigate();
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
@@ -66,7 +65,6 @@ const PagamentosPage = () => {
 
   const [page, setPage] = useState(1);
   const [filterSituation, setFilterSituation] = useState<string | null>(null);
-  const [filterDate, setFilterDate] = useState<string | null>(null);
 
   const fetchPagamentos = async (page: number) => {
     setLoading(true);
@@ -86,9 +84,6 @@ const PagamentosPage = () => {
 
         if (filterSituation) {
           params.append("situacoes", filterSituation);
-        }
-        if (filterDate) {
-          params.append("dataInicial", filterDate);
         }
 
         const response = await apiGetData("academic", `/pagamentos/idBling/${decoded?.id_bling}`);
@@ -132,7 +127,7 @@ const PagamentosPage = () => {
     setPage(value);
   };
 
-  const onSubmitNewUser = async (values: Student) => {
+  const onSubmitNewUser = async (_: Student) => {
     setLoadingSaveNewUser(true);
 
     let dataObj = {
@@ -362,7 +357,7 @@ const PagamentosPage = () => {
             variant="outlined"
             focused
             fullWidth
-            value={payment?.contato.nome}
+            value={payment?.nome ?? ""}
             size="small"
             disabled
           />
@@ -371,7 +366,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.contato.numeroDocumento}
+            value={payment?.numeroDocumento}
             disabled
           />
           <FormControl fullWidth>
@@ -389,7 +384,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.contato.numeroDocumento}
+            value={payment?.numeroDocumento}
             disabled
           />
           <TextField
@@ -397,7 +392,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={`${payment?.contato.numeroDocumento}@meltt.com.br`}
+            value={`${payment?.numeroDocumento}@meltt.com.br`}
             disabled
           />
           <TextField

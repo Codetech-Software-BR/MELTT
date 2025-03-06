@@ -102,6 +102,40 @@ class BlingController {
       });
     }
   }
+
+  async getAllContatos(req, res) {
+    try {
+      const { authorization } = req.headers;
+      const { pagina = 1 } = req.query;
+      const token = authorization.replace(/^Bearer\s+/i, "");
+
+      const params = new URLSearchParams();
+      params.append("limite", "20");
+      params.append("pagina", String(pagina));
+
+      const response = await axios.get(
+        `https://www.bling.com.br/Api/v3/contatos?${params.toString()}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      return res.json({ 
+        message: "Requisição realizada com sucesso",
+        data: response,
+        success: true
+      });
+    } catch (error) {
+      console.error("Erro ao comunicar com Bling:", error.response?.data || error.message);
+      return res.status(500).json({
+        message: error.message,
+        status: error.status
+      });
+    }
+  }
 }
 
 export default new BlingController();
