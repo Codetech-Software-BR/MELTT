@@ -110,7 +110,7 @@ class BlingController {
       const token = authorization.replace(/^Bearer\s+/i, "");
 
       const params = new URLSearchParams();
-      params.append("limite", "20");
+      params.append("limite", "100");
       params.append("pagina", String(pagina));
 
       const response = await axios.get(
@@ -125,7 +125,7 @@ class BlingController {
 
       return res.json({ 
         message: "Requisição realizada com sucesso",
-        data: response,
+        data: response.data.data,
         success: true
       });
     } catch (error) {
