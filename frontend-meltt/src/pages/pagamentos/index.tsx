@@ -116,14 +116,9 @@ const PagamentosPage = () => {
   const fetchWithFilters = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
+      let situacao = filterSituation
 
-      if (filterSituation) {
-        params.append("situacoes", filterSituation);
-      }
-      if (filterDate) params.append("dataInicial", filterDate);
-
-      const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
+      const response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
       setPayments(response.data);
     } catch (error) {
       toast.error("Erro ao aplicar filtro");
