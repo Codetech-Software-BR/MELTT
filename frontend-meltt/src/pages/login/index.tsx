@@ -47,7 +47,7 @@ const LoginPage = () => {
       } else {
         setToken(data.token);
         toast.success("Login efetuado com sucesso");
-        navigate("/splash");
+        navigate("/turmas");
       }
     } catch (error) {
       alert(error);
