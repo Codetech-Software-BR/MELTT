@@ -47,7 +47,17 @@ class PagamentosController {
     });
   };
 
-
+  getPagamentosByNumeroDocumento(req, res) {
+    const { numeroDocumento } = req.query;
+    db.query(
+      "SELECT * FROM pagamentos WHERE numeroDocumento = ? ORDER BY dataEmissao DESC LIMIT 1",
+      [numeroDocumento],
+      (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.status(200).json(result[0] || null);
+      }
+    );
+  };
 
 }
 

@@ -41,6 +41,7 @@ export type StudentInitialValuesFn = (
 const AlunosPageEdit = () => {
   const navigate = useNavigate();
   const { stateAluno } = useAlunoContext();
+  const [tipoUsuario, setTipoUsuario] = useState(null);
 
   const { id } = useParams();
 
@@ -74,36 +75,66 @@ const AlunosPageEdit = () => {
 
   const onSubmitAluno = async (values: any) => {
     console.log("aqui");
-    
-    const { senha, confirmar_senha, ativo, ...rest } = values;
+    let newTurma_id;
+
+    const { senha, confirmar_senha, ativo, documento, tipo, turma_id, ...rest } = values;
     if (senha !== confirmar_senha) {
       toast.error("As senhas não conferem");
-      return;
     }
-    delete values.confirmar_senha;
-    values = { ...rest, senha, ativo: ativo ? 1 : 0 };
+    if (turma_id === "") {
+      newTurma_id = null;
+      values = { ...rest, senha, documento, tipo, turma_id: newTurma_id, ativo: ativo ? 1 : 0 };
+    } else {
+      values = { ...rest, senha, documento, tipo, turma_id, ativo: ativo ? 1 : 0 };
+    }
     console.log("values", values);
     setLoadingAluno(true);
     try {
       if (id) {
         const response = await apiPutData("academic", `/usuarios/${id}`, values);
         console.log("response", response);
-        if (response.value?.id) {
+        if (response.id) {
           toast.success("Aluno atualizado com sucesso");
           navigate("/usuarios");
         }
       } else {
-        const response = await apiPostData("academic", "/usuarios", values);
+        if (tipo === "ALUNO") {
+          console.log(documento)
+          const response = await apiGetData("academic", `/pagamentos/documentos?numeroDocumento=${documento}`);
 
-        if (response.id) {
-          toast.success("Aluno salvo com sucesso");
-          navigate("/usuarios");
+          console.log("response", response);
+
+          if (response.id === null) {
+            toast.error("Este aluno não possui nem vínculo de pagamento no Bling");
+          }
+
+          if (response.id) {
+            values.id_bling = response.id_bling;
+
+            console.log("values2", values);
+            const responseAluno = await apiPostData("academic", `/usuarios`, values);
+
+            console.log("responseAluno", responseAluno);
+
+            if (responseAluno.id) {
+              toast.success("Aluno salvo com sucesso");
+              navigate("/usuarios");
+            }
+          }
+        } else {
+          const response = await apiPostData("academic", "/usuarios", values);
+          console.log("response", response);
+          if (response.id) {
+            toast.success("Usuário criado com sucesso");
+            navigate("/usuarios");
+          }
         }
       }
     } catch (error) {
       toast.error("Erro ao salvar aluno");
+    } finally {
+      setLoadingAluno(false);
     }
-    setLoadingAluno(false);
   };
 
   useEffect(() => {
@@ -236,6 +267,33 @@ const AlunosPageEdit = () => {
                   <Stack width={"100%"} direction={"row"} gap={2}>
                     <FormControl sx={{ width: "50%" }} size="small">
                       <InputLabel
+                        id="tipo"
+                        sx={{
+                          backgroundColor: "white",
+                          px: 0.5,
+                        }}
+                      >
+                        Tipo de Usuário
+                      </InputLabel>
+                      <Select
+                        labelId="tipo"
+                        name="tipo"
+                        value={values.tipo ?? ""}
+                        disabled={loadingTurmas}
+                        onChange={(event) => {
+                          handleChange(event); // Mantém a funcionalidade do Formik
+                          setTipoUsuario(event.target.value); // Executa a outra função desejada
+                        }}
+                      >
+                        {tiposUsuario.map((tipo: string) => (
+                          <MenuItem key={tipo} value={tipo}>
+                            {tipo}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    <FormControl sx={{ width: "50%", visibility: tipoUsuario == "ALUNO" ? "visible" : "hidden" }} size="small">
+                      <InputLabel
                         id="turma-label"
                         sx={{
                           backgroundColor: "white",
@@ -254,30 +312,6 @@ const AlunosPageEdit = () => {
                         {turmas.map((turma: { id: number, nome: string }) => (
                           <MenuItem key={turma.id} value={turma.id}>
                             {turma.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <FormControl sx={{ width: "50%" }} size="small">
-                      <InputLabel
-                        id="tipo"
-                        sx={{
-                          backgroundColor: "white",
-                          px: 0.5,
-                        }}
-                      >
-                        Tipo de Usuário
-                      </InputLabel>
-                      <Select
-                        labelId="tipo"
-                        name="tipo"
-                        value={values.tipo ?? ""}
-                        disabled={loadingTurmas}
-                        onChange={handleChange}
-                      >
-                        {tiposUsuario.map((tipo: string) => (
-                          <MenuItem key={tipo} value={tipo}>
-                            {tipo}
                           </MenuItem>
                         ))}
                       </Select>
