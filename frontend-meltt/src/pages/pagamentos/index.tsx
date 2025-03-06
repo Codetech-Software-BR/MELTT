@@ -37,11 +37,7 @@ import { Turma } from "../../types";
 interface Student {
   id: number;
   name: Key | null | undefined;
-  contato: {
-    nome: string;
-    numeroDocumento: string;
-    id: string;
-  };
+  numeroDocumento: string;
   valor: string;
   vencimento: string;
   situacao: number;
@@ -140,12 +136,12 @@ const PagamentosPage = () => {
     setLoadingSaveNewUser(true);
 
     let dataObj = {
-      email: `${payment?.contato.numeroDocumento}@meltt.com.br`,
-      senha: payment?.contato.id.toString(),
+      email: `${payment?.numeroDocumento}@meltt.com.br`,
+      senha: payment?.id.toString(),
       tipo: "ALUNO",
-      documento: payment?.contato.numeroDocumento,
-      nome: payment?.contato.nome,
-      id_bling: payment?.contato.id.toString(),
+      documento: payment?.numeroDocumento,
+      nome: decoded?.nome,
+      id_bling: payment?.id.toString(),
       ativo: 1,
       telefone: null,
       turma_id: turmaId,
@@ -154,7 +150,7 @@ const PagamentosPage = () => {
     try {
       const response = await apiPostData("academic", "/usuarios", { ...dataObj });
       if (response.id) {
-        toast.success(`Usuário criado com sucesso. E-mail: ${payment?.contato.numeroDocumento}@meltt.com.br  | Senha: ${payment?.contato.numeroDocumento}`, {
+        toast.success(`Usuário criado com sucesso. E-mail: ${payment?.numeroDocumento}@meltt.com.br  | Senha: ${payment?.id}`, {
           duration: 20000,
           icon: "👏",
         });
@@ -177,16 +173,7 @@ const PagamentosPage = () => {
         }}
       >
         <TableCell component="th" scope="row">
-          <Link
-            color="primary"
-            underline="always"
-            sx={{ fontFamily: "Poppins" }}
-          >
-            {row.contato.nome}
-          </Link>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.contato.numeroDocumento}
+          {row.numeroDocumento}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           R$ {row.valor}
