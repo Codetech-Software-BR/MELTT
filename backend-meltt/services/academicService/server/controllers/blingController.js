@@ -106,7 +106,7 @@ class BlingController {
   async getAllContatos(req, res) {
     try {
       const { authorization } = req.headers;
-      const { pagina = 1, situacoes, dataInicial, dataFinal } = req.query;
+      const { pagina = 1 } = req.query;
       const token = authorization.replace(/^Bearer\s+/i, "");
 
       const params = new URLSearchParams();
