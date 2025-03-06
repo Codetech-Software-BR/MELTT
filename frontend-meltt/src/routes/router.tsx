@@ -80,7 +80,7 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Navigate to="/alunos" replace />,
+        element: <Navigate to="/turmas" replace />,
       },
       {
         path: "/dashboard",

@@ -36,11 +36,7 @@ import { Turma } from "../../types";
 interface Student {
   id: number;
   name: Key | null | undefined;
-  contato: {
-    nome: string;
-    numeroDocumento: string;
-    id: string;
-  };
+  numeroDocumento: string;
   valor: string;
   vencimento: string;
   situacao: number;
@@ -68,23 +64,15 @@ const PagamentosPage = () => {
 
   const [page, setPage] = useState(1);
   const [filterSituation, setFilterSituation] = useState<string | null>(null);
-  // const [filterDate, setFilterDate] = useState<string | null>(null);
 
   const fetchPagamentos = async (page: number) => {
     setLoading(true);
     if (decoded?.tipo === 'ADMIN') {
       try {
         const params = new URLSearchParams();
+        params.append("page", page.toString());
 
-        params.append("pagina", page.toString());
-        if (filterSituation) {
-          params.append("situacoes", filterSituation);
-        }
-        // if (filterDate) {
-        //   params.append("dataInicial", filterDate);
-        // }
-
-        const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
+        const response = await apiGetData("academic", `/pagamentos?${params.toString()}`);
         setPayments(response.data);
       } catch (error) {
         toast.error("Erro ao buscar Pagamento");
@@ -96,9 +84,6 @@ const PagamentosPage = () => {
         if (filterSituation) {
           params.append("situacoes", filterSituation);
         }
-        // if (filterDate) {
-        //   params.append("dataInicial", filterDate);
-        // }
 
         const response = await apiGetData("academic", `/pagamentos/idBling/${decoded?.id_bling}`);
         setPayments(response);
@@ -121,13 +106,9 @@ const PagamentosPage = () => {
   const fetchWithFilters = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
+      let situacao = filterSituation
 
-      if (filterSituation) {
-        params.append("situacoes", filterSituation);
-      }
-
-      const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
+      const response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
       setPayments(response.data);
     } catch (error) {
       toast.error("Erro ao aplicar filtro");
@@ -149,12 +130,12 @@ const PagamentosPage = () => {
     setLoadingSaveNewUser(true);
 
     let dataObj = {
-      email: `${payment?.contato.numeroDocumento}@meltt.com.br`,
-      senha: payment?.contato.id.toString(),
+      email: `${payment?.numeroDocumento}@meltt.com.br`,
+      senha: payment?.id.toString(),
       tipo: "ALUNO",
-      documento: payment?.contato.numeroDocumento,
-      nome: payment?.contato.nome,
-      id_bling: payment?.contato.id.toString(),
+      documento: payment?.numeroDocumento,
+      nome: decoded?.nome,
+      id_bling: payment?.id.toString(),
       ativo: 1,
       telefone: null,
       turma_id: turmaId,
@@ -163,7 +144,7 @@ const PagamentosPage = () => {
     try {
       const response = await apiPostData("academic", "/usuarios", { ...dataObj });
       if (response.id) {
-        toast.success(`Usuário criado com sucesso. E-mail: ${payment?.contato.numeroDocumento}@meltt.com.br  | Senha: ${payment?.contato.numeroDocumento}`, {
+        toast.success(`Usuário criado com sucesso. E-mail: ${payment?.numeroDocumento}@meltt.com.br  | Senha: ${payment?.id}`, {
           duration: 20000,
           icon: "👏",
         });
@@ -186,16 +167,7 @@ const PagamentosPage = () => {
         }}
       >
         <TableCell component="th" scope="row">
-          <Link
-            color="primary"
-            underline="always"
-            sx={{ fontFamily: "Poppins" }}
-          >
-            {row.contato.nome}
-          </Link>
-        </TableCell>
-        <TableCell component="th" scope="row">
-          {row.contato.numeroDocumento}
+          {row.numeroDocumento}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           R$ {row.valor}
@@ -384,7 +356,7 @@ const PagamentosPage = () => {
             variant="outlined"
             focused
             fullWidth
-            value={payment?.contato.nome}
+            value={payment?.nome ?? ""}
             size="small"
             disabled
           />
@@ -393,7 +365,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.contato.numeroDocumento}
+            value={payment?.numeroDocumento}
             disabled
           />
           <FormControl fullWidth>
@@ -411,7 +383,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={payment?.contato.numeroDocumento}
+            value={payment?.numeroDocumento}
             disabled
           />
           <TextField
@@ -419,7 +391,7 @@ const PagamentosPage = () => {
             variant="outlined"
             fullWidth
             size="small"
-            value={`${payment?.contato.numeroDocumento}@meltt.com.br`}
+            value={`${payment?.numeroDocumento}@meltt.com.br`}
             disabled
           />
           <TextField
