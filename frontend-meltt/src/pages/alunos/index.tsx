@@ -161,18 +161,18 @@ const AlunosPage = () => {
           backgroundColor: row.id === selectedRowId ? "#eeeeee" : "inherit",
           transition: "background-color 0.3s",
           "&:last-child td, &:last-child th": { border: 0 },
-          " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
+          " &:hover": { bgcolor: "#F7F7F7" },
         }}
       >
         <TableCell component="th" scope="row">
-          <Link
+          {/* <Link
             color="primary"
             underline="always"
             onClick={() => onClickRowView(row)}
             sx={{ fontFamily: "Poppins" }}
-          >
-            {row.nome}
-          </Link>
+          > */}
+          {row.nome}
+          {/* </Link> */}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           {row.email}
@@ -232,7 +232,33 @@ const AlunosPage = () => {
         justifyContent={"space-between"}
         my={2}
       >
-        <h2 className="text-2xl text-default font-extrabold"></h2>
+        {/* <h2 className="text-2xl text-default font-extrabold"></h2> */}
+        <Stack direction={'row'} alignItems={'center'} gap={2} py={1} width={'100%'}>
+          <FormControl sx={{ width: '15%' }}>
+            <InputLabel sx={{ bgcolor: 'secondary' }}>Status</InputLabel>
+            <Select
+              size="small"
+              value={status ?? 1}
+              label="status"
+              onChange={handleChangeStatus}
+            >
+              <MenuItem value={1}>Ativos</MenuItem>
+              <MenuItem value={0}>Inativos</MenuItem>
+              <MenuItem value={2}>Todos</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: '30%' }}>
+            <TextField
+              fullWidth
+              label="Nome"
+              name="nome"
+              placeholder="Filtrar por nome"
+              size="small"
+              value={nome ?? ""}
+              onChange={handleChangeNome}
+            />
+          </FormControl>
+        </Stack>
         <Button
           color="secondary"
           variant="contained"
@@ -249,44 +275,16 @@ const AlunosPage = () => {
         <Paper
           elevation={0}
           sx={{
-            p: 1,
+            height: "calc(80vh - 20px)",
             flexGrow: 1,
             width: "100%",
-            height: "calc(100vh - 170px)",
-            borderRadius: 4,
           }}
         >
-          <Stack direction={'row'} alignItems={'center'} gap={2} py={1}>
-            <FormControl sx={{ width: '15%' }}>
-              <InputLabel sx={{ p: 0.3, bgcolor: '#fff' }}>Status de Atividade</InputLabel>
-              <Select
-                size="small"
-                value={status ?? 1}
-                label="status"
-                onChange={handleChangeStatus}
-              >
-                <MenuItem value={1}>Ativos</MenuItem>
-                <MenuItem value={0}>Inativos</MenuItem>
-                <MenuItem value={2}>Todos</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ width: '30%' }}>
-              <TextField
-                fullWidth
-                label="Nome"
-                name="nome"
-                placeholder="Filtrar por nome"
-                size="small"
-                value={nome ?? ""}
-                onChange={handleChangeNome}
-              />
-            </FormControl>
-          </Stack>
+
           <Paper
             elevation={0}
             sx={{
               height: "100%",
-              overflow: "auto",
               "&::-webkit-scrollbar": {
                 width: "8px",
                 height: "12px",
