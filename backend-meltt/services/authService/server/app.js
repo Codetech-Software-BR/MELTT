@@ -1,7 +1,7 @@
 // Bibliotecas
 import express from "express";
 import cors from "cors";
-import connection from "./db.js";
+import pool from "./db.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import authMiddleware from "./middlewares/auth/index.js";
@@ -22,31 +22,26 @@ app.use(cors(corsOptions));
 
 async function createUser({ aluno_id, nome, email, senha, tipo }) {
   const hashedPassword = await bcrypt.hash(senha, 10);
-  return new Promise((resolve, reject) => {
-    const query =
-      "INSERT INTO usuarios (aluno_id, nome, email, senha, tipo) VALUES (?, ?, ?, ?, ?)";
-    connection.query(
-      query,
-      [aluno_id, nome, email, hashedPassword, tipo],
-      (err, results) => {
-        console.log("err", err);
-        console.log("results", results);
-        if (err) return reject(err);
-
-        resolve({ id: results.id, email, tipo });
-      }
+  try {
+    const [results] = await pool.query(
+      "INSERT INTO usuarios (aluno_id, nome, email, senha, tipo) VALUES (?, ?, ?, ?, ?)",
+      [aluno_id, nome, email, hashedPassword, tipo]
     );
-  });
+    return { id: results.insertId, email, tipo };
+  } catch (err) {
+    console.log("Erro ao criar usuário:", err);
+    throw err;
+  }
 }
 
 async function findUserByEmail(email) {
-  return new Promise((resolve, reject) => {
-    const query = "SELECT * FROM usuarios WHERE email = ?";
-    connection.query(query, [email], (err, results) => {
-      if (err) return reject(err);
-      resolve(results[0]);
-    });
-  });
+  try {
+    const [results] = await pool.query("SELECT * FROM usuarios WHERE email = ?", [email]);
+    return results[0];
+  } catch (err) {
+    console.log("Erro ao buscar usuário:", err);
+    throw err;
+  }
 }
 
 async function verifyPassword(storedPassword, password) {
@@ -55,7 +50,14 @@ async function verifyPassword(storedPassword, password) {
 
 function generateToken(user) {
   return jwt.sign(
-    { id: user.id, tipo: user.tipo, nome: user.nome, email: user.email, turma_id: user.turma_id, id_bling: user.id_bling },
+    { 
+      id: user.id, 
+      tipo: user.tipo, 
+      nome: user.nome, 
+      email: user.email, 
+      turma_id: user.turma_id, 
+      id_bling: user.id_bling 
+    },
     process.env.JWT_SECRET,
     { expiresIn: "24h" }
   );
@@ -116,35 +118,6 @@ app.post("/api/users/forgot-password", async (req, res) => {
 
     return res.json({ message: "Feature in progress. Please wait" });
 
-    // const resetToken = generateToken(user);
-    // const resetLink = `http://localhost:5000/reset-password/${resetToken}`;
-
-    // // Enviar e-mail usando Amazon SES
-    // const params = {
-    //   Source: 'your_verified_email@example.com',
-    //   Destination: {
-    //     ToAddresses: [email]
-    //   },
-    //   Message: {
-    //     Subject: {
-    //       Data: 'Password Reset'
-    //     },
-    //     Body: {
-    //       Text: {
-    //         Data: `Reset your password by clicking on the following link: ${resetLink}`
-    //       }
-    //     }
-    //   }
-    // };
-
-    // ses.sendEmail(params, (err, data) => {
-    //   if (err) {
-    //     console.error(err, err.stack);
-    //     res.status(500).json({ error: 'Failed to send password reset email' });
-    //   } else {
-    //     res.json({ message: 'Password reset link sent' });
-    //   }
-    // });
   } catch (error) {
     res.status(500).json({ error: "Failed to send password reset email" });
   }
@@ -160,11 +133,7 @@ app.post("/api/users/reset-password/", authMiddleware, async (req, res) => {
     }
 
     const newPassword = await bcrypt.hash(senha, 10);
-    // user.senha = await bcrypt.hash(senha, 10);
-    connection.query("UPDATE usuarios SET senha = ? WHERE id = ?", [
-      newPassword,
-      user.id,
-    ]);
+    await pool.query("UPDATE usuarios SET senha = ? WHERE id = ?", [newPassword, user.id]);
     res.json({ message: "Senha resetada com sucesso" });
   } catch (error) {
     res.status(500).json({ error: "Erro ao resetar senha" });
@@ -175,12 +144,11 @@ app.delete("/api/users/:id", authMiddleware, async (req, res) => {
   const id = req.params.id;
 
   try {
-    const [user] = await connection.query("SELECT * FROM usuarios WHERE id = ?", [id]);
-    if (!user) {
+    const [users] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [id]);
+    if (users.length === 0) {
       return res.status(404).json({ error: "Usuário não encontrado" });
     }
-    await connection.query("DELETE FROM usuarios WHERE id = ?", [id]);
-
+    await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
     res.json({ message: "Usuário deletado com sucesso" });
   } catch (error) {
     console.error(error);
@@ -196,9 +164,8 @@ app.get("/api/users/getByTipo", authMiddleware, async (req, res) => {
   }
 
   try {
-    const [users] = await connection.promise().query("SELECT * FROM usuarios WHERE tipo = ?", [tipo]);
-    console.log("users", users);
-
+    const [users] = await pool.query("SELECT * FROM usuarios WHERE tipo = ?", [tipo]);
+    
     if (users.length === 0) {
       return res.status(404).json({ error: `Nenhum usuário encontrado para o tipo ${tipo}` });
     }
