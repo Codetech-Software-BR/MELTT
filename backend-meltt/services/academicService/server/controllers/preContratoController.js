@@ -1,4 +1,4 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class PreContratoController {
   static instance;
@@ -10,18 +10,18 @@ class PreContratoController {
     return PreContratoController.instance;
   }
 
-  getAllPreContratos(req, res) {
+  async getAllPreContratos(req, res) {
     const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
     const offset = (page - 1) * limit; // Calcula o deslocamento
 
     const query = "SELECT * FROM pre_contratos LIMIT ? OFFSET ?";
 
-    db.query(query, [limit, offset], (err, results) => {
+    await pool.query(query, [limit, offset], (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
 
       // Consulta para contar o total de registros
-      db.query("SELECT COUNT(*) AS total FROM pre_contratos", (err, countResult) => {
+      pool.query("SELECT COUNT(*) AS total FROM pre_contratos", (err, countResult) => {
         if (err) return res.status(500).json({ error: err.message });
 
         const total = countResult[0].total;
@@ -38,19 +38,19 @@ class PreContratoController {
     });
   }
 
-  getPreContratoById(req, res) {
+  async getPreContratoById(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM pre_contratos WHERE id = ?", [id], (err, result) => {
+    await pool.query("SELECT * FROM pre_contratos WHERE id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   }
 
-  createPreContrato(req, res) {
+  async createPreContrato(req, res) {
     const { content, createdBy, contactedBy, studentName, agreedValue, packageInterest, status } = req.body;
     const query =
       "INSERT INTO pre_contratos (content, createdBy, contactedBy, studentName, agreedValue, packageInterest, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    db.query(
+      await pool.query(
       query,
       [content, createdBy, contactedBy, studentName, agreedValue, packageInterest, status],
       (err, result) => {
@@ -60,20 +60,20 @@ class PreContratoController {
     );
   }
 
-  updatePreContrato(req, res) {
+  async updatePreContrato(req, res) {
     const id = req.params.id;
     const { content, createdBy, contactedBy, studentName, agreedValue, packageInterest, status } = req.body;
     const updateQuery =
       "UPDATE pre_contratos SET content = ?, createdBy = ?, contactedBy = ?, studentName = ?, agreedValue = ?, packageInterest = ?, status = ? WHERE id = ?";
 
-    db.query(
+      await pool.query(
       updateQuery,
       [content, createdBy, contactedBy, studentName, agreedValue, packageInterest, status, id],
       (err) => {
         if (err) return res.status(500).json(err);
 
         const selectQuery = "SELECT * FROM pre_contratos WHERE id = ?";
-        db.query(selectQuery, [id], (err, results) => {
+        pool.query(selectQuery, [id], (err, results) => {
           if (err) return res.status(500).json(err);
           if (results.length === 0) {
             return res.status(404).json({ error: "Pré-contrato não encontrado." });
@@ -84,9 +84,9 @@ class PreContratoController {
     );
   }
 
-  deletePreContrato(req, res) {
+  async deletePreContrato(req, res) {
     const id = req.params.id;
-    db.query("DELETE FROM pre_contratos WHERE id = ?", [id], (err) => {
+    await pool.query("DELETE FROM pre_contratos WHERE id = ?", [id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Pré-contrato deletado com sucesso!", id });
     });

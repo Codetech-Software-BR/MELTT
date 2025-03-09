@@ -1,19 +1,19 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class PagamentosController {
 
-  getAllPagamentos(req, res) {
+  async getAllPagamentos(req, res) {
     const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
     const offset = (page - 1) * limit; // Calcula o deslocamento
 
     const query = "SELECT * FROM pagamentos LIMIT ? OFFSET ?";
 
-    db.query(query, [limit, offset], (err, results) => {
+    await pool.query(query, [limit, offset], (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
 
       // Consulta para contar o total de registros
-      db.query("SELECT COUNT(*) AS total FROM pagamentos", (err, countResult) => {
+      pool.query("SELECT COUNT(*) AS total FROM pagamentos", (err, countResult) => {
         if (err) return res.status(500).json({ error: err.message });
 
         const total = countResult[0].total;
@@ -30,18 +30,18 @@ class PagamentosController {
     });
   };
 
-  getPagamentosBySituacao(req, res) {
+  async getPagamentosBySituacao(req, res) {
     const situacao = req.params.id;
-    db.query("SELECT * FROM pagamentos WHERE situacao = ?", [situacao], (err, result) => {
+    await pool.query("SELECT * FROM pagamentos WHERE situacao = ?", [situacao], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
 
 
-  getPagamentosByIdBling(req, res) {
+  async getPagamentosByIdBling(req, res) {
     const id_bling = req.params.id;
-    db.query("SELECT * FROM pagamentos WHERE id_bling = ?", [id_bling], (err, result) => {
+    await pool.query("SELECT * FROM pagamentos WHERE id_bling = ?", [id_bling], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });

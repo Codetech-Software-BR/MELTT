@@ -1,5 +1,5 @@
 import axios from "axios";
-import db from "../db.js";
+import pool from "../db.js";
 import { format, subMonths, addMonths } from "date-fns";
 
 class BlingController {
@@ -55,7 +55,7 @@ class BlingController {
         let numeroDocumento = numeroDoc;
 
         try {
-          const [result] = await db.promise().query(`
+          const [result] = await pool.promise().query(`
             INSERT INTO pagamentos (
               bling_payment_id,
               id_bling, 

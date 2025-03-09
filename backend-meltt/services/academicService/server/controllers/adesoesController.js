@@ -1,4 +1,4 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class AdesaoController {
 
@@ -9,10 +9,10 @@ class AdesaoController {
 
   //   const query = "SELECT * FROM adesoes LIMIT ? OFFSET ?";
 
-  //   db.query(query, [limit, offset], (err, results) => {
+  //   pool.query(query, [limit, offset], (err, results) => {
   //     if (err) return res.status(500).json({ error: err.message });
 
-  //     db.query("SELECT COUNT(*) AS total FROM adesoes", (err, countResult) => {
+  //     pool.query("SELECT COUNT(*) AS total FROM adesoes", (err, countResult) => {
   //       if (err) return res.status(500).json({ error: err.message });
 
   //       const total = countResult[0].total;
@@ -29,7 +29,7 @@ class AdesaoController {
   //   });
   // };
 
-  getAllAdesoes(req, res) {
+  async getAllAdesoes(req, res) {
     const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
     const offset = (page - 1) * limit; // Calcula o deslocamento
@@ -43,13 +43,13 @@ class AdesaoController {
       FROM adesoes
     `;
   
-    db.query(query, [limit, offset], (err, results) => {
+    await pool.query(query, [limit, offset], (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
   
-      db.query(countQuery, (err, countResult) => {
+      pool.query(countQuery, (err, countResult) => {
         if (err) return res.status(500).json({ error: err.message });
   
-        db.query(countStatusQuery, (err, statusResult) => {
+        pool.query(countStatusQuery, (err, statusResult) => {
           if (err) return res.status(500).json({ error: err.message });
   
           const total = countResult[0].total;
@@ -72,36 +72,36 @@ class AdesaoController {
   }
   
   
-  getAdesaoById(req, res) {
+  async getAdesaoById(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM adesoes WHERE id = ?", [id], (err, result) => {
+   await pool.query("SELECT * FROM adesoes WHERE id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
 
-  getAdesoesByTurmaId(req, res) {
+  async getAdesoesByTurmaId(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM adesoes WHERE turma_id = ?", [id], (err, result) => {
+    await pool.query("SELECT * FROM adesoes WHERE turma_id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
 
-  getAdesoesByAlunoId(req, res) {
+  async getAdesoesByAlunoId(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM adesoes WHERE aluno_id = ?", [id], (err, result) => {
+   await pool.query("SELECT * FROM adesoes WHERE aluno_id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
 
 
-  createAdesao(req, res) {
+  async createAdesao(req, res) {
     const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
     const query =
       "INSERT INTO adesoes (aluno_id, turma_id, status, data_assinatura, observacoes ) VALUES (?, ?, ?, ?, ?)";
-    db.query(
+    await pool.query(
       query,
       [aluno_id, turma_id, status, data_assinatura, observacoes],
       (err, result) => {
@@ -111,12 +111,12 @@ class AdesaoController {
     );
   };
 
-  updateAdesao(req, res) {
+  async updateAdesao(req, res) {
     const id = req.params.id;
     const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
     const updateQuery = `UPDATE adesoes SET aluno_id = ?, turma_id = ?, status = ?, data_assinatura = ?, observacoes = ? WHERE id = ?`;
 
-    db.query(
+    await pool.query(
       updateQuery,
       [aluno_id, turma_id, status, data_assinatura, observacoes, id],
       (err) => {
@@ -124,7 +124,7 @@ class AdesaoController {
 
         const selectQuery = "SELECT * FROM adesoes WHERE id = ?";
 
-        db.query(selectQuery, [id], (err, results) => {
+        pool.query(selectQuery, [id], (err, results) => {
           if (err) return res.status(500).json(err);
           if (results.length === 0) {
             return res.status(404).json({ error: "Adesão não encontrada." });
@@ -140,9 +140,9 @@ class AdesaoController {
     );
   };
 
-  deleteAdesao(req, res) {
+  async deleteAdesao(req, res) {
     const id = req.params.id;
-    db.query("DELETE FROM adesoes WHERE id = ?", [id], (err) => {
+    await pool.query("DELETE FROM adesoes WHERE id = ?", [id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Adesão deletada com sucesso!", id });
     });

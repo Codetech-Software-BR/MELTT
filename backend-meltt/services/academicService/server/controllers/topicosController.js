@@ -1,19 +1,19 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class topicosController {
 
-  getAllTopicos(req, res) {
+  async getAllTopicos(req, res) {
     const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
     const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
     const offset = (page - 1) * limit; // Calcula o deslocamento
 
     const query = "SELECT * FROM topicos LIMIT ? OFFSET ?";
 
-    db.query(query, [limit, offset], (err, results) => {
+    await pool.query(query, [limit, offset], (err, results) => {
       if (err) return res.status(500).json({ error: err.message });
 
       // Consulta para contar o total de registros
-      db.query("SELECT COUNT(*) AS total FROM topicos", (err, countResult) => {
+      pool.query("SELECT COUNT(*) AS total FROM topicos", (err, countResult) => {
         if (err) return res.status(500).json({ error: err.message });
 
         const total = countResult[0].total;
@@ -30,34 +30,34 @@ class topicosController {
     });
   };
 
-  getTopicoById(req, res) {
+  async getTopicoById(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM topicos WHERE id = ?", [id], (err, result) => {
+    await pool.query("SELECT * FROM topicos WHERE id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
 
-  getTopicoByTurmaId(req, res) {
+  async getTopicoByTurmaId(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM topicos WHERE turma_id = ?", [id], (err, result) => {
+    await pool.query("SELECT * FROM topicos WHERE turma_id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
 
-  createTopico(req, res) {
+  async createTopico(req, res) {
     const { turma_id, titulo, descricao, usuario_id } = req.body;
     const query =
       "INSERT INTO topicos (turma_id, titulo, descricao) VALUES (?, ?, ?)";
-    db.query(query, [turma_id, titulo, descricao], (err, result) => {
+    await pool.query(query, [turma_id, titulo, descricao], (err, result) => {
       if (err) return res.status(500).json(err);
 
       const mensagem = `Novo Tópico criado: ${titulo}`;
       const tipo = 'ALUNO';
       const notificacaoQuery = "INSERT INTO notificacoes (usuario_id, tipo, mensagem) VALUES (?, ?, ?)";
 
-      db.query(notificacaoQuery, [usuario_id, tipo, mensagem], (err) => {
+      pool.query(notificacaoQuery, [usuario_id, tipo, mensagem], (err) => {
         if (err) return res.status(500).json(err);
         res.status(201).json({ id: result.insertId, ...req.body });
       })
@@ -66,20 +66,20 @@ class topicosController {
     });
   };
 
-  updateTopico(req, res) {
+  async updateTopico(req, res) {
     const id = req.params.id;
     const { turma_id, aluno_id, titulo, descricao } = req.body;
     const query =
       "UPDATE topicos SET turma_id = ?, aluno_id = ?, titulo = ?, descricao = ? WHERE id = ?";
-    db.query(query, [turma_id, aluno_id, titulo, descricao, id], (err) => {
+    await pool.query(query, [turma_id, aluno_id, titulo, descricao, id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Topico atualizado com sucesso!" });
     });
   };
 
-  deleteTopico(req, res) {
+  async deleteTopico(req, res) {
     const id = req.params.id;
-    db.query("DELETE FROM topicos WHERE id = ?", [id], (err) => {
+    await pool.query("DELETE FROM topicos WHERE id = ?", [id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Topico deletado com sucesso!" });
     });
