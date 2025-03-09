@@ -1,30 +1,37 @@
-import pool from "../db.js";
+import db from "../db.js";
 
 class AdesaoController {
   async getAllAdesoes(req, res) {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const offset = (page - 1) * limit;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
 
-      const [results] = await pool.promise().query("SELECT * FROM adesoes LIMIT ? OFFSET ?", [limit, offset]);
-      const [[{ total }]] = await pool.promise().query("SELECT COUNT(*) AS total FROM adesoes");
-      const [[statusResult]] = await pool.promise().query(
-        `SELECT 
-          SUM(CASE WHEN status = 'concluida' THEN 1 ELSE 0 END) AS totalConcluidas,
-          SUM(CASE WHEN status = 'pendente' THEN 1 ELSE 0 END) AS totalPendentes 
-        FROM adesoes`
-      );
+    try {
+      const [data, total, status] = await Promise.all([
+        db.query("SELECT * FROM adesoes LIMIT ? OFFSET ?", [limit, offset]),
+        db.query("SELECT COUNT(*) AS total FROM adesoes"),
+        db.query(`
+          SELECT 
+            SUM(status = 'concluida') AS totalConcluidas,
+            SUM(status = 'pendente') AS totalPendentes 
+          FROM adesoes
+        `)
+      ]);
+
+      const [dataRows] = data[0];
+      const [totalRows] = total[0];
+      const [statusRows] = status[0];
 
       res.status(200).json({
         page,
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
+        totalPages: Math.ceil(totalRows[0].total / limit),
+        totalItems: totalRows[0].total,
         itemsPerPage: limit,
-        totalConcluidas: statusResult.totalConcluidas || 0,
-        totalPendentes: statusResult.totalPendentes || 0,
-        data: results,
+        totalConcluidas: statusRows[0].totalConcluidas || 0,
+        totalPendentes: statusRows[0].totalPendentes || 0,
+        data: dataRows
       });
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -32,72 +39,74 @@ class AdesaoController {
 
   async getAdesaoById(req, res) {
     try {
-      const [result] = await pool.promise().query("SELECT * FROM adesoes WHERE id = ?", [req.params.id]);
-      res.status(200).json(result);
+      const [rows] = await db.query("SELECT * FROM adesoes WHERE id = ?", [req.params.id]);
+      res.status(rows.length ? 200 : 404).json(rows[0] || { error: "Adesão não encontrada" });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message });
     }
   }
 
   async getAdesoesByTurmaId(req, res) {
     try {
-      const [result] = await pool.promise().query("SELECT * FROM adesoes WHERE turma_id = ?", [req.params.id]);
-      res.status(200).json(result);
+      const [rows] = await db.query("SELECT * FROM adesoes WHERE turma_id = ?", [req.params.id]);
+      res.status(200).json(rows);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message });
     }
   }
 
   async getAdesoesByAlunoId(req, res) {
     try {
-      const [result] = await pool.promise().query("SELECT * FROM adesoes WHERE aluno_id = ?", [req.params.id]);
-      res.status(200).json(result);
+      const [rows] = await db.query("SELECT * FROM adesoes WHERE aluno_id = ?", [req.params.id]);
+      res.status(200).json(rows);
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message });
     }
   }
 
   async createAdesao(req, res) {
     try {
       const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
-      const [result] = await pool.promise().query(
-        "INSERT INTO adesoes (aluno_id, turma_id, status, data_assinatura, observacoes) VALUES (?, ?, ?, ?, ?)",
-        [aluno_id, turma_id, status, data_assinatura, observacoes]
+      const [result] = await db.query(
+        "INSERT INTO adesoes SET ?", 
+        { aluno_id, turma_id, status, data_assinatura, observacoes }
       );
       res.status(201).json({ id: result.insertId, ...req.body });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message });
     }
   }
 
   async updateAdesao(req, res) {
     try {
-      const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
-      const id = req.params.id;
-
-      await pool.promise().query(
-        "UPDATE adesoes SET aluno_id = ?, turma_id = ?, status = ?, data_assinatura = ?, observacoes = ? WHERE id = ?",
-        [aluno_id, turma_id, status, data_assinatura, observacoes, id]
+      const { affectedRows } = await db.query(
+        "UPDATE adesoes SET ? WHERE id = ?",
+        [req.body, req.params.id]
       );
 
-      const [results] = await pool.promise().query("SELECT * FROM adesoes WHERE id = ?", [id]);
-
-      if (results.length === 0) {
-        return res.status(404).json({ error: "Adesão não encontrada." });
+      if (!affectedRows) {
+        return res.status(404).json({ error: "Adesão não encontrada" });
       }
 
-      res.status(200).json({ message: "Adesão atualizada com sucesso!", value: results[0] });
+      const [rows] = await db.query("SELECT * FROM adesoes WHERE id = ?", [req.params.id]);
+      res.status(200).json({ message: "Atualizado com sucesso", value: rows[0] });
+      
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message });
     }
   }
 
   async deleteAdesao(req, res) {
     try {
-      await pool.promise().query("DELETE FROM adesoes WHERE id = ?", [req.params.id]);
-      res.status(200).json({ message: "Adesão deletada com sucesso!", id: req.params.id });
+      const [result] = await db.query("DELETE FROM adesoes WHERE id = ?", [req.params.id]);
+      
+      if (!result.affectedRows) {
+        return res.status(404).json({ error: "Adesão não encontrada" });
+      }
+      
+      res.status(200).json({ message: "Deletado com sucesso", id: req.params.id });
     } catch (err) {
-      res.status(500).json(err);
+      res.status(500).json({ error: err.message });
     }
   }
 }
