@@ -1,103 +1,98 @@
 import pool from "../db.js";
 
 class ContratosController {
-
   async getAllContratos(req, res) {
-    const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
-    const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
-    const offset = (page - 1) * limit; // Calcula o deslocamento
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
 
-    const query = "SELECT * FROM contratos LIMIT ? OFFSET ?";
+      const [results] = await pool.query("SELECT * FROM contratos LIMIT ? OFFSET ?", [limit, offset]);
+      const [[{ total }]] = await pool.query("SELECT COUNT(*) AS total FROM contratos");
 
-    await pool.query(query, [limit, offset], (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-
-      // Consulta para contar o total de registros
-      pool.query("SELECT COUNT(*) AS total FROM contratos", (err, countResult) => {
-        if (err) return res.status(500).json({ error: err.message });
-
-        const total = countResult[0].total;
-        const totalPages = Math.ceil(total / limit);
-
-        res.status(200).json({
-          page,
-          totalPages,
-          totalItems: total,
-          itemsPerPage: limit,
-          data: results,
-        });
-
-        console.log('results', results);
+      res.status(200).json({
+        page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit,
+        data: results,
       });
-    });
-  };
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async getContratosById(req, res) {
-    const id = req.params.id;
-    await pool.query("SELECT * FROM contratos WHERE id = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(200).json(result);
-    });
-  };
+    try {
+      const [result] = await pool.query("SELECT * FROM contratos WHERE id = ?", [req.params.id]);
+      if (result.length === 0) return res.status(404).json({ error: "Contrato não encontrado." });
+
+      res.status(200).json(result[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async getContratosByAssociacaoId(req, res) {
-    const id = req.params.id;
-    await pool.query("SELECT * FROM contratos WHERE user_id = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
+    try {
+      const [result] = await pool.query("SELECT * FROM contratos WHERE user_id = ?", [req.params.id]);
       res.status(200).json(result);
-    });
-  };
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async createContrato(req, res) {
-    const { user_id, assinado, contrato_pdf, associacao } = req.body;
-    const query =
-      "INSERT INTO contratos (user_id, assinado, contrato_pdf, associacao ) VALUES (?, ?, ?, ?)";
-    await pool.query(
-      query,
-      [user_id, assinado, contrato_pdf, associacao],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.status(201).json({ id: result.insertId, ...req.body });
-      }
-    );
-  };
+    try {
+      const { user_id, assinado, contrato_pdf, associacao } = req.body;
+      const [result] = await pool.query(
+        "INSERT INTO contratos (user_id, assinado, contrato_pdf, associacao) VALUES (?, ?, ?, ?)",
+        [user_id, assinado, contrato_pdf, associacao]
+      );
+      res.status(201).json({ id: result.insertId, ...req.body });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async updateContratos(req, res) {
-    const id = req.params.id;
-    const { user_id, assinado } = req.body;
-    const updateQuery = `UPDATE contratos SET user_id = ?, assinado = ? WHERE id = ?`;
+    try {
+      const { user_id, assinado } = req.body;
+      const id = req.params.id;
 
-    await pool.query(
-      updateQuery,
-      [user_id, assinado, id],
-      (err) => {
-        if (err) return res.status(500).json(err);
+      const [updateResult] = await pool.query(
+        "UPDATE contratos SET user_id = ?, assinado = ? WHERE id = ?",
+        [user_id, assinado, id]
+      );
 
-        const selectQuery = "SELECT * FROM contratos WHERE id = ?";
-        pool.query(selectQuery, [id], (err, results) => {
-          if (err) return res.status(500).json(err);
-          if (results.length === 0) {
-            return res.status(404).json({ error: "Contrato não encontrado." });
-          }
-          res
-            .status(200)
-            .json({
-              message: "Contrato atualizado com sucesso!",
-              value: results[0],
-            });
-        });
+      if (updateResult.affectedRows === 0) {
+        return res.status(404).json({ error: "Contrato não encontrado." });
       }
-    );
-  };
+
+      const [updatedContrato] = await pool.query("SELECT * FROM contratos WHERE id = ?", [id]);
+      res.status(200).json({
+        message: "Contrato atualizado com sucesso!",
+        value: updatedContrato[0],
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async deleteContratos(req, res) {
-    const id = req.params.id;
-    await pool.query("DELETE FROM contratos WHERE id = ?", [id], (err) => {
-      if (err) return res.status(500).json(err);
-      res.status(200).json({ message: "Evento deletado com sucesso!", id });
-    });
-  };
+    try {
+      const id = req.params.id;
+      const [result] = await pool.query("DELETE FROM contratos WHERE id = ?", [id]);
 
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Contrato não encontrado." });
+      }
+
+      res.status(200).json({ message: "Contrato deletado com sucesso!", id });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 export default new ContratosController();

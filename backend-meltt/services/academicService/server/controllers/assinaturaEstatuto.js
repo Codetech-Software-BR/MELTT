@@ -1,67 +1,73 @@
 import pool from "../db.js";
 
 class AssinaturaEstatutoController {
-
   async getAllEstatutosAssinados(req, res) {
-    const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
-    const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
-    const offset = (page - 1) * limit; // Calcula o deslocamento
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
 
-    const query = "SELECT * FROM assinatura_estatuto LIMIT ? OFFSET ?";
+      const [results] = await pool.promise().query(
+        "SELECT * FROM assinatura_estatuto LIMIT ? OFFSET ?",
+        [limit, offset]
+      );
 
-    await pool.query(query, [limit, offset], (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
+      const [[{ total }]] = await pool.promise().query(
+        "SELECT COUNT(*) AS total FROM assinatura_estatuto"
+      );
 
-      // Consulta para contar o total de registros
-      pool.query("SELECT COUNT(*) AS total FROM contratos", (err, countResult) => {
-        if (err) return res.status(500).json({ error: err.message });
+      const totalPages = Math.ceil(total / limit);
 
-        const total = countResult[0].total;
-        const totalPages = Math.ceil(total / limit);
-
-        res.status(200).json({
-          page,
-          totalPages,
-          totalItems: total,
-          itemsPerPage: limit,
-          data: results,
-        });
-
-        console.log('results', results);
+      res.status(200).json({
+        page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+        data: results,
       });
-    });
-  };
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async getEstatutoAssinadosById(req, res) {
-    const id = req.params.id;
-    await pool.query("SELECT * FROM assinatura_estatuto WHERE id = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
+    try {
+      const id = req.params.id;
+      const [result] = await pool.promise().query(
+        "SELECT * FROM assinatura_estatuto WHERE id = ?",
+        [id]
+      );
       res.status(200).json(result);
-    });
-  };
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async getEstatutoAssinadosByUser(req, res) {
-    const id = req.params.id;
-    await pool.query("SELECT * FROM assinatura_estatuto WHERE id_usuario = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
+    try {
+      const id = req.params.id;
+      const [result] = await pool.promise().query(
+        "SELECT * FROM assinatura_estatuto WHERE id_usuario = ?",
+        [id]
+      );
       res.status(200).json(result);
-    });
-  };
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
-  assinaturEstatuto(req, res) {
-    const { id_usuario, id_turma, email, nome, data_assinada } = req.body;
-    const query =
-      "INSERT INTO assinatura_estatuto (id_usuario, id_turma, email, nome, data_assinada ) VALUES (?, ?, ?, ?, ?)";
-    pool.query(
-      query,
-      [id_usuario, id_turma, email, nome, data_assinada],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.status(201).json({ id: result.insertId, ...req.body });
-      }
-    );
-  };
-
+  async assinaturEstatuto(req, res) {
+    try {
+      const { id_usuario, id_turma, email, nome, data_assinada } = req.body;
+      const [result] = await pool.promise().query(
+        "INSERT INTO assinatura_estatuto (id_usuario, id_turma, email, nome, data_assinada) VALUES (?, ?, ?, ?, ?)",
+        [id_usuario, id_turma, email, nome, data_assinada]
+      );
+      res.status(201).json({ id: result.insertId, ...req.body });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 export default new AssinaturaEstatutoController();

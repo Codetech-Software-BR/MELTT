@@ -1,101 +1,95 @@
 import pool from "../db.js";
 
 class EventosController {
-
   async getAllEventos(req, res) {
-    const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
-    const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
-    const offset = (page - 1) * limit; // Calcula o deslocamento
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
 
-    const query = "SELECT * FROM eventos LIMIT ? OFFSET ?";
+      const [results] = await pool.query("SELECT * FROM eventos LIMIT ? OFFSET ?", [limit, offset]);
+      const [[{ total }]] = await pool.query("SELECT COUNT(*) AS total FROM eventos");
 
-    await pool.query(query, [limit, offset], (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
-
-      // Consulta para contar o total de registros
-      pool.query("SELECT COUNT(*) AS total FROM eventos", (err, countResult) => {
-        if (err) return res.status(500).json({ error: err.message });
-
-        const total = countResult[0].total;
-        const totalPages = Math.ceil(total / limit);
-
-        res.status(200).json({
-          page,
-          totalPages,
-          totalItems: total,
-          itemsPerPage: limit,
-          data: results,
-        });
+      res.status(200).json({
+        page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit,
+        data: results,
       });
-    });
-  };
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
   async getEventosById(req, res) {
-    const id = req.params.id;
-    await pool.query("SELECT * FROM eventos WHERE id = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
+    try {
+      const { id } = req.params;
+      const [result] = await pool.query("SELECT * FROM eventos WHERE id = ?", [id]);
       res.status(200).json(result);
-    });
-  };
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
   async getEventosByTurmaId(req, res) {
-    const id = req.params.id;
-    await pool.query("SELECT * FROM eventos WHERE turma_id = ?", [id], (err, result) => {
-      if (err) return res.status(500).json(err);
+    try {
+      const { id } = req.params;
+      const [result] = await pool.query("SELECT * FROM eventos WHERE turma_id = ?", [id]);
       res.status(200).json(result);
-    });
-  };
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
   async createEventos(req, res) {
-    const { nome, token, turma_id, data_formatura } = req.body;
-    const query =
-      "INSERT INTO eventos (nome, token, turma_id, data_formatura ) VALUES (?, ?, ?, ?)";
-    await pool.query(
-      query,
-      [nome, token, turma_id, data_formatura],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.status(201).json({ id: result.insertId, ...req.body });
-      }
-    );
-  };
+    try {
+      const { nome, token, turma_id, data_formatura } = req.body;
+      const [result] = await pool.query(
+        "INSERT INTO eventos (nome, token, turma_id, data_formatura) VALUES (?, ?, ?, ?)",
+        [nome, token, turma_id, data_formatura]
+      );
+      res.status(201).json({ id: result.insertId, ...req.body });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
   async updateEventos(req, res) {
-    const id = req.params.id;
-    const { nome, token, turma_id, data_formatura} = req.body;
-    const updateQuery = `UPDATE eventos SET nome = ?, token = ?, turma_id = ?, data_formatura = ? WHERE id = ?`;
+    try {
+      const { id } = req.params;
+      const { nome, token, turma_id, data_formatura } = req.body;
 
-    await pool.query(
-      updateQuery,
-      [nome, token, turma_id, id],
-      (err) => {
-        if (err) return res.status(500).json(err);
+      const [updateResult] = await pool.query(
+        "UPDATE eventos SET nome = ?, token = ?, turma_id = ?, data_formatura = ? WHERE id = ?",
+        [nome, token, turma_id, data_formatura, id]
+      );
 
-        const selectQuery = "SELECT * FROM eventos WHERE id = ?";
-        pool.query(selectQuery, [id], (err, results) => {
-          if (err) return res.status(500).json(err);
-          if (results.length === 0) {
-            return res.status(404).json({ error: "Evento não encontrado." });
-          }
-          res
-            .status(200)
-            .json({
-              message: "Evento atualizado com sucesso!",
-              value: results[0],
-            });
-        });
+      if (updateResult.affectedRows === 0) {
+        return res.status(404).json({ error: "Evento não encontrado." });
       }
-    );
-  };
+
+      const [[updatedEvento]] = await pool.query("SELECT * FROM eventos WHERE id = ?", [id]);
+      res.status(200).json({ message: "Evento atualizado com sucesso!", value: updatedEvento });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 
   async deleteEventos(req, res) {
-    const id = req.params.id;
-    await pool.query("DELETE FROM eventos WHERE id = ?", [id], (err) => {
-      if (err) return res.status(500).json(err);
+    try {
+      const { id } = req.params;
+      const [deleteResult] = await pool.query("DELETE FROM eventos WHERE id = ?", [id]);
+      
+      if (deleteResult.affectedRows === 0) {
+        return res.status(404).json({ error: "Evento não encontrado." });
+      }
+      
       res.status(200).json({ message: "Evento deletado com sucesso!", id });
-    });
-  };
-
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 export default new EventosController();
