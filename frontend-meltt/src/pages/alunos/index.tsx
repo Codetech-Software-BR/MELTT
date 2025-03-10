@@ -17,6 +17,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Typography,
+  TextField,
 } from "@mui/material";
 import BasicTable from "../../components/table";
 import { Key, useEffect, useState } from "react";
@@ -51,7 +53,12 @@ const AlunosPage = () => {
   const [loadingTurmas, setLoadingTurmas] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
+
   const [status, setStatus] = useState(1);
+
+  const [nome, setNome] = useState("");
+  const [nomeDebounced, setNomeDebounced] = useState(nome);
+
   const [open, setOpen] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
 
@@ -75,6 +82,20 @@ const AlunosPage = () => {
     setStatus(event.target.value as number);
   };
 
+  const handleChangeNome = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setNome(event.target.value as string);
+  };
+
+  useEffect(() => {
+    // Cria um timeout para debouncing
+    const timeoutId = setTimeout(() => {
+      setNomeDebounced(nome);
+    }, 500); // 500ms de delay
+
+    // Limpeza do timeout caso o estado 'nome' mude antes do tempo
+    return () => clearTimeout(timeoutId);
+  }, [nome]);
+
   const [students, setStudents] = useState([]);
 
   const [onLoad, setOnLoad] = useState(false);
@@ -90,9 +111,9 @@ const AlunosPage = () => {
     try {
       let response;
       if (status === 2) {
-        response = await apiGetData("academic", `/usuarios`);
+        response = await apiGetData("academic", `/usuarios?nome=${nome}`);
       } else {
-        response = await apiGetData("academic", `/usuarios?ativo=${status}`);
+        response = await apiGetData("academic", `/usuarios?ativo=${status}&nome=${nome}`);
       }
       setTotalPages(response.totalPages);
       setStudents(response.data);
@@ -140,18 +161,18 @@ const AlunosPage = () => {
           backgroundColor: row.id === selectedRowId ? "#eeeeee" : "inherit",
           transition: "background-color 0.3s",
           "&:last-child td, &:last-child th": { border: 0 },
-          " &:hover": { bgcolor: "#F7F7F7", cursor: "pointer" },
+          " &:hover": { bgcolor: "#F7F7F7" },
         }}
       >
         <TableCell component="th" scope="row">
-          <Link
+          {/* <Link
             color="primary"
             underline="always"
             onClick={() => onClickRowView(row)}
             sx={{ fontFamily: "Poppins" }}
-          >
-            {row.nome}
-          </Link>
+          > */}
+          {row.nome}
+          {/* </Link> */}
         </TableCell>
         <TableCell align="left" sx={{ fontFamily: "Poppins" }}>
           {row.email}
@@ -199,10 +220,9 @@ const AlunosPage = () => {
 
   useEffect(() => {
     fetchTurmas();
-    console.log(turmas)
     fetchAlunos();
     setOnLoad(true);
-  }, []);
+  }, [nomeDebounced, status]);
 
   return (
     <Stack width={"calc(100% - 28px)"}>
@@ -212,7 +232,33 @@ const AlunosPage = () => {
         justifyContent={"space-between"}
         my={2}
       >
-        <h2 className="text-2xl text-default font-extrabold"></h2>
+        {/* <h2 className="text-2xl text-default font-extrabold"></h2> */}
+        <Stack direction={'row'} alignItems={'center'} gap={2} py={1} width={'100%'}>
+          <FormControl sx={{ width: '15%' }}>
+            <InputLabel sx={{ bgcolor: 'secondary' }}>Status</InputLabel>
+            <Select
+              size="small"
+              value={status ?? 1}
+              label="status"
+              onChange={handleChangeStatus}
+            >
+              <MenuItem value={1}>Ativos</MenuItem>
+              <MenuItem value={0}>Inativos</MenuItem>
+              <MenuItem value={2}>Todos</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: '30%' }}>
+            <TextField
+              fullWidth
+              label="Nome"
+              name="nome"
+              placeholder="Filtrar por nome"
+              size="small"
+              value={nome ?? ""}
+              onChange={handleChangeNome}
+            />
+          </FormControl>
+        </Stack>
         <Button
           color="secondary"
           variant="contained"
@@ -229,36 +275,16 @@ const AlunosPage = () => {
         <Paper
           elevation={0}
           sx={{
-            p: 1,
+            height: "calc(80vh - 20px)",
             flexGrow: 1,
             width: "100%",
-            height: "calc(100vh - 170px)",
-            borderRadius: 4,
           }}
         >
-          <Stack direction={'row'} alignItems={'center'} gap={2} py={1}>
-            <FormControl sx={{ width: '20%' }}>
-              <InputLabel sx={{ p: 0.3, bgcolor: '#fff' }}>Status de Atividade</InputLabel>
-              <Select
-                size="small"
-                value={status ?? 1}
-                label="status"
-                onChange={handleChangeStatus}
-              >
-                <MenuItem value={1}>Ativos</MenuItem>
-                <MenuItem value={0}>Inativos</MenuItem>
-                <MenuItem value={2}>Todos</MenuItem>
-              </Select>
-            </FormControl>
-            <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchAlunos}>
-              Buscar
-            </Button>
-          </Stack>
+
           <Paper
             elevation={0}
             sx={{
               height: "100%",
-              overflow: "auto",
               "&::-webkit-scrollbar": {
                 width: "8px",
                 height: "12px",

@@ -7,6 +7,7 @@ class UsuarioController {
         const offset = (page - 1) * limit; // Calcula o deslocamento
 
         const ativo = req.query.ativo; // Captura o parâmetro "ativo" da query string
+        const nome = req.query.nome;
 
         let query = "SELECT * FROM usuarios";
         let countQuery = "SELECT COUNT(*) AS total FROM usuarios";
@@ -17,6 +18,17 @@ class UsuarioController {
             query += " WHERE ativo = ?";
             countQuery += " WHERE ativo = ?";
             queryParams.push(parseInt(ativo)); // Converte para número
+        }
+
+        if (nome) {
+            if (queryParams.length > 0) {
+                query += " AND nome LIKE ?";
+                countQuery += " AND nome LIKE ?";
+            } else {
+                query += " WHERE nome LIKE ?";
+                countQuery += " WHERE nome LIKE ?";
+            }
+            queryParams.push(`${nome}%`); // Busca o nome que começa com o valor de "nome"
         }
 
         query += " LIMIT ? OFFSET ?";
@@ -45,7 +57,7 @@ class UsuarioController {
         });
     }
 
-     createUsuario(req, res) {
+    createUsuario(req, res) {
         console.log(req.body);
         const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
         const query =
@@ -80,12 +92,12 @@ class UsuarioController {
 
     updateUsuario(req, res) {
         const id = req.params.id;
-        const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
-        const updateQuery = `UPDATE usuarios SET email = ?, senha = ?, tipo = ?, documento = ?, nome = ?, id_bling = ?, ativo = ?, telefone = ?, turma_id = ? WHERE id = ?`;
+        const { documento, nome, ativo, telefone } = req.body;
+        const updateQuery = `UPDATE usuarios SET documento = ?, nome = ?, ativo = ?, telefone = ? WHERE id = ?`;
 
         db.query(
             updateQuery,
-            [email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id, id],
+            [documento, nome, ativo, telefone, id],
             (err) => {
                 if (err) return res.status(500).json(err);
 
@@ -94,10 +106,10 @@ class UsuarioController {
                 db.query(selectQuery, [id], (err, results) => {
                     if (err) return res.status(500).json(err);
                     if (results.length === 0) {
-                        return res.status(404).json({ error: "Aluno não encontrado." });
+                        return res.status(404).json({ error: "Usuário não encontrado." });
                     }
                     res.status(200).json({
-                        message: "Aluno atualizado com sucesso!",
+                        message: "Usuário atualizado com sucesso!",
                         value: results[0],
                     });
                 });
