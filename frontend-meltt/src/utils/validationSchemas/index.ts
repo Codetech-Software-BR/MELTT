@@ -12,6 +12,13 @@ export const validateStudentSchema = Yup.object({
   ativo: Yup.boolean().required("o campo ativo é obrigatório."),
 });
 
+export const validateUpdateStudentSchema = Yup.object({
+  nome: Yup.string().required("o campo nome é obrigatório."),
+  documento: Yup.string().required("o campo documento é obrigatório."),
+  telefone: Yup.string().required("o campo telefone é obrigatório."),
+  ativo: Yup.boolean().required("o campo ativo é obrigatório."),
+});
+
 export const validateFaculdadeSchema = Yup.object({
   nome: Yup.string().required("o campo nome é obrigatório."),
   endereco: Yup.string().required("o campo email é obrigatório."),

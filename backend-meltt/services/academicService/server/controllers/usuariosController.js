@@ -92,12 +92,12 @@ class UsuarioController {
 
     updateUsuario(req, res) {
         const id = req.params.id;
-        const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
-        const updateQuery = `UPDATE usuarios SET email = ?, senha = ?, tipo = ?, documento = ?, nome = ?, id_bling = ?, ativo = ?, telefone = ?, turma_id = ? WHERE id = ?`;
+        const { documento, nome, ativo, telefone } = req.body;
+        const updateQuery = `UPDATE usuarios SET documento = ?, nome = ?, ativo = ?, telefone = ? WHERE id = ?`;
 
         db.query(
             updateQuery,
-            [email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id, id],
+            [documento, nome, ativo, telefone, id],
             (err) => {
                 if (err) return res.status(500).json(err);
 
@@ -106,10 +106,10 @@ class UsuarioController {
                 db.query(selectQuery, [id], (err, results) => {
                     if (err) return res.status(500).json(err);
                     if (results.length === 0) {
-                        return res.status(404).json({ error: "Aluno não encontrado." });
+                        return res.status(404).json({ error: "Usuário não encontrado." });
                     }
                     res.status(200).json({
-                        message: "Aluno atualizado com sucesso!",
+                        message: "Usuário atualizado com sucesso!",
                         value: results[0],
                     });
                 });

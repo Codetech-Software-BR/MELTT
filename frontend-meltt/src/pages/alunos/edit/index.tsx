@@ -15,12 +15,12 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
 
-import { validateStudentSchema } from "../../../utils/validationSchemas";
+import { validateStudentSchema, validateUpdateStudentSchema } from "../../../utils/validationSchemas";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
+import { apiGetData, apiPutData } from "../../../services/api";
 import { LoadingButton } from "@mui/lab";
 import { BiSave } from "react-icons/bi";
 import { useAlunoContext } from "../../../providers/alunoContext";
@@ -74,30 +74,34 @@ const AlunosPageEdit = () => {
   };
 
   const onSubmitAluno = async (values: any) => {
-    console.log("aqui");
-    let newTurma_id;
-
-    const { senha, confirmar_senha, ativo, documento, tipo, turma_id, ...rest } = values;
-    if (senha !== confirmar_senha) {
-      toast.error("As senhas não conferem");
-    }
-    if (turma_id === "") {
-      newTurma_id = null;
-      values = { ...rest, senha, documento, tipo, turma_id: newTurma_id, ativo: ativo ? 1 : 0 };
-    } else {
-      values = { ...rest, senha, documento, tipo, turma_id, ativo: ativo ? 1 : 0 };
-    }
-    console.log("values", values);
-    setLoadingAluno(true);
     try {
       if (id) {
-        const response = await apiPutData("academic", `/usuarios/${id}`, values);
+        setLoadingAluno(true);
+        const { telefone, nome, documento, ativo } = values;
+        const valuesToUpdate = { telefone, nome, documento, ativo };
+        console.log("valuesToUpdate", valuesToUpdate);
+        const response = await apiPutData("academic", `/usuarios/${id}`, valuesToUpdate);
         console.log("response", response);
-        if (response.id) {
+        if (response !== null) {
           toast.success("Aluno atualizado com sucesso");
           navigate("/usuarios");
         }
       } else {
+        console.log("aqui");
+        let newTurma_id;
+
+        const { senha, confirmar_senha, ativo, documento, tipo, turma_id, ...rest } = values;
+        if (senha !== confirmar_senha) {
+          toast.error("As senhas não conferem");
+        }
+        if (turma_id === "") {
+          newTurma_id = null;
+          values = { ...rest, senha, documento, tipo, turma_id: newTurma_id, ativo: ativo ? 1 : 0 };
+        } else {
+          values = { ...rest, senha, documento, tipo, turma_id, ativo: ativo ? 1 : 0 };
+        }
+        console.log("values", values);
+        setLoadingAluno(true);
         if (tipo === "ALUNO") {
           console.log(documento)
           const response = await apiGetData("academic", `/pagamentos/documentos?numeroDocumento=${documento}`);
@@ -167,13 +171,13 @@ const AlunosPageEdit = () => {
             initialValues={{
               ...getAlunosInitialValue,
             }}
-            validationSchema={validateStudentSchema}
+            validationSchema={id ? validateUpdateStudentSchema : validateStudentSchema}
             onSubmit={(values: any) => {
               console.log(values)
               onSubmitAluno(values)
             }}
           >
-            {({ values, errors, handleChange, handleSubmit }) => (
+            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%] flex flex-col justify-between"
                 onSubmit={handleSubmit}
@@ -216,22 +220,25 @@ const AlunosPageEdit = () => {
                       placeholder="(XX) XXXXX-XXXX"
                       size="small"
                       value={values.telefone ?? ""}
+                      error={Boolean(errors.telefone)}
                       onChange={handleChange}
                     />
                   </Stack>
                   <Stack width={"100%"} direction={"row"} gap={2}>
+                    {!id && (
+                      <TextField
+                        fullWidth
+                        label="Email"
+                        name="email"
+                        placeholder="email@example.com"
+                        size="small"
+                        value={values.email ?? ""}
+                        error={Boolean(errors.email)}
+                        onChange={handleChange}
+                      />
+                    )}
                     <TextField
-                      fullWidth
-                      label="Email"
-                      name="email"
-                      placeholder="email@example.com"
-                      size="small"
-                      value={values.email ?? ""}
-                      error={Boolean(errors.email)}
-                      onChange={handleChange}
-                    />
-                    <TextField
-                      fullWidth
+                      sx={{ width: id ? "50%" : "100%" }}
                       label="Documento"
                       name="documento"
                       placeholder="RG ou CPF"
@@ -241,91 +248,93 @@ const AlunosPageEdit = () => {
                       onChange={handleChange}
                     />
                   </Stack>
-                  <Stack width={"100%"} direction={"row"} gap={2}>
-                    <TextField
-                      fullWidth
-                      label="Senha"
-                      name="senha"
-                      placeholder="Digite sua senha"
-                      size="small"
-                      value={values.senha ?? ""}
-                      error={Boolean(errors.senha)}
-                      onChange={handleChange}
-                    />
-                    <TextField
-                      sx={{ width: "100%" }}
-                      label="Confirmar Senha"
-                      name="confirmar_senha"
-                      placeholder="Digite sua senha novamente"
-                      size="small"
-                      value={values.confirmar_senha ?? ""}
-                      error={Boolean(errors.confirmar_senha)}
-                      onChange={handleChange}
-                    />
-
-                  </Stack>
-                  <Stack width={"100%"} direction={"row"} gap={2}>
-                    <FormControl sx={{ width: "50%" }} size="small">
-                      <InputLabel
-                        id="tipo"
-                        sx={{
-                          backgroundColor: "white",
-                          px: 0.5,
-                        }}
-                      >
-                        Tipo de Usuário
-                      </InputLabel>
-                      <Select
-                        labelId="tipo"
-                        name="tipo"
-                        value={values.tipo ?? ""}
-                        disabled={loadingTurmas}
-                        onChange={(event) => {
-                          handleChange(event); // Mantém a funcionalidade do Formik
-                          setTipoUsuario(event.target.value); // Executa a outra função desejada
-                        }}
-                      >
-                        {tiposUsuario.map((tipo: string) => (
-                          <MenuItem key={tipo} value={tipo}>
-                            {tipo}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <FormControl sx={{ width: "50%", visibility: tipoUsuario == "ALUNO" ? "visible" : "hidden" }} size="small">
-                      <InputLabel
-                        id="turma-label"
-                        sx={{
-                          backgroundColor: "white",
-                          px: 0.5,
-                        }}
-                      >
-                        Turma
-                      </InputLabel>
-                      <Select
-                        labelId="turma-label"
-                        name="turma_id"
-                        value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
-                        disabled={loadingTurmas}
+                  {!id && (
+                    <Stack width={"100%"} direction={"row"} gap={2}>
+                      <TextField
+                        fullWidth
+                        label="Senha"
+                        name="senha"
+                        placeholder="Digite sua senha"
+                        size="small"
+                        value={values.senha ?? ""}
+                        error={Boolean(errors.senha)}
                         onChange={handleChange}
-                      >
-                        {turmas.map((turma: { id: number, nome: string }) => (
-                          <MenuItem key={turma.id} value={turma.id}>
-                            {turma.nome}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Stack>
+                      />
+                      <TextField
+                        sx={{ width: "100%" }}
+                        label="Confirmar Senha"
+                        name="confirmar_senha"
+                        placeholder="Digite sua senha novamente"
+                        size="small"
+                        value={values.confirmar_senha ?? ""}
+                        error={Boolean(errors.confirmar_senha)}
+                        onChange={handleChange}
+                      />
+                    </Stack>
+                  )}
+                  {!id && (
+                    <Stack width={"100%"} direction={"row"} gap={2}>
+                      <FormControl sx={{ width: "50%" }} size="small">
+                        <InputLabel
+                          id="tipo"
+                          sx={{
+                            backgroundColor: "white",
+                            px: 0.5,
+                          }}
+                        >
+                          Tipo de Usuário
+                        </InputLabel>
+                        <Select
+                          labelId="tipo"
+                          name="tipo"
+                          value={values.tipo ?? ""}
+                          disabled={loadingTurmas}
+                          onChange={(event) => {
+                            handleChange(event); // Mantém a funcionalidade do Formik
+                            setTipoUsuario(event.target.value); // Executa a outra função desejada
+                          }}
+                        >
+                          {tiposUsuario.map((tipo: string) => (
+                            <MenuItem key={tipo} value={tipo}>
+                              {tipo}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <FormControl sx={{ width: "50%", visibility: tipoUsuario == "ALUNO" ? "visible" : "hidden" }} size="small">
+                        <InputLabel
+                          id="turma-label"
+                          sx={{
+                            backgroundColor: "white",
+                            px: 0.5,
+                          }}
+                        >
+                          Turma
+                        </InputLabel>
+                        <Select
+                          labelId="turma-label"
+                          name="turma_id"
+                          value={turmas.some((t: { id: number }) => t.id === values.turma_id) ? values.turma_id : ""}
+                          disabled={loadingTurmas}
+                          onChange={handleChange}
+                        >
+                          {turmas.map((turma: { id: number, nome: string }) => (
+                            <MenuItem key={turma.id} value={turma.id}>
+                              {turma.nome}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Stack>
+                  )}
                   <Paper elevation={0} sx={{ width: "50%", padding: 0, margin: 0, alignSelf: "start" }}>
                     <FormControl component="fieldset">
                       <FormGroup aria-label="position" row>
                         <FormControlLabel
-                          checked={values.ativo}
-                          onChange={handleChange}
                           name="ativo"
-                          value={values.ativo}
-                          control={<Switch color="primary" />}
+                          control={<Switch checked={values.ativo}
+                            onChange={(e) => setFieldValue('ativo', e.target.checked)} color="primary"
+                          />}
                           label="Ativo"
                           labelPlacement="start"
                         />
