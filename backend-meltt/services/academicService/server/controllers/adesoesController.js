@@ -19,7 +19,7 @@ class AdesaoController {
       ]);
 
       const [dataRows] = data[0];
-      const [totalRows] = total[0];
+      // const [totalRows] = total[0];
       const [statusRows] = status[0];
 
       res.status(200).json({
@@ -27,7 +27,7 @@ class AdesaoController {
         totalPages: Math.ceil(totalRows[0].total / limit),
         totalItems: totalRows[0].total,
         itemsPerPage: limit,
-        totalConcluidas: statusRows[0].totalConcluidas || 0,
+        // totalConcluidas: statusRows[0].totalConcluidas || 0,
         totalPendentes: statusRows[0].totalPendentes || 0,
         data: dataRows
       });
