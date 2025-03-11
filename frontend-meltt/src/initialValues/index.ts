@@ -32,6 +32,12 @@ export const initialValuesTarefa = {
   atribuido_por: ""
 }
 
+export const initialValuesPlano = {
+  nome: "",
+  valor: "",
+  incluso: ""
+}
+
 export const initialValuesAluno = {
   nome: "",
   email: "",
