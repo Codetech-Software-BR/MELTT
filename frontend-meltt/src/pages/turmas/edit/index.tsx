@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Button,
   Card,
@@ -19,10 +20,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Formik } from "formik";
 import { validateTurmaSchema } from "../../../utils/validationSchemas";
 import toast from "react-hot-toast";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiPostData, apiPutData } from "../../../services/api";
+import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
 import { DatePicker, LoadingButton } from "@mui/lab";
@@ -50,17 +51,28 @@ export type StudentInitialValuesFn = (
 const TurmasEditPage = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const {stateTurma} = useTurmaContext();
+  const { stateTurma } = useTurmaContext();
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
-
   const [file, setFile] = useState<File | null>(null);
+  const [planos, setPlanos] = useState<any[]>([]);
+  const [selecionados, setSelecionados] = useState<any[]>([]);
 
-  const [eventos, setEventos] = useState<{ data: string; descricao: string }[]>([]);
-  const [novoEvento, setNovoEvento] = useState({ data: "", descricao: "" });
+  useEffect(() => {
+    setSelecionados(planos); // Quando `planos` mudar, atualizar os selecionados
+  }, [planos]);
 
-  const [plans, setPlans] = useState<{ nome: string; inclusos: string; valor: string }[]>([]);
-  const [newPlan, setNewPlan] = useState({ nome: "", inclusos: "", valor: "" });
+  const getPlanos = async () => {
+    const response = await apiGetData("academic", `/planos-formatura/turma/${id}`);
+
+    if (response !== null) {
+      setPlanos(response);
+    }
+  };
+
+  useEffect(() => {
+    getPlanos();
+  }, []);
 
   const getTurmasInitialValue = Object.keys(initialValuesTurma).reduce(
     (acc, key) => {
@@ -97,48 +109,16 @@ const TurmasEditPage = () => {
     },
   });
 
-
-  const adicionarPlano = () => {
-    if (!newPlan.nome || !newPlan.inclusos || !newPlan.valor) return;
-    setPlans([...plans, newPlan]);
-    setNewPlan({ nome: "", inclusos: "", valor: "" });
-  };
-
-  const removerPlano = (index: number) => {
-    setPlans(plans.filter((_, i) => i !== index));
-  };
-
-  const adicionarEvento = () => {
-    if (!novoEvento.data || !novoEvento.descricao) return;
-    setEventos([...eventos, novoEvento]);
-    setNovoEvento({ data: "", descricao: "" });
-  };
-
-  const removerEvento = (index: number) => {
-    setEventos(eventos.filter((_, i) => i !== index));
-  };
-
   const onSubmitTurma = async (values: any) => {
+    console.log(values);
     setLoadingSave(true);
 
-    let dataObj = {
-      ...values,
-      faculdade_id: 1,
-    };
-
     try {
-      if (id) {
-        const response = await apiPutData("academic", `/turmas/${id}`, dataObj);
-        if (response.result.nome) {
-          toast.success("Turma editada com sucesso");
-          navigate(-1);
-        }
-      } else {
-        const response = await apiPostData("academic", "/turmas", dataObj);
-        if (response.id) {
-          toast.success("Turma salvo com sucesso");
-          navigate(-1);
-        }
+      if (!id) throw new Error("ID da turma não encontrado");
+      const response = await apiPutData("academic", `/turmas/${id}`, values);
+      if (response.result.nome) {
+        toast.success("Turma editada com sucesso");
+        navigate(-1);
       }
     } catch (error) {
       toast.error("Erro ao salvar turma");
@@ -176,7 +156,7 @@ const TurmasEditPage = () => {
             validationSchema={validateTurmaSchema}
             onSubmit={(values: any) => onSubmitTurma(values)}
           >
-            {({ values, errors, handleChange, handleSubmit }) => (
+            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%]"
                 onSubmit={handleSubmit}
@@ -184,7 +164,6 @@ const TurmasEditPage = () => {
                   if (e.key === "Enter") {
                     e.preventDefault();
                     handleSubmit(e);
-                    () => { };
                   }
                 }}
               >
@@ -220,24 +199,21 @@ const TurmasEditPage = () => {
                     >
                       <TextField
                         fullWidth
+                        size="small"
                         name="nome"
                         variant="outlined"
-                        focused
                         label="Nome da Turma"
                         value={values.nome}
                         onChange={handleChange}
                         placeholder="Qual o nome da sua turma ?"
                       />
-                      <FormControl fullWidth>
-                        <InputLabel id="ano_formatura" sx={{ p: 0.5, bgcolor: "#fff" }}>
-                          Ano de Formatura
-                        </InputLabel>
+                      <FormControl fullWidth size="small">
+                        <InputLabel id="ano_formatura">Ano de Formatura</InputLabel>
                         <Select
                           name="ano_formatura"
                           variant="outlined"
                           label="Data de Formatura da Turma"
                           value={values.ano_formatura}
-                          error={errors.ano_formatura ? true : false}
                           onChange={handleChange}
                         >
                           {graduationYearsList.map((option: any) => (
@@ -248,226 +224,74 @@ const TurmasEditPage = () => {
                         </Select>
                       </FormControl>
                     </Stack>
-                    <TextField
-                      fullWidth
-                      name="nome"
-                      variant="outlined"
-                      focused
-                      label="Identificador da turma"
-                      value={values.identificador}
-                      onChange={handleChange}
-                      placeholder="código único identificador da turma ?"
-                    />
-                    {!id && (
-                      <Stack direction={'column'}>
-                        <Typography variant="body2">Arquivo do Estatuto</Typography>
-                        <div
-                          className="h-44 border-2 border-dashed border-default rounded-md -mt-4 p-4"
-                          {...getRootProps()}
-                        >
-                          {file ? (
-                            <Stack
-                              height={"100%"}
-                              direction={"column"}
-                              justifyContent={"center"}
-                              alignItems={"center"}
-                              overflow={"hidden"}
-                              p={2}
-                            >
-                              <IconUpload />
-                              <Typography
-                                variant="body1"
-                                fontWeight={800}
-                                textAlign={"center"}
-                                color="primary"
-                              >
-                                {file?.name}
-                              </Typography>
-                              <Typography variant="body2" color="primary">
-                                {file?.type}
-                              </Typography>
-                              <IconButton
-                                size="small"
-                                onClick={() => {
-                                  setFile(null);
-                                }}
-                              >
-                                <TbTrash size={14} className="text-red-500" />
-                              </IconButton>
-                            </Stack>
-                          ) : (
-                            <>
-                              <input {...getInputProps()} />
-                              {isDragActive ? (
-                                <p className=" flex items-center justify-center text-default h-full text-center">
-                                  Solte seu arquivo aqui...
-                                </p>
-                              ) : (
-                                <Stack
-                                  width={"100%"}
-                                  height={"100%"}
-                                  alignItems={"center"}
-                                  justifyContent={"center"}
-                                >
-                                  <Stack direction={"column"} alignItems={"center"} gap={1}>
-                                    <IconUpload />
-                                    <small
-                                      className="text-[#777] font-light text-xs"
-                                      style={{ fontFamily: "Poppins" }}
-                                    >
-                                      Arraste seu arquivo para iniciar o upload
-                                    </small>
-                                    <small
-                                      className="text-[#777] font-light text-xs"
-                                      style={{ fontFamily: "Poppins", fontSize: 10 }}
-                                    >
-                                      pdf/jpg/png
-                                    </small>
-                                    <Divider
-                                      orientation="horizontal"
-                                      flexItem
-                                      sx={{ color: "black", fontSize: 12 }}
-                                    >
-                                      ou
-                                    </Divider>
-                                    <Button
-                                      variant="outlined"
-                                      color="primary"
-                                      endIcon={<SlMagnifier size={14} color="#2d1c63" />}
-                                      style={{
-                                        borderRadius: "8px",
-                                        padding: "6px",
-                                        fontSize: 12,
-                                        width: 150,
-                                      }}
-                                    >
-                                      Buscar arquivo
-                                    </Button>
-                                  </Stack>
-                                </Stack>
-                              )}
-                            </>
+                    <Stack direction={"row"}
+                      justifyContent={"space-between"}
+                      gap={2}>
+                      <TextField
+                        fullWidth
+                        size="small"
+                        name="identificador"
+                        variant="outlined"
+                        label="Identificador da turma"
+                        value={values.identificador}
+                        onChange={handleChange}
+                        placeholder="código único identificador da turma ?"
+                      />
+                      <FormControl fullWidth size="small">
+                        <Autocomplete
+                          multiple
+                          size="small"
+                          id="planos_formatura"
+                          options={planos || []} // Todas as opções disponíveis
+                          getOptionLabel={(option) => option.nome}
+                          value={selecionados} // Apenas os selecionados
+                          onChange={(_, newValue) => {
+                            setSelecionados(newValue); // Atualiza o estado ao remover/adicionar
+                            setFieldValue("planos_formatura", newValue);
+                          }}
+                          renderInput={(params) => (
+                            <TextField
+                              {...params}
+                              label="Planos de Formatura"
+                              variant="outlined"
+                            />
                           )}
-                        </div>
-                      </Stack>
-                    )}
-                    <Stack spacing={3} bgcolor={"#f9f9f9"} p={2} borderRadius={2}>
-                      <Typography variant="body1" color="primary">
-                        Planos de Formatura
-                      </Typography>
-                      <Stack direction="row" spacing={2}>
-                        <TextField
-                          size="small"
-                          label="Nome do Plano"
-                          value={newPlan.nome}
-                          onChange={(e) => setNewPlan({ ...newPlan, nome: e.target.value })}
-                          fullWidth
                         />
-                        <TextField
-                          size="small"
-                          label="O que está incluso"
-                          value={newPlan.inclusos}
-                          onChange={(e) => setNewPlan({ ...newPlan, inclusos: e.target.value })}
-                          fullWidth
-                        />
-                        <TextField
-                          size="small"
-                          label="Valor"
-                          type="number"
-                          value={newPlan.valor}
-                          onChange={(e) => setNewPlan({ ...newPlan, valor: e.target.value })}
-                          fullWidth
-                        />
-                        <Button variant="contained" color="primary" onClick={adicionarPlano}>
-                          <BiSave />
-                        </Button>
-                      </Stack>
-                      <Stack spacing={1}>
-                        {plans.map((plano, index) => (
-                          <Card key={index} variant="outlined">
-                            <CardContent>
-                              <Typography variant="body1" sx={{ fontWeight: 600 }}>{plano.nome}</Typography>
-                              <Typography variant="body2">Inclusos: {plano.inclusos}</Typography>
-                              <Typography variant="body2">Valor: R$ {plano.valor}</Typography>
-                            </CardContent>
-                            <CardActions>
-                              <IconButton size="small" color="error" onClick={() => removerPlano(index)}>
-                                <TbTrash />
-                              </IconButton>
-                            </CardActions>
-                          </Card>
-                        ))}
-                      </Stack>
+                      </FormControl>
                     </Stack>
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="regras_adesao"
                       variant="outlined"
-                      focused
                       label="Regras de Adesão"
-                      disabled={id ? true : false}
                       multiline
-                      rows={4}
+                      rows={3}
                       value={values.regras_adesao}
                       onChange={handleChange}
                       placeholder="descreva detalhamente as regras de adesão"
                     />
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="regras_rescisao"
                       variant="outlined"
-                      focused
                       label="Regras de Rescisão"
-                      disabled={id ? true : false}
                       multiline
-                      rows={4}
+                      rows={3}
                       value={values.regras_rescisao}
                       onChange={handleChange}
                       placeholder="descreva detalhadamento as regras de rescisão"
                     />
                     <TextField
                       fullWidth
-                      name="nome"
+                      name="regras_renegociacao"
                       variant="outlined"
-                      focused
                       label="Regras de Renegociação"
-                      disabled={id ? true : false}
                       multiline
-                      rows={4}
+                      rows={3}
                       value={values.regras_renegociacao}
                       onChange={handleChange}
                       placeholder="descreva detalhadamente as regras de renegociação"
                     />
-                    <Stack gap={2}>
-                      <Typography variant="h6">Cronograma Inicial</Typography>
-                      <Stack direction="row" gap={2}>
-                        <DatePicker
-                          label="Data do Evento"
-                          value={novoEvento.data ? dayjs(novoEvento.data) : null}
-                          onChange={(date: Date | null) => setNovoEvento({ ...novoEvento, data: date ? dayjs(date).format("YYYY-MM-DD") : "" })}
-                          renderInput={(params: any) => <TextField {...params} fullWidth />}
-                        />
-                        <TextField
-                          fullWidth
-                          label="Descrição"
-                          value={novoEvento.descricao}
-                          onChange={(e) => setNovoEvento({ ...novoEvento, descricao: e.target.value })}
-                        />
-                        <Button variant="contained" onClick={adicionarEvento}>
-                          Adicionar
-                        </Button>
-                      </Stack>
-
-                      {eventos.map((evento, index) => (
-                        <Stack key={index} direction="row" alignItems="center" gap={2}>
-                          <TextField value={evento.data} fullWidth disabled />
-                          <TextField value={evento.descricao} fullWidth disabled />
-                          <IconButton onClick={() => removerEvento(index)}>
-                            <TbTrash color="red" />
-                          </IconButton>
-                        </Stack>
-                      ))}
-                    </Stack>
                   </Box>
                   <Stack
                     width="100%"

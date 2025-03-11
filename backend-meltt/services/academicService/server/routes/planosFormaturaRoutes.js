@@ -4,6 +4,7 @@ import authMiddleware from "../middlewares/auth/index.js";
 
 const router = express.Router();
 
+router.get("/turma/:id", authMiddleware, planosFormaturaController.getPlanosFormatura);
 router.get("/", authMiddleware, planosFormaturaController.getAllPlanosFormatura);
 router.get("/:id", authMiddleware, planosFormaturaController.getPlanoFormatura);
 router.post("/", authMiddleware, planosFormaturaController.createPlanoFormatura);
