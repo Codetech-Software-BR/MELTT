@@ -302,8 +302,8 @@ export default function CustomDrawer(props: Props) {
               >
                 <Box sx={{ width: "100%", padding: 1, maxWidth: 280 }}>
                   <List>
-                    {notificacoes.length > 0 ? (
-                      notificacoes.map((notificacao, index) => (
+                    {notificacoes?.length > 0 ? (
+                      notificacoes?.map((notificacao, index) => (
                         <ListItem key={index} disablePadding>
                           <ListItemButton>
                             <ListItemText
