@@ -35,12 +35,12 @@ export const menuListAdmin = [
   {
     title: "Usuários",
     route: "/usuarios",
-    icon: <FaUsers size={22}  />,
+    icon: <FaUsers size={22} />,
   },
   {
     title: "Pagamentos",
     route: "/pagamentos",
-    icon: <MdOutlinePayments size={22}  />,
+    icon: <MdOutlinePayments size={22} />,
   },
   {
     title: "Eventos",
@@ -203,11 +203,11 @@ export const graduationYearsList = [
   {
     value: "2029",
     label: "2029"
-  }, 
+  },
   {
     value: "2030",
     label: "2030"
-  }, 
+  },
   {
     value: "2031",
     label: "2031"
@@ -215,11 +215,11 @@ export const graduationYearsList = [
   {
     value: "2032",
     label: "2032"
-  }, 
+  },
   {
     value: "2033",
     label: "2033"
-  }, 
+  },
   {
     value: "2034",
     label: "2034"
@@ -227,7 +227,7 @@ export const graduationYearsList = [
   {
     value: "2035",
     label: "2035"
-  }, 
+  },
   {
     value: "2036",
     label: "2036"
