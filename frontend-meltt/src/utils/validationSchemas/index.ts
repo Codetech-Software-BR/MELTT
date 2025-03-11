@@ -46,6 +46,12 @@ export const validateTarefaSchema = Yup.object({
   atribuido_por: Yup.string().required("o campo atribuído por é obrigatório."),
 })
 
+export const validatePlanoSchema = Yup.object({
+  nome: Yup.string().required("o campo nome é obrigatório."),
+  valor: Yup.string().required("o campo valor é obrigatório."),
+  incluso: Yup.string().required("o campo incluso e detalhes é obrigatório."),
+})
+
 export const validateTeacherSchema = Yup.object({
   nome: Yup.string().required("o campo nome é obrigatório."),
   telefone: Yup.string().required("campo obrigatório."),
