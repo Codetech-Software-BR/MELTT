@@ -28,6 +28,11 @@ export const menuListAdmin = [
     icon: <FaGraduationCap size={22} />,
   },
   {
+    title: "Planos Formatura",
+    route: "/planos-formatura",
+    icon: <FaGraduationCap size={22} />,
+  },
+  {
     title: "Usuários",
     route: "/usuarios",
     icon: <FaUsers size={22} />,
