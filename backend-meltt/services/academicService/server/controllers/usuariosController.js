@@ -2,183 +2,175 @@ import pool from "../db.js";
 
 class UsuarioController {
   async getAllUsuarios(req, res) {
-    const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
-    const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
-    const offset = (page - 1) * limit; // Calcula o deslocamento
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const { ativo, nome } = req.query;
 
-    const ativo = req.query.ativo; // Captura o parâmetro "ativo" da query string
-    const nome = req.query.nome;
+    try {
+      let query = "SELECT * FROM usuarios";
+      let countQuery = "SELECT COUNT(*) AS total FROM usuarios";
+      const queryParams = [];
+      const whereClauses = [];
 
-    let query = "SELECT * FROM usuarios";
-    let countQuery = "SELECT COUNT(*) AS total FROM usuarios";
-    let queryParams = [];
-
-    if (ativo !== undefined) {
-      query += " WHERE ativo = ?";
-      countQuery += " WHERE ativo = ?";
-      queryParams.push(parseInt(ativo));
-    }
-
-    query += " LIMIT ? OFFSET ?";
-    queryParams.push(limit, offset);
-    // Se "ativo" estiver presente, adiciona a condição WHERE
-    if (ativo !== undefined) {
-      query += " WHERE ativo = ?";
-      countQuery += " WHERE ativo = ?";
-      queryParams.push(parseInt(ativo)); // Converte para número
-    }
-
-    if (nome) {
-      if (queryParams.length > 0) {
-        query += " AND nome LIKE ?";
-        countQuery += " AND nome LIKE ?";
-      } else {
-        query += " WHERE nome LIKE ?";
-        countQuery += " WHERE nome LIKE ?";
+      // Construção dinâmica das cláusulas WHERE
+      if (ativo !== undefined) {
+        whereClauses.push("ativo = ?");
+        queryParams.push(parseInt(ativo));
       }
-      queryParams.push(`${nome}%`); // Busca o nome que começa com o valor de "nome"
-    }
 
-    query += " LIMIT ? OFFSET ?";
-    queryParams.push(limit, offset);
+      if (nome) {
+        whereClauses.push("nome LIKE CONCAT(?, '%')");
+        queryParams.push(nome);
+      }
 
-    console.log(query);
-    console.log(queryParams);
+      // Adiciona WHERE se houver filtros
+      if (whereClauses.length > 0) {
+        const whereStatement = ` WHERE ${whereClauses.join(" AND ")}`;
+        query += whereStatement;
+        countQuery += whereStatement;
+      }
 
-    db.query(query, queryParams, (err, results) => {
-      if (err) return res.status(500).json({ error: err.message });
+      // Query principal com paginação
+      query += " LIMIT ? OFFSET ?";
+      const paginationParams = [...queryParams, limit, offset];
 
-      db.query(countQuery, queryParams.slice(0, -2), (err, countResult) => {
-        if (err) return res.status(500).json({ error: err.message });
+      // Executa as queries em paralelo
+      const [results, [countResult]] = await Promise.all([
+        pool.query(query, paginationParams),
+        pool.query(countQuery, queryParams)
+      ]);
 
-        const total = countResult[0].total;
-        const totalPages = Math.ceil(total / limit);
+      const total = countResult[0].total;
+      const totalPages = Math.ceil(total / limit);
 
-        res.status(200).json({
-          page,
-          totalPages,
-          totalItems: total,
-          itemsPerPage: limit,
-          data: results,
-        });
+      res.status(200).json({
+        page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+        data: results[0],
       });
-    });
+
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 
   async createUsuario(req, res) {
-    const {
-      email,
-      senha,
-      tipo,
-      documento,
-      nome,
-      id_bling,
-      ativo,
-      telefone,
-      turma_id,
-    } = req.body;
-    const query =
-      "INSERT INTO usuarios (email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     try {
-      const [result] = await pool.query(query, [
-        email,
-        senha,
-        tipo,
-        documento,
-        nome,
-        id_bling,
-        ativo,
-        telefone,
-        turma_id,
-      ]);
-      res.status(201).json({ id: result.insertId, ...req.body });
+      const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
+      
+      const [result] = await pool.query(
+        `INSERT INTO usuarios 
+        (email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id]
+      );
+
+      res.status(201).json({ 
+        id: result.insertId, 
+        ...req.body 
+      });
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
   async getUsuarioById(req, res) {
-    const id = req.params.id;
     try {
-      const [result] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
-        id,
-      ]);
-      res.status(200).json(result);
+      const [results] = await pool.query(
+        "SELECT * FROM usuarios WHERE id = ?", 
+        [req.params.id]
+      );
+
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
+      }
+
+      res.status(200).json(results[0]);
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
   async getUsuariosByTurmaId(req, res) {
-    const id = req.params.id;
     try {
-      const [result] = await pool.query(
+      const [results] = await pool.query(
         "SELECT * FROM usuarios WHERE turma_id = ?",
-        [id]
+        [req.params.id]
       );
-      res.status(200).json(result);
+
+      res.status(200).json(results);
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
   async updateUsuario(req, res) {
-    const id = req.params.id;
-    const {
-      email,
-      senha,
-      tipo,
-      documento,
-      nome,
-      id_bling,
-      ativo,
-      telefone,
-      turma_id,
-    } = req.body;
-    const updateQuery = `
-      UPDATE usuarios
-      SET email = ?, senha = ?, tipo = ?, documento = ?, nome = ?, id_bling = ?, ativo = ?, telefone = ?, turma_id = ?
-      WHERE id = ?`;
     try {
-      await pool.query(updateQuery, [
-        email,
-        senha,
-        tipo,
-        documento,
-        nome,
-        id_bling,
-        ativo,
-        telefone,
-        turma_id,
-        id,
-      ]);
+      const { id } = req.params;
+      const fields = req.body;
 
-      const [results] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
-        id,
-      ]);
-      if (results.length === 0) {
-        return res.status(404).json({ error: "Aluno não encontrado." });
+      const updateQuery = `
+        UPDATE usuarios
+        SET email = ?, senha = ?, tipo = ?, documento = ?, 
+            nome = ?, id_bling = ?, ativo = ?, telefone = ?, turma_id = ?
+        WHERE id = ?`;
+
+      const params = [
+        fields.email,
+        fields.senha,
+        fields.tipo,
+        fields.documento,
+        fields.nome,
+        fields.id_bling,
+        fields.ativo,
+        fields.telefone,
+        fields.turma_id,
+        id
+      ];
+
+      const [result] = await pool.query(updateQuery, params);
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Usuário não encontrado" });
       }
+
+      const [updatedUser] = await pool.query(
+        "SELECT * FROM usuarios WHERE id = ?", 
+        [id]
+      );
+
       res.status(200).json({
-        message: "Aluno atualizado com sucesso!",
-        value: results[0],
+        message: "Usuário atualizado com sucesso!",
+        data: updatedUser[0]
       });
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
 
   async updateUsuarioStatus(req, res) {
-    const id = req.params.id;
-    const query = "UPDATE usuarios SET ativo = 0 WHERE id = ?";
     try {
-      const [result] = await pool.query(query, [id]);
+      const [result] = await pool.query(
+        "UPDATE usuarios SET ativo = 0 WHERE id = ?",
+        [req.params.id]
+      );
+
       if (result.affectedRows === 0) {
         return res.status(404).json({ message: "Usuário não encontrado!" });
       }
-      res
-        .status(200)
-        .json({ message: "Usuário marcado como inativo!", id });
+
+      res.status(200).json({
+        message: "Usuário marcado como inativo!",
+        id: req.params.id
+      });
+
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
