@@ -5,7 +5,7 @@ class AdesaoController {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const offset = (page - 1) * limit;
-
+  
     try {
       const [data, total, status] = await Promise.all([
         db.query("SELECT * FROM adesoes LIMIT ? OFFSET ?", [limit, offset]),
@@ -17,25 +17,28 @@ class AdesaoController {
           FROM adesoes
         `)
       ]);
-
-      const [dataRows] = data[0];
-      const [totalRows] = total[0];
-      const [statusRows] = status[0];
-
+  
+      const dataRows = data[0]; // Retorna um array de objetos
+      const totalRows = total[0]; // Retorna um array [{ total: 10 }]
+      const statusRows = status[0]; // Retorna um array [{ totalConcluidas: 5, totalPendentes: 5 }]
+  
+      const totalCount = totalRows.length > 0 ? totalRows[0].total : 0;
+  
       res.status(200).json({
         page,
-        totalPages: Math.ceil(totalRows[0].total / limit),
-        totalItems: totalRows[0].total,
+        totalPages: Math.ceil(totalCount / limit),
+        totalItems: totalCount,
         itemsPerPage: limit,
-        // totalConcluidas: statusRows[0].totalConcluidas || 0,
-        totalPendentes: statusRows[0].totalPendentes || 0,
+        totalConcluidas: statusRows.length > 0 ? statusRows[0].totalConcluidas || 0 : 0,
+        totalPendentes: statusRows.length > 0 ? statusRows[0].totalPendentes || 0 : 0,
         data: dataRows
       });
-
+  
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   }
+  
 
   async getAdesaoById(req, res) {
     try {
