@@ -90,7 +90,7 @@ class AdesaoController {
 
   getAdesoesByAlunoId(req, res) {
     const id = req.params.id;
-    db.query("SELECT * FROM adesoes WHERE aluno_id = ?", [id], (err, result) => {
+    db.query("SELECT * FROM adesoes WHERE usuario_id = ?", [id], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
@@ -98,12 +98,12 @@ class AdesaoController {
 
 
   createAdesao(req, res) {
-    const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
+    const { usuario_id, turma_id, status, data_assinatura, observacoes } = req.body;
     const query =
-      "INSERT INTO adesoes (aluno_id, turma_id, status, data_assinatura, observacoes ) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO adesoes (usuario_id, turma_id, status, data_assinatura, observacoes ) VALUES (?, ?, ?, ?, ?)";
     db.query(
       query,
-      [aluno_id, turma_id, status, data_assinatura, observacoes],
+      [usuario_id, turma_id, status, data_assinatura, observacoes],
       (err, result) => {
         if (err) return res.status(500).json(err);
         res.status(201).json({ id: result.insertId, ...req.body });
@@ -113,12 +113,12 @@ class AdesaoController {
 
   updateAdesao(req, res) {
     const id = req.params.id;
-    const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
-    const updateQuery = `UPDATE adesoes SET aluno_id = ?, turma_id = ?, status = ?, data_assinatura = ?, observacoes = ? WHERE id = ?`;
+    const { usuario_id, turma_id, status, data_assinatura, observacoes } = req.body;
+    const updateQuery = `UPDATE adesoes SET usuario_id = ?, turma_id = ?, status = ?, data_assinatura = ?, observacoes = ? WHERE id = ?`;
 
     db.query(
       updateQuery,
-      [aluno_id, turma_id, status, data_assinatura, observacoes, id],
+      [usuario_id, turma_id, status, data_assinatura, observacoes, id],
       (err) => {
         if (err) return res.status(500).json(err);
 
