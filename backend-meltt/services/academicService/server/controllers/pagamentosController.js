@@ -1,5 +1,6 @@
 import pool from "../db.js";
 
+
 class PagamentosController {
   async getAllPagamentos(req, res) {
     const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
@@ -55,6 +56,19 @@ class PagamentosController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  getPagamentosByNumeroDocumento(req, res) {
+    const { numeroDocumento } = req.query;
+    db.query(
+      "SELECT * FROM pagamentos WHERE numeroDocumento = ? ORDER BY dataEmissao DESC LIMIT 1",
+      [numeroDocumento],
+      (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.status(200).json(result[0] || null);
+      }
+    );
+  };
+
 }
 
 export default new PagamentosController();

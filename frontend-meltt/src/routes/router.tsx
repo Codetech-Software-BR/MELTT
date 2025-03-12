@@ -40,6 +40,8 @@ import EventosNewPage from "../pages/eventos/new";
 import EventosCheckinsPage from "../pages/eventos/checkins";
 import DashboardPagamentosPage from "../pages/dashboards";
 import EstatutosPage from "../pages/estatutos";
+import PlanosFormaturaPage from "../pages/planos";
+import PlanosFormaturaNewPage from "../pages/planos/new";
 
 export const router = createBrowserRouter([
   {
@@ -153,6 +155,14 @@ export const router = createBrowserRouter([
       {
         path: "/contratos-eventos",
         element: <ContratosEventosPage/>
+      },
+      {
+        path: "/planos-formatura",
+        element: <PlanosFormaturaPage/>
+      },
+      {
+        path: "/planos-formatura/new",
+        element: <PlanosFormaturaNewPage/>
       },
       {
         path: "/fornecedores",

@@ -6,7 +6,8 @@ class UsuarioController {
     const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
     const offset = (page - 1) * limit; // Calcula o deslocamento
 
-    const ativo = req.query.ativo; // Parâmetro "ativo" da query string
+    const ativo = req.query.ativo; // Captura o parâmetro "ativo" da query string
+    const nome = req.query.nome;
 
     let query = "SELECT * FROM usuarios";
     let countQuery = "SELECT COUNT(*) AS total FROM usuarios";
@@ -15,29 +16,53 @@ class UsuarioController {
     if (ativo !== undefined) {
       query += " WHERE ativo = ?";
       countQuery += " WHERE ativo = ?";
-      queryParams.push(parseInt(ativo)); 
+      queryParams.push(parseInt(ativo));
+    }
+
+    query += " LIMIT ? OFFSET ?";
+    queryParams.push(limit, offset);
+    // Se "ativo" estiver presente, adiciona a condição WHERE
+    if (ativo !== undefined) {
+      query += " WHERE ativo = ?";
+      countQuery += " WHERE ativo = ?";
+      queryParams.push(parseInt(ativo)); // Converte para número
+    }
+
+    if (nome) {
+      if (queryParams.length > 0) {
+        query += " AND nome LIKE ?";
+        countQuery += " AND nome LIKE ?";
+      } else {
+        query += " WHERE nome LIKE ?";
+        countQuery += " WHERE nome LIKE ?";
+      }
+      queryParams.push(`${nome}%`); // Busca o nome que começa com o valor de "nome"
     }
 
     query += " LIMIT ? OFFSET ?";
     queryParams.push(limit, offset);
 
-    try {
-      const [results] = await pool.query(query, queryParams);
-      const countParams = ativo !== undefined ? queryParams.slice(0, 1) : [];
-      const [countResult] = await pool.query(countQuery, countParams);
-      const total = countResult[0].total;
-      const totalPages = Math.ceil(total / limit);
+    console.log(query);
+    console.log(queryParams);
 
-      res.status(200).json({
-        page,
-        totalPages,
-        totalItems: total,
-        itemsPerPage: limit,
-        data: results,
+    db.query(query, queryParams, (err, results) => {
+      if (err) return res.status(500).json({ error: err.message });
+
+      db.query(countQuery, queryParams.slice(0, -2), (err, countResult) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        const total = countResult[0].total;
+        const totalPages = Math.ceil(total / limit);
+
+        res.status(200).json({
+          page,
+          totalPages,
+          totalItems: total,
+          itemsPerPage: limit,
+          data: results,
+        });
       });
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
+    });
   }
 
   async createUsuario(req, res) {
