@@ -74,23 +74,66 @@ class TurmaController {
     });
   };
 
-  vincularPlanoFormatura(req, res) {
-    const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
-    const query = 'INSERT INTO turma_plano_formatura (turma_id, plano_id) VALUES (?, ?)';
-    db.query(query, [turma_id, plano_id], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(201).json({message: "Plano de formatura vinculado com sucesso!"});
-    });
-  };
+  atualizarPlanosFormatura(req, res) {
+    const { turma_id, planos_ids } = req.body; // Lista de planos selecionados no frontend
 
-  desvincularPlanoFormatura(req, res) {
-    const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
-    const query = 'DELETE FROM turma_plano_formatura WHERE turma_id = ? AND plano_id = ?';
-    db.query(query, [turma_id, plano_id], (err, result) => {
+    if (!turma_id || !Array.isArray(planos_ids)) {
+      return res.status(400).json({ message: "Dados inválidos" });
+    }
+
+    const querySelecionados = 'SELECT plano_id FROM turma_plano_formatura WHERE turma_id = ?';
+
+    db.query(querySelecionados, [turma_id], (err, result) => {
       if (err) return res.status(500).json(err);
-      res.status(200).json({message: "Plano de formatura desvinculado com sucesso!"});
+
+      const planosAtuais = result.map(row => row.plano_id);
+
+      // Identificar planos a remover (presentes antes, mas não agora)
+      const planosRemover = planosAtuais.filter(plano => !planos_ids.includes(plano));
+
+      // Identificar planos a adicionar (não estavam antes, mas foram selecionados agora)
+      const planosAdicionar = planos_ids.filter(plano => !planosAtuais.includes(plano));
+
+      // Monta as queries necessárias
+      const removerQuery = 'DELETE FROM turma_plano_formatura WHERE turma_id = ? AND plano_id IN (?)';
+      const adicionarQuery = 'INSERT INTO turma_plano_formatura (turma_id, plano_id) VALUES ?';
+
+      // Executa as operações
+      const promises = [];
+
+      if (planosRemover.length > 0) {
+        promises.push(db.query(removerQuery, [turma_id, planosRemover]));
+      }
+
+      if (planosAdicionar.length > 0) {
+        const valoresAdicionar = planosAdicionar.map(plano => [turma_id, plano]);
+        promises.push(db.query(adicionarQuery, [valoresAdicionar]));
+      }
+
+      Promise.all(promises)
+        .then(() => res.status(200).json({ message: "Planos de formatura atualizados com sucesso!" }))
+        .catch(error => res.status(500).json(error));
     });
   }
+
+
+  // vincularPlanoFormatura(req, res) {
+  //   const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
+  //   const query = 'INSERT INTO turma_plano_formatura (turma_id, plano_id) VALUES (?, ?)';
+  //   db.query(query, [turma_id, plano_id], (err, result) => {
+  //     if (err) return res.status(500).json(err);
+  //     res.status(201).json({message: "Plano de formatura vinculado com sucesso!"});
+  //   });
+  // };
+
+  // desvincularPlanoFormatura(req, res) {
+  //   const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
+  //   const query = 'DELETE FROM turma_plano_formatura WHERE turma_id = ? AND plano_id = ?';
+  //   db.query(query, [turma_id, plano_id], (err, result) => {
+  //     if (err) return res.status(500).json(err);
+  //     res.status(200).json({message: "Plano de formatura desvinculado com sucesso!"});
+  //   });
+  // }
 }
 
 export default new TurmaController();

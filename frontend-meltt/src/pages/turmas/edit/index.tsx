@@ -23,7 +23,7 @@ import toast from "react-hot-toast";
 import { useCallback, useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
+import { apiGetData, apiPatchData, apiPostData, apiPutData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
 import { DatePicker, LoadingButton } from "@mui/lab";
@@ -58,20 +58,34 @@ const TurmasEditPage = () => {
   const [planos, setPlanos] = useState<any[]>([]);
   const [selecionados, setSelecionados] = useState<any[]>([]);
 
-  useEffect(() => {
-    setSelecionados(planos); // Quando `planos` mudar, atualizar os selecionados
-  }, [planos]);
-
   const getPlanos = async () => {
-    const response = await apiGetData("academic", `/planos-formatura/turma/${id}`);
+    try {
+      const response = await apiGetData("academic", `/planos-formatura`);
+      console.log("response planos", response);
+      if (response) {
+        setPlanos(response.data);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar planos", error);
+    }
+  };
 
-    if (response !== null) {
-      setPlanos(response);
+  const getPlanosId = async () => {
+    try {
+      const response = await apiGetData("academic", `/planos-formatura/turma/${id}`);
+      console.log("response id", response);
+
+      if (response) {
+        setSelecionados(response);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar planos da turma", error);
     }
   };
 
   useEffect(() => {
     getPlanos();
+    getPlanosId();
   }, []);
 
   const getTurmasInitialValue = Object.keys(initialValuesTurma).reduce(
@@ -110,22 +124,47 @@ const TurmasEditPage = () => {
   });
 
   const onSubmitTurma = async (values: any) => {
-    console.log(values);
+    console.log("values", values);
     setLoadingSave(true);
 
     try {
-      if (!id) throw new Error("ID da turma não encontrado");
-      const response = await apiPutData("academic", `/turmas/${id}`, values);
-      if (response.result.nome) {
-        toast.success("Turma editada com sucesso");
-        navigate(-1);
+      if (!id) {
+        throw new Error("ID da turma não encontrado");
       }
-    } catch (error) {
-      toast.error("Erro ao salvar turma");
+
+      const { planos_formatura, ...turmaValues } = values;
+
+      await apiPatchData("academic", `/turmas/${id}`, turmaValues);
+
+      await apiPutData("academic", "/turmas/atualizar-planos", {
+        turma_id: id,
+        planos_ids: planos_formatura.map((plano: any) => plano.id),
+      });
+
+      toast.success("Turma editada com sucesso");
+      navigate(-1);
+
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Erro ao salvar turma");
+    } finally {
+      setLoadingSave(false);
     }
-    setLoadingSave(false);
   };
 
+  const [initialValues, setInitialValues] = useState({
+    ...getTurmasInitialValue,
+    planos_formatura: [],
+  });
+
+  useEffect(() => {
+    if (selecionados.length > 0) {
+      setInitialValues(prev => ({
+        ...prev,
+        planos_formatura: selecionados,
+      }));
+    }
+  }, [selecionados]);
 
   return (
     <Stack width={"100%"} height={"100%"} gap={10}>
@@ -150,9 +189,8 @@ const TurmasEditPage = () => {
           }}
         >
           <Formik
-            initialValues={{
-              ...getTurmasInitialValue,
-            }}
+            enableReinitialize
+            initialValues={initialValues}
             validationSchema={validateTurmaSchema}
             onSubmit={(values: any) => onSubmitTurma(values)}
           >
@@ -242,19 +280,16 @@ const TurmasEditPage = () => {
                           multiple
                           size="small"
                           id="planos_formatura"
-                          options={planos || []} // Todas as opções disponíveis
+                          options={planos} // Os planos disponíveis
                           getOptionLabel={(option) => option.nome}
-                          value={selecionados} // Apenas os selecionados
+                          value={selecionados} // Mantém a lista de selecionados atualizada
                           onChange={(_, newValue) => {
-                            setSelecionados(newValue); // Atualiza o estado ao remover/adicionar
+                            setSelecionados(newValue);
                             setFieldValue("planos_formatura", newValue);
                           }}
+                          isOptionEqualToValue={(option, value) => option.id === value.id}
                           renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              label="Planos de Formatura"
-                              variant="outlined"
-                            />
+                            <TextField {...params} label="Planos de Formatura" variant="outlined" />
                           )}
                         />
                       </FormControl>
