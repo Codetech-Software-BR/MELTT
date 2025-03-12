@@ -19,7 +19,7 @@ class AdesaoController {
       ]);
 
       const [dataRows] = data[0];
-      // const [totalRows] = total[0];
+      const [totalRows] = total[0];
       const [statusRows] = status[0];
 
       res.status(200).json({
