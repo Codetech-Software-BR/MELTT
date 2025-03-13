@@ -38,10 +38,10 @@ class TarefasController {
   };
 
   createTarefa(req, res) {
-    const { nome, atribuido_por } = req.body;
+    const { nome, atribuido_por, prazo_tarefa } = req.body;
     const query =
-      "INSERT INTO tarefas (nome, atribuido_por) VALUES (?, ?)";
-    db.query(query, [nome, atribuido_por], (err, result) => {
+      "INSERT INTO tarefas (nome, atribuido_por, prazo_tarefa) VALUES (?, ?)";
+    db.query(query, [nome, atribuido_por, prazo_tarefa], (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(201).json({ id: result.insertId, ...req.body });
     });
@@ -49,10 +49,10 @@ class TarefasController {
 
   updateTarefa(req, res) {
     const id = req.params.id;
-    const { nome, atribuido_por } = req.body;
+    const { nome, atribuido_por, prazo_tarefa } = req.body;
     const query =
       "UPDATE tarefas SET nome = ?, atribuido_por = ? WHERE id = ?";
-    db.query(query, [nome, atribuido_por, id], (err) => {
+    db.query(query, [nome, atribuido_por, prazo_tarefa, id], (err) => {
       if (err) return res.status(500).json(err);
       res.status(200).json({ message: "Tarefa atualizada com sucesso!", id, ...req.body });
     });
