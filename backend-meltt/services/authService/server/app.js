@@ -13,12 +13,11 @@ const app = express();
 app.use(bodyParser.json());
 
 const JWT_SECRET = process.env.JWT_SECRET;
+const selfPingUrl = process.env.SELF_PING_URL
 
 const corsOptions = { origin: true };
 app.use(cors(corsOptions));
 
-// app.use("/users", userRoutes);
-// app.use("/influencers", influencersRoutes);
 
 async function createUser({ aluno_id, nome, email, senha, tipo }) {
   const hashedPassword = await bcrypt.hash(senha, 10);
@@ -203,16 +202,13 @@ app.post("/api/external/bling/oauth", async (req, res) => {
     const response = await axios.post(url, data, config);
     console.log('response', response.data);
     const { access_token, refresh_token } = response.data;
-    // tokenManager.setTokens({ access_token, refresh_token });
 
     return res.json({
       access_token,
       refresh_token,
     });
   } catch (error) {
-    // console.error("Erro ao obter tokens: ", error);
     return res.status(500).json({ error: error });
-    // return res.status(500).json({ error: "Erro ao obter tokens de acesso" });
   }
 });
 
@@ -240,8 +236,6 @@ app.post("/api/external/bling/refresh", async (req, res) => {
     };
 
     const response = await axios.post(url, data, config);
-    console.log('response', response.data);
-    // const { access_token, refresh_token: new_refresh_token } = response.data;
 
     return res.json({
       access_token,
@@ -255,6 +249,13 @@ app.post("/api/external/bling/refresh", async (req, res) => {
     });
   }
 });
+
+app.get('/ping', (req, res) => res.send('pong'));
+setInterval(() => {
+  axios.get(selfPingUrl)
+    .then(() => console.log('Self-ping realizado com sucesso'))
+    .catch((err) => console.error('Erro no self-ping:', err));
+}, 10 * 60 * 1000)
 
 app.get("/", (req, res) => res.send("API AUTH MELTT"));
 
