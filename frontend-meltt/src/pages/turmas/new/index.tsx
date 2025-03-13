@@ -20,7 +20,7 @@ import toast from "react-hot-toast";
 import { useCallback, useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPostData } from "../../../services/api";
+import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
 import { LoadingButton } from "@mui/lab";
@@ -105,26 +105,18 @@ const TurmasPageNew = () => {
             }
           })
           if (result.status === 200) {
-            let dataObj = {
-              ...turmaValues,
-              arquivo_url: `https://meltt-turmas.s3.amazonaws.com/turmas/${encodeURIComponent(file.name)}`,
-            };
-            let response = await apiPostData("academic", "/turmas", dataObj)
-            if (response.id) {
-              const requests = planos_formatura.map((plano: any) => {
-                return apiPostData("academic", `/turmas/vincular-planos`, {
-                  turma_id: response.id,
-                  plano_id: plano.id,
-                });
-              });
+            turmaValues.arquivo_url = `https://meltt-turmas.s3.amazonaws.com/turmas/${encodeURIComponent(file.name)}`;
+            const response = await apiPostData("academic", "/turmas", turmaValues);
+            if (!response.id) throw new Error("Erro ao criar/atualizar a turma.");
 
-              // Aguarda todas as requisições serem concluídas
-              await Promise.all(requests);
+            await apiPutData("academic", "/turmas/atualizar-planos", {
+              turma_id: response.id,
+              planos_ids: planos_formatura.map((plano: any) => plano.id),
+            });
 
-              toast.dismiss();
-              toast.success("Turma salva com sucesso");
-              navigate(-1);
-            }
+            toast.dismiss();
+            toast.success("Turma salva com sucesso");
+            navigate(-1);
           }
         }
       } else {
@@ -252,7 +244,7 @@ const TurmasPageNew = () => {
                           multiple
                           size="small"
                           id="planos_formatura"
-                          onKeyDown={(e) => {e.preventDefault()}}
+                          onKeyDown={(e) => { e.preventDefault() }}
                           options={planos}
                           getOptionLabel={(option) => option.nome}
                           value={values.planos_formatura} // Ensure this is an array

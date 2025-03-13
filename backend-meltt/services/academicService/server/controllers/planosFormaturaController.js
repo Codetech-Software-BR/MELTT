@@ -37,6 +37,23 @@ class PlanosFormaturaController {
         });
     };
 
+    getPlanosFormatura(req, res) {
+        const id = req.params.id;
+    
+        const query = `
+            SELECT pf.* 
+            FROM turma_plano_formatura tpf
+            INNER JOIN planos_formatura pf ON tpf.plano_id = pf.id
+            WHERE tpf.turma_id = ?;
+        `;
+    
+        db.query(query, [id], (err, result) => {
+            if (err) return res.status(500).json({ error: err.message });
+            res.status(200).json(result);
+        });
+    }
+    
+
     createPlanoFormatura(req, res) {
         const { nome, incluso, valor } = req.body;
         const query =
