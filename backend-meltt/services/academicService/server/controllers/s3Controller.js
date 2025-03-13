@@ -82,20 +82,21 @@ class s3Controller {
   async getUploadTurmaContractUrl(req, res) {
     try {
       const { fileName, fileType, turmaId } = req.query;
-  
+
       if (!fileName || !fileType || !turmaId) {
         return res.status(400).json({ error: "fileName, fileType e turmaId são obrigatórios" });
       }
-  
+
       const filePath = `turmas/${turmaId}`;
-  
+
       const signedUrl = await s3Service.s3Client.getSignedUrl("putObject", {
         Bucket: process.env.AWS_BUCKET_TURMAS,
         Key: filePath,
         ContentType: fileType,
         Expires: 3600,
+        ACL: "public-read"
       });
-  
+
       return res.json({ url: signedUrl });
     } catch (error) {
       console.error("Erro ao gerar presigned URL:", error);
