@@ -69,10 +69,10 @@ class AdesaoController {
 
   async createAdesao(req, res) {
     try {
-      const { aluno_id, turma_id, status, data_assinatura, observacoes } = req.body;
+      const { usuario_id, turma_id, status, data_assinatura, observacoes } = req.body;
       const [result] = await db.query(
         "INSERT INTO adesoes SET ?", 
-        { aluno_id, turma_id, status, data_assinatura, observacoes }
+        { usuario_id, turma_id, status, data_assinatura, observacoes }
       );
       res.status(201).json({ id: result.insertId, ...req.body });
     } catch (err) {
@@ -89,9 +89,9 @@ class AdesaoController {
 
       if (!affectedRows) {
         return res.status(404).json({ error: "Adesão não encontrada" });
-        const [rows] = await db.query("SELECT * FROM adesoes WHERE id = ?", [req.params.id]);
-        res.status(200).json({ message: "Atualizado com sucesso", value: rows[0] });
       }
+      const [rows] = await db.query("SELECT * FROM adesoes WHERE id = ?", [req.params.id]);
+      res.status(200).json({ message: "Atualizado com sucesso", value: rows[0] });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
