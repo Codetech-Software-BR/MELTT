@@ -20,11 +20,13 @@ import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPutData } from "../../../services/api";
+import { apiGetData, apiPostData, apiPutData } from "../../../services/api";
 import { LoadingButton } from "@mui/lab";
 import { BiSave } from "react-icons/bi";
 import { useAlunoContext } from "../../../providers/alunoContext";
 import { initialValuesAluno } from "../../../initialValues";
+import formatPhoneNumber from "../../../utils/formatters/masks/phoneNumberMask.js";
+import resetPhoneNumber from "../../../utils/formatters/masks/resetPhoneNumber.js";
 
 export type StudentInfo = {
   educacao_basica: string | undefined;
@@ -78,7 +80,8 @@ const AlunosPageEdit = () => {
       if (id) {
         setLoadingAluno(true);
         const { telefone, nome, documento, ativo } = values;
-        const valuesToUpdate = { telefone, nome, documento, ativo };
+        const telefoneApenasNumeros = resetPhoneNumber(telefone);
+        const valuesToUpdate = { telefone: telefoneApenasNumeros, nome, documento, ativo };
         console.log("valuesToUpdate", valuesToUpdate);
         const response = await apiPutData("academic", `/usuarios/${id}`, valuesToUpdate);
         console.log("response", response);
@@ -90,15 +93,16 @@ const AlunosPageEdit = () => {
         console.log("aqui");
         let newTurma_id;
 
-        const { senha, confirmar_senha, ativo, documento, tipo, turma_id, ...rest } = values;
+        const { senha, confirmar_senha, ativo, documento, tipo, turma_id, telefone, ...rest } = values;
+        const telefoneApenasNumeros = resetPhoneNumber(telefone);
         if (senha !== confirmar_senha) {
           toast.error("As senhas não conferem");
         }
         if (turma_id === "") {
           newTurma_id = null;
-          values = { ...rest, senha, documento, tipo, turma_id: newTurma_id, ativo: ativo ? 1 : 0 };
+          values = { ...rest, senha, documento, tipo, turma_id: newTurma_id, ativo: ativo ? 1 : 0, telefone: telefoneApenasNumeros };
         } else {
-          values = { ...rest, senha, documento, tipo, turma_id, ativo: ativo ? 1 : 0 };
+          values = { ...rest, senha, documento, tipo, turma_id, ativo: ativo ? 1 : 0, telefone: telefoneApenasNumeros };
         }
         console.log("values", values);
         setLoadingAluno(true);
@@ -170,6 +174,7 @@ const AlunosPageEdit = () => {
           <Formik
             initialValues={{
               ...getAlunosInitialValue,
+              telefone: formatPhoneNumber(getAlunosInitialValue.telefone),
             }}
             validationSchema={id ? validateUpdateStudentSchema : validateStudentSchema}
             onSubmit={(values: any) => {
@@ -221,7 +226,11 @@ const AlunosPageEdit = () => {
                       size="small"
                       value={values.telefone ?? ""}
                       error={Boolean(errors.telefone)}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        const formattedValue = formatPhoneNumber(e.target.value);
+                        setFieldValue("telefone", formattedValue);
+                      }}
+                      inputProps={{ maxLength: 15 }}
                     />
                   </Stack>
                   <Stack width={"100%"} direction={"row"} gap={2}>
