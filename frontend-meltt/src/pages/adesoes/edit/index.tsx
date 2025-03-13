@@ -58,6 +58,7 @@ const AdesaoEditPage = () => {
     setSavingAdesao(true);
     let dataObj = {
       ...values,
+      usuario_id: values.aluno_id,
       data_assinatura: new Date().toISOString()
     };
 
@@ -107,7 +108,6 @@ const AdesaoEditPage = () => {
             }}
             validationSchema={validateAdesaoSchema}
             onSubmit={(values: any) => {
-              console.log(values)
               onSubmitAdesao(values)
             }}
           >
