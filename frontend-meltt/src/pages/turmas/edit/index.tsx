@@ -2,12 +2,7 @@ import {
   Autocomplete,
   Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
-  Divider,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -17,23 +12,19 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import { validateTurmaSchema } from "../../../utils/validationSchemas";
 import toast from "react-hot-toast";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import "dayjs/locale/pt-br";
 import LoadingBackdrop from "../../../components/loadingBackdrop";
-import { apiGetData, apiPatchData, apiPostData, apiPutData } from "../../../services/api";
+import { apiGetData, apiPatchData, apiPutData } from "../../../services/api";
 
 import { BiSave } from "react-icons/bi";
-import { DatePicker, LoadingButton } from "@mui/lab";
+import { LoadingButton } from "@mui/lab";
 import { initialValuesTurma } from "../../../initialValues";
 import { useDropzone } from "react-dropzone";
-import IconUpload from "../../../assets/icons/upload";
-import { TbTrash } from "react-icons/tb";
-import { SlMagnifier } from "react-icons/sl";
 import { graduationYearsList } from "../../../utils/arrays";
-import dayjs from "dayjs";
 import { useTurmaContext } from "../../../providers/turmaContext";
 
 export type StudentInfo = {
@@ -54,39 +45,9 @@ const TurmasEditPage = () => {
   const { stateTurma } = useTurmaContext();
   const [loadingSave, setLoadingSave] = useState(false);
   const [openLoadingBackdrop, setOpenLoadingBackdrop] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
   const [planos, setPlanos] = useState<any[]>([]);
-  const [selecionados, setSelecionados] = useState<any[]>([]);
-
-  const getPlanos = async () => {
-    try {
-      const response = await apiGetData("academic", `/planos-formatura`);
-      console.log("response planos", response);
-      if (response) {
-        setPlanos(response.data);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar planos", error);
-    }
-  };
-
-  const getPlanosId = async () => {
-    try {
-      const response = await apiGetData("academic", `/planos-formatura/turma/${id}`);
-      console.log("response id", response);
-
-      if (response) {
-        setSelecionados(response);
-      }
-    } catch (error) {
-      console.error("Erro ao buscar planos da turma", error);
-    }
-  };
-
-  useEffect(() => {
-    getPlanos();
-    getPlanosId();
-  }, []);
+  const [planosTurma, setPlanosTurma] = useState<any[]>([]);
+  const formikRef = useRef<FormikProps<any>>(null); // Referência para Formik
 
   const getTurmasInitialValue = Object.keys(initialValuesTurma).reduce(
     (acc, key) => {
@@ -99,29 +60,37 @@ const TurmasEditPage = () => {
     {} as any
   );
 
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      setFile(acceptedFiles[0]);
-      const reader = new FileReader();
-
-      if (file.type.startsWith("image/")) {
-        reader.readAsDataURL(file);
-      } else if (file.type === "text/plain") {
-        reader.readAsText(file);
-      } else if (file.type === "application/pdf") {
-        reader.readAsDataURL(file);
+  const getPlanos = async () => {
+    try {
+      const response = await apiGetData("academic", `/planos-formatura`);
+      // console.log("response planos", response);
+      if (response) {
+        setPlanos(response.data);
       }
+    } catch (error) {
+      console.error("Erro ao buscar planos", error);
     }
+  };
+
+  const getPlanosId = async () => {
+    try {
+      const response = await apiGetData("academic", `/planos-formatura/turma/${id}`);
+
+      if (response) {
+        console.log("response", response);
+
+        setPlanosTurma(response);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar planos da turma", error);
+    }
+  };
+
+  useEffect(() => {
+    getPlanos();
+    getPlanosId();
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-    },
-  });
 
   const onSubmitTurma = async (values: any) => {
     console.log("values", values);
@@ -152,19 +121,11 @@ const TurmasEditPage = () => {
     }
   };
 
-  const [initialValues, setInitialValues] = useState({
-    ...getTurmasInitialValue,
-    planos_formatura: [],
-  });
-
   useEffect(() => {
-    if (selecionados.length > 0) {
-      setInitialValues(prev => ({
-        ...prev,
-        planos_formatura: selecionados,
-      }));
+    if (formikRef && planosTurma !== null) {
+      formikRef.current?.setFieldValue("planos_formatura", planosTurma);
     }
-  }, [selecionados]);
+  }, [planosTurma, formikRef]);
 
   return (
     <Stack width={"100%"} height={"100%"} gap={10}>
@@ -189,12 +150,12 @@ const TurmasEditPage = () => {
           }}
         >
           <Formik
-            enableReinitialize
-            initialValues={initialValues}
+            innerRef={formikRef} // Captura a referência do Formik
+            initialValues={{ ...getTurmasInitialValue, planos_formatura: planosTurma }}
             validationSchema={validateTurmaSchema}
             onSubmit={(values: any) => onSubmitTurma(values)}
           >
-            {({ values, errors, handleChange, handleSubmit, setFieldValue }) => (
+            {({ values, handleChange, handleSubmit, setFieldValue }) => (
               <form
                 className="h-[100%]"
                 onSubmit={handleSubmit}
@@ -282,9 +243,10 @@ const TurmasEditPage = () => {
                           id="planos_formatura"
                           options={planos} // Os planos disponíveis
                           getOptionLabel={(option) => option.nome}
-                          value={selecionados} // Mantém a lista de selecionados atualizada
+                          value={planosTurma || []} // Mantém a lista de selecionados atualizada
                           onChange={(_, newValue) => {
-                            setSelecionados(newValue);
+                            console.log("newValue", newValue);
+                            setPlanosTurma(newValue);
                             setFieldValue("planos_formatura", newValue);
                           }}
                           isOptionEqualToValue={(option, value) => option.id === value.id}
