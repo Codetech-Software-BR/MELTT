@@ -41,7 +41,7 @@ router.use("/adesoes", adesoesRoutes)
 router.use("/usuarios", usuariosRoutes);
 router.use("/pagamentos", pagamentosRoutes);
 router.use("/assinatura-estatuto", assinaturaEstatutoRoutes);
-router.use("agenda", agendaRoutes);
+router.use("/agenda", agendaRoutes);
 
 
 export default router;
