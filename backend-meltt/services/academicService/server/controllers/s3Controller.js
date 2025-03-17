@@ -31,7 +31,6 @@ class S3Service {
       Key: filePath,
       Body: fileStream,
       ContentType: file.mimetype,
-      ACL: "public-read",
     };
     const command = new PutObjectCommand(uploadParams);
     try {
