@@ -148,6 +148,7 @@ class TurmaController {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  }
 
   atualizarPlanosFormatura(req, res) {
     const { turma_id, planos_ids } = req.body; // Lista de planos selecionados no frontend
@@ -210,6 +211,6 @@ class TurmaController {
   //   });
   // }
   }
-}
+
 
 export default new TurmaController();
