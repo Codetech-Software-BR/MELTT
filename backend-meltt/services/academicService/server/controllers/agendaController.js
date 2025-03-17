@@ -1,91 +1,123 @@
-import db from "../db.js";
+import pool from "../db.js";
 
 class AgendaController {
-    getAllAgenda(req, res) {
-        const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
-        const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
-        const offset = (page - 1) * limit; // Calcula o deslocamento
+  async getAllAgenda(req, res) {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const offset = (page - 1) * limit;
 
-        const query = "SELECT * FROM agenda LIMIT ? OFFSET ?";
+      const [results] = await pool.query(
+        "SELECT * FROM agenda LIMIT ? OFFSET ?",
+        [limit, offset]
+      );
 
-        db.query(query, [limit, offset], (err, results) => {
-            if (err) return res.status(500).json({ error: err.message });
+      const [[countResult]] = await pool.query(
+        "SELECT COUNT(*) AS total FROM agenda"
+      );
+      const total = countResult.total;
+      const totalPages = Math.ceil(total / limit);
 
-            // Consulta para contar o total de registros
-            db.query("SELECT COUNT(*) AS total FROM agenda", (err, countResult) => {
-                if (err) return res.status(500).json({ error: err.message });
+      res.status(200).json({
+        page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+        data: results,
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
-                const total = countResult[0].total;
-                const totalPages = Math.ceil(total / limit);
+  async getAgenda(req, res) {
+    try {
+      const id = req.params.id;
+      const [results] = await pool.query(
+        "SELECT * FROM agenda WHERE id = ?",
+        [id]
+      );
 
-                res.status(200).json({
-                    page,
-                    totalPages,
-                    totalItems: total,
-                    itemsPerPage: limit,
-                    data: results,
-                });
-            });
-        });
-    };
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Agenda não encontrada." });
+      }
 
-    getAgenda(req, res) {
-        const id = req.params.id;
-        db.query("SELECT * FROM agenda WHERE id = ?", [id], (err, result) => {
-            if (err) return res.status(500).json(err);
-            res.status(200).json(result);
-        });
-    };
+      res.status(200).json(results[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
-    createAgenda(req, res) {
-        const { nome, descricao, data, nome_turma, turma_id} = req.body;
-        const query =
-            "INSERT INTO agenda (nome, descricao, data, nome_turma, turma_id ) VALUES (?, ?, ?, ?, ?)";
-        db.query(
-            query,
-            [nome, descricao, data, nome_turma, turma_id],
-            (err, result) => {
-                if (err) return res.status(500).json(err);
-                res.status(201).json({ id: result.insertId, ...req.body });
-            }
-        );
-    };
+  async createAgenda(req, res) {
+    try {
+      const { nome, descricao, data, nome_turma, turma_id } = req.body;
+      const [result] = await pool.query(
+        `INSERT INTO agenda 
+        (nome, descricao, data, nome_turma, turma_id) 
+        VALUES (?, ?, ?, ?, ?)`,
+        [nome, descricao, data, nome_turma, turma_id]
+      );
 
-    updateAgenda(req, res) {
-        const id = req.params.id;
-        const { nome, descricao, data, nome_turma, turma_id } = req.body;
-        const updateQuery = `UPDATE agenda SET nome = ?, descricao = ?, data = ?, nome_turma = ?, turma_id = ? WHERE id = ?`;
+      res.status(201).json({
+        id: result.insertId,
+        ...req.body,
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
-        db.query(
-            updateQuery,
-            [nome, descricao, data, nome_turma, turma_id, id],
-            (err) => {
-                if (err) return res.status(500).json(err);
+  async updateAgenda(req, res) {
+    try {
+      const id = req.params.id;
+      const { nome, descricao, data, nome_turma, turma_id } = req.body;
 
-                const selectQuery = "SELECT * FROM agenda WHERE id = ?";
-                db.query(selectQuery, [id], (err, results) => {
-                    if (err) return res.status(500).json(err);
-                    if (results.length === 0) {
-                        return res.status(404).json({ error: "Agenda não encontrado." });
-                    }
-                    res
-                        .status(200)
-                        .json({
-                            message: "Agenda atualizada com sucesso!",
-                            value: results[0],
-                        });
-                });
-            }
-        );
-    };
+      await pool.query(
+        `UPDATE agenda SET 
+          nome = ?, 
+          descricao = ?, 
+          data = ?, 
+          nome_turma = ?, 
+          turma_id = ? 
+        WHERE id = ?`,
+        [nome, descricao, data, nome_turma, turma_id, id]
+      );
 
-    deleteAgenda(req, res) {
-        const id = req.params.id;
-        db.query("DELETE FROM agenda WHERE id = ?", [id], (err) => {
-            if (err) return res.status(500).json(err);
-            res.status(200).json({ message: "Agenda deletada com sucesso!", id });
-        });
-    };
+      const [results] = await pool.query(
+        "SELECT * FROM agenda WHERE id = ?",
+        [id]
+      );
+
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Agenda não encontrada." });
+      }
+
+      res.status(200).json({
+        message: "Agenda atualizada com sucesso!",
+        value: results[0],
+      });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  async deleteAgenda(req, res) {
+    try {
+      const id = req.params.id;
+      const [result] = await pool.query(
+        "DELETE FROM agenda WHERE id = ?",
+        [id]
+      );
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Agenda não encontrada." });
+      }
+
+      res.status(200).json({ message: "Agenda deletada com sucesso!", id });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 export default new AgendaController();
