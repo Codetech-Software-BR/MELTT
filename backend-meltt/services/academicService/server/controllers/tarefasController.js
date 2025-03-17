@@ -27,6 +27,57 @@ class TarefasController {
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
+  };
+
+  getTarefaById(req, res) {
+    const id = req.params.id;
+    db.query("SELECT * FROM tarefas WHERE id = ?", [id], (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(200).json(result);
+    });
+  };
+
+  createTarefa(req, res) {
+    const { nome, atribuido_por, prazo_tarefa } = req.body;
+    const query =
+      "INSERT INTO tarefas (nome, atribuido_por, prazo_tarefa) VALUES (?, ?)";
+    db.query(query, [nome, atribuido_por, prazo_tarefa], (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(201).json({ id: result.insertId, ...req.body });
+    });
+  };
+
+  updateTarefa(req, res) {
+    const id = req.params.id;
+    const { nome, atribuido_por, prazo_tarefa } = req.body;
+    const query =
+      "UPDATE tarefas SET nome = ?, atribuido_por = ? WHERE id = ?";
+    db.query(query, [nome, atribuido_por, prazo_tarefa, id], (err) => {
+      if (err) return res.status(500).json(err);
+      res.status(200).json({ message: "Tarefa atualizada com sucesso!", id, ...req.body });
+    });
+  };
+
+  deleteTarefa(req, res) {
+    const id = req.params.id;
+    db.query("DELETE FROM tarefas WHERE id = ?", [id], (err) => {
+      if (err) return res.status(500).json(err);
+      res.status(200).json({ message: "Turma deletada com sucesso!" });
+    });
+  };
+
+  getResponsaveis(req, res) {
+    db.query(
+      "SELECT u.id AS usuario_id, u.nome AS usuario_nome, ut.tarefa_id FROM usuario_tarefa ut JOIN usuarios u ON ut.usuario_id = u.id",
+      (err, result) => {
+        if (err) {
+          console.error("Erro na consulta:", err);
+          return res.status(500).json({ error: "Erro ao buscar responsáveis", details: err });
+        }
+        console.log("Resultado da consulta:", result);
+        res.status(200).json(result);
+      }
+    );
   }
 
   async getTarefaById(req, res) {

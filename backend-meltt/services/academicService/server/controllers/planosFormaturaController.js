@@ -62,7 +62,6 @@ class PlanosFormaturaController {
       "UPDATE planos_formatura SET nome = ?, incluso = ?, valor = ? WHERE id = ?";
     try {
       await pool.query(updateQuery, [nome, incluso, valor, id]);
-
       const [results] = await pool.query(
         "SELECT * FROM planos_formatura WHERE id = ?",
         [id]
@@ -80,6 +79,36 @@ class PlanosFormaturaController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  getPlanosFormatura(req, res) {
+    const id = req.params.id;
+
+    const query = `
+            SELECT pf.* 
+            FROM turma_plano_formatura tpf
+            INNER JOIN planos_formatura pf ON tpf.plano_id = pf.id
+            WHERE tpf.turma_id = ?;
+        `;
+
+    db.query(query, [id], (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(200).json(result);
+    });
+  }
+
+  createPlanoFormatura(req, res) {
+    const { nome, incluso, valor } = req.body;
+    const query =
+      "INSERT INTO planos_formatura (nome, incluso, valor ) VALUES (?, ?, ?)";
+    db.query(
+      query,
+      [nome, incluso, valor],
+      (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.status(201).json({ id: result.insertId, ...req.body });
+      }
+    );
+  };
 
   async deletePlanoFormatura(req, res) {
     const id = req.params.id;

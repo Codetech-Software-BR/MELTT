@@ -32,6 +32,7 @@ export const validateTurmaSchema = Yup.object({
   regras_adesao: Yup.string().required("o campo regras de adesão é obrigatório."),
   regras_rescisao: Yup.string().required("o campo regras de rescisão é obrigatório."),
   regras_renegociacao: Yup.string().required("o campo regras de renegociação é obrigatório."),
+  planos_formatura: Yup.array().required("o campo planos de formatura é obrigatório."),
 });
 
 export const validateAdesaoSchema = Yup.object({
