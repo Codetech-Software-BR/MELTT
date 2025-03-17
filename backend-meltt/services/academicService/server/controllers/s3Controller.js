@@ -97,7 +97,6 @@ class s3Controller {
         Key: filePath,
         ContentType: fileType,
         Expires: 3600,
-        ACL: "public-read",
         Metadata: {
           turmaId: turmaId.toString()
         }
