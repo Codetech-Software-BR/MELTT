@@ -193,24 +193,25 @@ class TurmaController {
   }
 
 
-  // vincularPlanoFormatura(req, res) {
-  //   const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
-  //   const query = 'INSERT INTO turma_plano_formatura (turma_id, plano_id) VALUES (?, ?)';
-  //   db.query(query, [turma_id, plano_id], (err, result) => {
-  //     if (err) return res.status(500).json(err);
-  //     res.status(201).json({message: "Plano de formatura vinculado com sucesso!"});
-  //   });
-  // };
+  vincularPlanoFormatura(req, res) {
+    const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
+    const query = 'INSERT INTO turma_plano_formatura (turma_id, plano_id) VALUES (?, ?)';
+    db.query(query, [turma_id, plano_id], (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(201).json({ message: "Plano de formatura vinculado com sucesso!" });
+    });
+  };
 
-  // desvincularPlanoFormatura(req, res) {
-  //   const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
-  //   const query = 'DELETE FROM turma_plano_formatura WHERE turma_id = ? AND plano_id = ?';
-  //   db.query(query, [turma_id, plano_id], (err, result) => {
-  //     if (err) return res.status(500).json(err);
-  //     res.status(200).json({message: "Plano de formatura desvinculado com sucesso!"});
-  //   });
-  // }
+  desvincularPlanoFormatura(req, res) {
+    const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
+    const query = 'DELETE FROM turma_plano_formatura WHERE turma_id = ? AND plano_id = ?';
+    db.query(query, [turma_id, plano_id], (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(200).json({ message: "Plano de formatura desvinculado com sucesso!" });
+    });
   }
+
+}
 
 
 export default new TurmaController();
