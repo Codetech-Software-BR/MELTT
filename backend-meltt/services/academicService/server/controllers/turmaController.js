@@ -150,7 +150,7 @@ class TurmaController {
     }
   }
 
-  atualizarPlanosFormatura(req, res) {
+  async atualizarPlanosFormatura(req, res) {
     const { turma_id, planos_ids } = req.body; // Lista de planos selecionados no frontend
 
     if (!turma_id || !Array.isArray(planos_ids)) {
@@ -159,7 +159,7 @@ class TurmaController {
 
     const querySelecionados = 'SELECT plano_id FROM turma_plano_formatura WHERE turma_id = ?';
 
-    db.query(querySelecionados, [turma_id], (err, result) => {
+    await pool.query(querySelecionados, [turma_id], (err, result) => {
       if (err) return res.status(500).json(err);
 
       const planosAtuais = result.map(row => row.plano_id);
@@ -178,12 +178,12 @@ class TurmaController {
       const promises = [];
 
       if (planosRemover.length > 0) {
-        promises.push(db.query(removerQuery, [turma_id, planosRemover]));
+        promises.push(pool.query(removerQuery, [turma_id, planosRemover]));
       }
 
       if (planosAdicionar.length > 0) {
         const valoresAdicionar = planosAdicionar.map(plano => [turma_id, plano]);
-        promises.push(db.query(adicionarQuery, [valoresAdicionar]));
+        promises.push(pool.query(adicionarQuery, [valoresAdicionar]));
       }
 
       Promise.all(promises)
@@ -192,24 +192,6 @@ class TurmaController {
     });
   }
 
-
-  vincularPlanoFormatura(req, res) {
-    const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
-    const query = 'INSERT INTO turma_plano_formatura (turma_id, plano_id) VALUES (?, ?)';
-    db.query(query, [turma_id, plano_id], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(201).json({ message: "Plano de formatura vinculado com sucesso!" });
-    });
-  };
-
-  desvincularPlanoFormatura(req, res) {
-    const { turma_id, plano_id } = req.body; // Pegando os dados do corpo da requisição
-    const query = 'DELETE FROM turma_plano_formatura WHERE turma_id = ? AND plano_id = ?';
-    db.query(query, [turma_id, plano_id], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(200).json({ message: "Plano de formatura desvinculado com sucesso!" });
-    });
-  }
 
 }
 
