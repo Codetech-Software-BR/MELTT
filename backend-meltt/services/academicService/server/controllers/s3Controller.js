@@ -82,9 +82,15 @@ class s3Controller {
   async getUploadTurmaContractUrl(req, res) {
     try {
       const { fileName, fileType, turmaId } = req.query;
-  
+
       if (!fileName || !fileType || !turmaId) {
         return res.status(400).json({ error: "fileName, fileType e turmaId são obrigatórios" });
+      }
+
+      const decodedFileName = decodeURIComponent(fileName);
+      const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!validTypes.includes(fileType)) {
+        return res.status(400).json({ error: "Tipo de arquivo não suportado" });
       }
   
       const filePath = `turmas/${turmaId}`;
@@ -94,9 +100,13 @@ class s3Controller {
         Key: filePath,
         ContentType: fileType,
         Expires: 3600,
+        ACL: "public-read",
+        Metadata: {
+          turmaId: turmaId.toString()
+        }
       });
   
-      return res.json({ url: signedUrl });
+      return res.json({ url: signedUrl, path: filePath });
     } catch (error) {
       console.error("Erro ao gerar presigned URL:", error);
       return res.status(500).json({ error: "Erro ao gerar URL de upload" });
