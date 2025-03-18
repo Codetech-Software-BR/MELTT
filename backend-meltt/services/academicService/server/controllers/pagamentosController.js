@@ -32,26 +32,22 @@ class PagamentosController {
 
   getPagamentosBySituacao(req, res) {
     const situacao = req.params.id;
-    const { vencimento, dataEmissao } = req.query;
+    const { periodo } = req.query;
 
     let query = "SELECT * FROM pagamentos WHERE situacao = ?";
     let params = [situacao];
 
-    if (vencimento) {
-      query += " AND vencimento = ?";
-      params.push(vencimento);
-    }
-
-    if (dataEmissao) {
-      query += " AND dataEmissao = ?";
-      params.push(dataEmissao);
+    if (periodo) {
+      const dataAtual = new Date().toISOString().split("T")[0]; // Obtém a data de hoje no formato YYYY-MM-DD
+      query += " AND vencimento BETWEEN ? AND ?";
+      params.push(periodo, dataAtual);
     }
 
     db.query(query, params, (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
-  };
+  }
 
   getPagamentosByIdBling(req, res) {
     const id_bling = req.params.id;

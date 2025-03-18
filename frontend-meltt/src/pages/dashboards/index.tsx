@@ -2,20 +2,15 @@ import {
   Slide,
   Stack,
   Typography,
-  Button,
-  IconButton,
   TextField,
+  Autocomplete,
 } from "@mui/material";
-import { getToken } from "../../utils/token";
-import { CustomJwtPayload } from "../../components/customDrawer";
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { apiGetData } from "../../services/api";
 import BoxDashboardValues from "../../components/box/dashboardValues";
 import CustomLineChart from "../../components/charts/line";
 import toast from "react-hot-toast";
-import { ClearIcon, DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 
 type ChartDataArray = Array<{
   data_valor: string;
@@ -28,13 +23,8 @@ interface ChartData {
 }
 
 const DashboardPagamentosPage = () => {
-  const token = getToken();
-  const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
-
   const [loading, setLoading] = useState(false);
   const [onLoad, setOnLoad] = useState(false);
-  const [listStudents, setStudents] = useState<any[]>([]);
-  const [listAtividades, setListAtividades] = useState<any[]>([]);
 
   const [valorEmAberto, setValorEmAberto] = useState(0);
   const [valorRecebido, setValorRecebido] = useState(0);
@@ -43,25 +33,34 @@ const DashboardPagamentosPage = () => {
   const [listAbertos, setListAbertos] = useState<ChartDataArray>([]);
   const [listRecebido, setListRecebido] = useState<ChartDataArray>([]);
   const [listCancelado, setListCancelado] = useState<ChartDataArray>([]);
-  const [vencimento, setVencimento] = useState<Dayjs | null>(null);
-  const [dataEmissao, setDataEmissao] = useState<Dayjs | null>(null);
+
+  const [periodo, setPeriodo] = useState<any>(null);
+
+  const handleChange = (event, newValue) => {
+    setPeriodo(newValue);
+  };
+
+  // Opções do filtro com suas respectivas datas
+  const options = [
+    { label: "Uma semana atrás", value: dayjs().subtract(7, "day").startOf("day") },
+    { label: "Duas semanas atrás", value: dayjs().subtract(14, "day").startOf("day") },
+    { label: "Últimos 30 dias", value: dayjs().subtract(30, "day").startOf("day") },
+    { label: "Últimos 60 dias", value: dayjs().subtract(60, "day").startOf("day") },
+  ];
 
   const fetchPagamentosBySituacao = async (situacao: number) => {
     try {
       let response;
 
-      const vencimentoFormatado = vencimento ? vencimento.format("YYYY-MM-DD") : null;
-      const dataEmissaoFormatado = dataEmissao ? dataEmissao.format("YYYY-MM-DD") : null;
 
-      if (vencimento && dataEmissao) {
-        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?vencimento=${vencimentoFormatado}&dataEmissao=${dataEmissaoFormatado}`);
-      } else if (vencimento) {
-        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?vencimento=${vencimentoFormatado}`);
-      } else if (dataEmissao) {
-        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?dataEmissao=${dataEmissaoFormatado}`);
-      } else {
-        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
+      response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
+
+      if (periodo !== null) {
+        const periodoFormatado = periodo ? periodo.value.toISOString().split("T") : null;
+        console.log(periodoFormatado[0]);
+        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?periodo=${periodoFormatado[0]}`);
       }
+
       const total = response.reduce((acc: number, pagamento: any) => {
         const valor = parseFloat(pagamento.valor);
         return acc + (isNaN(valor) ? 0 : valor);
@@ -121,7 +120,7 @@ const DashboardPagamentosPage = () => {
       fetchPagamentosBySituacao(2),
       fetchPagamentosBySituacao(5)
     ])
-  }, [vencimento, dataEmissao]);
+  }, [periodo]);
 
   useEffect(() => {
     setLoading(false);
@@ -158,19 +157,22 @@ const DashboardPagamentosPage = () => {
           timeout={300}
         >
           <Stack direction={"column"} justifyContent={"space-between"}>
-            <Stack direction="row" spacing={2}>
-              <DatePicker value={vencimento} onChange={(newValue) => setVencimento(newValue)} />
-              {vencimento && (
-                <IconButton onClick={() => setVencimento(null)} size="small">
-                  <ClearIcon />
-                </IconButton>
-              )}
-              <DatePicker value={dataEmissao} onChange={(newValue) => setDataEmissao(newValue)} />
-              {dataEmissao && (
-                <IconButton onClick={() => setDataEmissao(null)} size="small">
-                  <ClearIcon />
-                </IconButton>
-              )}
+            <Stack direction="row" spacing={2} py={2}>
+              <Autocomplete
+                sx={{ width: "25%" }}
+                size="small"
+                options={options}
+                getOptionLabel={(option) => option.label}
+                value={periodo || null}
+                onChange={handleChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filtrar por Data"
+                    inputProps={{ ...params.inputProps, readOnly: true }} // Prevent typing
+                  />
+                )}
+              />
             </Stack>
             <Stack direction={"row"} justifyContent={"space-between"}>
               <BoxDashboardValues title="Total Pago" valor={valorRecebido} />
