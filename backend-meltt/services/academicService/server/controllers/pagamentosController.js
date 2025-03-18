@@ -31,35 +31,36 @@ class PagamentosController {
     }
   }
 
-  async getPagamentosBySituacao(req, res) {
+  getPagamentosBySituacao(req, res) {
     const situacao = req.params.id;
-    try {
-      const [result] = await pool.query(
-        "SELECT * FROM pagamentos WHERE situacao = ?",
-        [situacao]
-      );
-      res.status(200).json(result);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+    const { periodo } = req.query;
+
+    let query = "SELECT * FROM pagamentos WHERE situacao = ?";
+    let params = [situacao];
+
+    if (periodo) {
+      const dataAtual = new Date().toISOString().split("T")[0]; // Obtém a data de hoje no formato YYYY-MM-DD
+      query += " AND vencimento BETWEEN ? AND ?";
+      params.push(periodo, dataAtual);
     }
+
+    db.query(query, params, (err, result) => {
+      if (err) return res.status(500).json(err);
+      res.status(200).json(result);
+    });
   }
 
-  async getPagamentosByIdBling(req, res) {
+  getPagamentosByIdBling(req, res) {
     const id_bling = req.params.id;
-    try {
-      const [result] = await pool.query(
-        "SELECT * FROM pagamentos WHERE id_bling = ?",
-        [id_bling]
-      );
+    db.query("SELECT * FROM pagamentos WHERE id_bling = ?", [id_bling], (err, result) => {
+      if (err) return res.status(500).json(err);
       res.status(200).json(result);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
+    });
+  };
 
-  getPagamentosByNumeroDocumento(req, res) {
+  async getPagamentosByNumeroDocumento(req, res) {
     const { numeroDocumento } = req.query;
-    db.query(
+    pool.query(
       "SELECT * FROM pagamentos WHERE numeroDocumento = ? ORDER BY dataEmissao DESC LIMIT 1",
       [numeroDocumento],
       (err, result) => {
