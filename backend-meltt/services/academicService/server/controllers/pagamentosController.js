@@ -32,12 +32,26 @@ class PagamentosController {
 
   getPagamentosBySituacao(req, res) {
     const situacao = req.params.id;
-    db.query("SELECT * FROM pagamentos WHERE situacao = ?", [situacao], (err, result) => {
+    const { vencimento, dataEmissao } = req.query;
+
+    let query = "SELECT * FROM pagamentos WHERE situacao = ?";
+    let params = [situacao];
+
+    if (vencimento) {
+      query += " AND vencimento = ?";
+      params.push(vencimento);
+    }
+
+    if (dataEmissao) {
+      query += " AND dataEmissao = ?";
+      params.push(dataEmissao);
+    }
+
+    db.query(query, params, (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
   };
-
 
   getPagamentosByIdBling(req, res) {
     const id_bling = req.params.id;

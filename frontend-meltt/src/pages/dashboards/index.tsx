@@ -2,6 +2,9 @@ import {
   Slide,
   Stack,
   Typography,
+  Button,
+  IconButton,
+  TextField,
 } from "@mui/material";
 import { getToken } from "../../utils/token";
 import { CustomJwtPayload } from "../../components/customDrawer";
@@ -11,6 +14,8 @@ import { apiGetData } from "../../services/api";
 import BoxDashboardValues from "../../components/box/dashboardValues";
 import CustomLineChart from "../../components/charts/line";
 import toast from "react-hot-toast";
+import { ClearIcon, DatePicker } from "@mui/x-date-pickers";
+import dayjs, { Dayjs } from "dayjs";
 
 type ChartDataArray = Array<{
   data_valor: string;
@@ -38,12 +43,25 @@ const DashboardPagamentosPage = () => {
   const [listAbertos, setListAbertos] = useState<ChartDataArray>([]);
   const [listRecebido, setListRecebido] = useState<ChartDataArray>([]);
   const [listCancelado, setListCancelado] = useState<ChartDataArray>([]);
-
+  const [vencimento, setVencimento] = useState<Dayjs | null>(null);
+  const [dataEmissao, setDataEmissao] = useState<Dayjs | null>(null);
 
   const fetchPagamentosBySituacao = async (situacao: number) => {
     try {
-      const response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
+      let response;
 
+      const vencimentoFormatado = vencimento ? vencimento.format("YYYY-MM-DD") : null;
+      const dataEmissaoFormatado = dataEmissao ? dataEmissao.format("YYYY-MM-DD") : null;
+
+      if (vencimento && dataEmissao) {
+        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?vencimento=${vencimentoFormatado}&dataEmissao=${dataEmissaoFormatado}`);
+      } else if (vencimento) {
+        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?vencimento=${vencimentoFormatado}`);
+      } else if (dataEmissao) {
+        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?dataEmissao=${dataEmissaoFormatado}`);
+      } else {
+        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
+      }
       const total = response.reduce((acc: number, pagamento: any) => {
         const valor = parseFloat(pagamento.valor);
         return acc + (isNaN(valor) ? 0 : valor);
@@ -53,18 +71,18 @@ const DashboardPagamentosPage = () => {
         data_valor: pagamento.vencimento,
         valor_pago: parseFloat(pagamento.valor) || 0
       }));
-  
+
       const groupedData = chartData.reduce((acc: Record<string, number>, current) => {
         const date = current.data_valor;
         acc[date] = (acc[date] || 0) + current.valor_pago;
         return acc;
       }, {});
-  
+
       const finalData = Object.entries(groupedData).map(([data_valor, valor_pago]) => ({
         data_valor,
         valor_pago
       }));
-  
+
       finalData.sort((a, b) => new Date(a.data_valor).getTime() - new Date(b.data_valor).getTime());
 
 
@@ -103,7 +121,7 @@ const DashboardPagamentosPage = () => {
       fetchPagamentosBySituacao(2),
       fetchPagamentosBySituacao(5)
     ])
-  })
+  }, [vencimento, dataEmissao]);
 
   useEffect(() => {
     setLoading(false);
@@ -139,10 +157,26 @@ const DashboardPagamentosPage = () => {
           unmountOnExit
           timeout={300}
         >
-          <Stack direction={"row"} justifyContent={"space-between"}>
-            <BoxDashboardValues title="Total Pago" valor={valorRecebido} />
-            <BoxDashboardValues title="Total a receber" valor={valorEmAberto} />
-            <BoxDashboardValues title="Total Cancelado" valor={valorCancelado} />
+          <Stack direction={"column"} justifyContent={"space-between"}>
+            <Stack direction="row" spacing={2}>
+              <DatePicker value={vencimento} onChange={(newValue) => setVencimento(newValue)} />
+              {vencimento && (
+                <IconButton onClick={() => setVencimento(null)} size="small">
+                  <ClearIcon />
+                </IconButton>
+              )}
+              <DatePicker value={dataEmissao} onChange={(newValue) => setDataEmissao(newValue)} />
+              {dataEmissao && (
+                <IconButton onClick={() => setDataEmissao(null)} size="small">
+                  <ClearIcon />
+                </IconButton>
+              )}
+            </Stack>
+            <Stack direction={"row"} justifyContent={"space-between"}>
+              <BoxDashboardValues title="Total Pago" valor={valorRecebido} />
+              <BoxDashboardValues title="Total a receber" valor={valorEmAberto} />
+              <BoxDashboardValues title="Total Cancelado" valor={valorCancelado} />
+            </Stack>
           </Stack>
         </Slide>
         <Slide direction="right" in={onLoad} mountOnEnter>
