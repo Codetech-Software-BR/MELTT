@@ -2,15 +2,15 @@ import {
   Slide,
   Stack,
   Typography,
+  TextField,
+  Autocomplete,
 } from "@mui/material";
-import { getToken } from "../../utils/token";
-import { CustomJwtPayload } from "../../components/customDrawer";
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import { apiGetData } from "../../services/api";
 import BoxDashboardValues from "../../components/box/dashboardValues";
 import CustomLineChart from "../../components/charts/line";
 import toast from "react-hot-toast";
+import dayjs from "dayjs";
 
 type ChartDataArray = Array<{
   data_valor: string;
@@ -23,13 +23,8 @@ interface ChartData {
 }
 
 const DashboardPagamentosPage = () => {
-  const token = getToken();
-  const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
-
   const [loading, setLoading] = useState(false);
   const [onLoad, setOnLoad] = useState(false);
-  const [listStudents, setStudents] = useState<any[]>([]);
-  const [listAtividades, setListAtividades] = useState<any[]>([]);
 
   const [valorEmAberto, setValorEmAberto] = useState(0);
   const [valorRecebido, setValorRecebido] = useState(0);
@@ -39,10 +34,32 @@ const DashboardPagamentosPage = () => {
   const [listRecebido, setListRecebido] = useState<ChartDataArray>([]);
   const [listCancelado, setListCancelado] = useState<ChartDataArray>([]);
 
+  const [periodo, setPeriodo] = useState<any>(null);
+
+  const handleChange = (event, newValue) => {
+    setPeriodo(newValue);
+  };
+
+  // Opções do filtro com suas respectivas datas
+  const options = [
+    { label: "Uma semana atrás", value: dayjs().subtract(7, "day").startOf("day") },
+    { label: "Duas semanas atrás", value: dayjs().subtract(14, "day").startOf("day") },
+    { label: "Últimos 30 dias", value: dayjs().subtract(30, "day").startOf("day") },
+    { label: "Últimos 60 dias", value: dayjs().subtract(60, "day").startOf("day") },
+  ];
 
   const fetchPagamentosBySituacao = async (situacao: number) => {
     try {
-      const response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
+      let response;
+
+
+      response = await apiGetData("academic", `/pagamentos/situacao/${situacao}`);
+
+      if (periodo !== null) {
+        const periodoFormatado = periodo ? periodo.value.toISOString().split("T") : null;
+        console.log(periodoFormatado[0]);
+        response = await apiGetData("academic", `/pagamentos/situacao/${situacao}?periodo=${periodoFormatado[0]}`);
+      }
 
       const total = response.reduce((acc: number, pagamento: any) => {
         const valor = parseFloat(pagamento.valor);
@@ -53,18 +70,18 @@ const DashboardPagamentosPage = () => {
         data_valor: pagamento.vencimento,
         valor_pago: parseFloat(pagamento.valor) || 0
       }));
-  
+
       const groupedData = chartData.reduce((acc: Record<string, number>, current) => {
         const date = current.data_valor;
         acc[date] = (acc[date] || 0) + current.valor_pago;
         return acc;
       }, {});
-  
+
       const finalData = Object.entries(groupedData).map(([data_valor, valor_pago]) => ({
         data_valor,
         valor_pago
       }));
-  
+
       finalData.sort((a, b) => new Date(a.data_valor).getTime() - new Date(b.data_valor).getTime());
 
 
@@ -103,7 +120,7 @@ const DashboardPagamentosPage = () => {
       fetchPagamentosBySituacao(2),
       fetchPagamentosBySituacao(5)
     ])
-  })
+  }, [periodo]);
 
   useEffect(() => {
     setLoading(false);
@@ -139,10 +156,29 @@ const DashboardPagamentosPage = () => {
           unmountOnExit
           timeout={300}
         >
-          <Stack direction={"row"} justifyContent={"space-between"}>
-            <BoxDashboardValues title="Total Pago" valor={valorRecebido} />
-            <BoxDashboardValues title="Total a receber" valor={valorEmAberto} />
-            <BoxDashboardValues title="Total Cancelado" valor={valorCancelado} />
+          <Stack direction={"column"} justifyContent={"space-between"}>
+            <Stack direction="row" spacing={2} py={2}>
+              <Autocomplete
+                sx={{ width: "25%" }}
+                size="small"
+                options={options}
+                getOptionLabel={(option) => option.label}
+                value={periodo || null}
+                onChange={handleChange}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Filtrar por Data"
+                    inputProps={{ ...params.inputProps, readOnly: true }} // Prevent typing
+                  />
+                )}
+              />
+            </Stack>
+            <Stack direction={"row"} justifyContent={"space-between"}>
+              <BoxDashboardValues title="Total Pago" valor={valorRecebido} />
+              <BoxDashboardValues title="Total a receber" valor={valorEmAberto} />
+              <BoxDashboardValues title="Total Cancelado" valor={valorCancelado} />
+            </Stack>
           </Stack>
         </Slide>
         <Slide direction="right" in={onLoad} mountOnEnter>

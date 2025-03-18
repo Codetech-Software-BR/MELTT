@@ -32,12 +32,22 @@ class PagamentosController {
 
   getPagamentosBySituacao(req, res) {
     const situacao = req.params.id;
-    db.query("SELECT * FROM pagamentos WHERE situacao = ?", [situacao], (err, result) => {
+    const { periodo } = req.query;
+
+    let query = "SELECT * FROM pagamentos WHERE situacao = ?";
+    let params = [situacao];
+
+    if (periodo) {
+      const dataAtual = new Date().toISOString().split("T")[0]; // Obtém a data de hoje no formato YYYY-MM-DD
+      query += " AND vencimento BETWEEN ? AND ?";
+      params.push(periodo, dataAtual);
+    }
+
+    db.query(query, params, (err, result) => {
       if (err) return res.status(500).json(err);
       res.status(200).json(result);
     });
-  };
-
+  }
 
   getPagamentosByIdBling(req, res) {
     const id_bling = req.params.id;
