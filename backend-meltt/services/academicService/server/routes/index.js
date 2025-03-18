@@ -18,6 +18,8 @@ import adesoesRoutes from "./adesoesRoutes.js"
 import usuariosRoutes from "./usuariosRoutes.js";
 import pagamentosRoutes from "./pagamentosRoutes.js";
 import assinaturaEstatutoRoutes from "./assinaturaEstatuto.js"
+import agendaRoutes from './agendaRoutes.js';
+
 
 const router = express.Router();
 
@@ -39,5 +41,7 @@ router.use("/adesoes", adesoesRoutes)
 router.use("/usuarios", usuariosRoutes);
 router.use("/pagamentos", pagamentosRoutes);
 router.use("/assinatura-estatuto", assinaturaEstatutoRoutes);
+router.use("/agenda", agendaRoutes);
+
 
 export default router;
