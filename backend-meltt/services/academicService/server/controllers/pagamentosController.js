@@ -31,7 +31,7 @@ class PagamentosController {
     }
   }
 
-  getPagamentosBySituacao(req, res) {
+  async getPagamentosBySituacao(req, res) {
     const situacao = req.params.id;
     const { periodo } = req.query;
 
@@ -39,36 +39,43 @@ class PagamentosController {
     let params = [situacao];
 
     if (periodo) {
-      const dataAtual = new Date().toISOString().split("T")[0]; // Obtém a data de hoje no formato YYYY-MM-DD
+      const dataAtual = new Date().toISOString().split("T")[0];
       query += " AND vencimento BETWEEN ? AND ?";
       params.push(periodo, dataAtual);
     }
 
-    db.query(query, params, (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(200).json(result);
-    });
+    try {
+      const [results] = await pool.query(query, params);
+      res.status(200).json(results);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   }
 
-  getPagamentosByIdBling(req, res) {
+  async getPagamentosByIdBling(req, res) {
     const id_bling = req.params.id;
-    db.query("SELECT * FROM pagamentos WHERE id_bling = ?", [id_bling], (err, result) => {
-      if (err) return res.status(500).json(err);
-      res.status(200).json(result);
-    });
-  };
+
+    try {
+      const [results] = await pool.query("SELECT * FROM pagamentos WHERE id_bling = ?", [id_bling]);
+      res.status(200).json(results);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
   async getPagamentosByNumeroDocumento(req, res) {
     const { numeroDocumento } = req.query;
-    pool.query(
-      "SELECT * FROM pagamentos WHERE numeroDocumento = ? ORDER BY dataEmissao DESC LIMIT 1",
-      [numeroDocumento],
-      (err, result) => {
-        if (err) return res.status(500).json(err);
-        res.status(200).json(result[0] || null);
-      }
-    );
-  };
+
+    try {
+      const [results] = await pool.query(
+        "SELECT * FROM pagamentos WHERE numeroDocumento = ? ORDER BY dataEmissao DESC LIMIT 1",
+        [numeroDocumento]
+      );
+      res.status(200).json(results[0] || null);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
 }
 
