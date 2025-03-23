@@ -13,7 +13,7 @@ const app = express();
 app.use(bodyParser.json());
 
 const JWT_SECRET = process.env.JWT_SECRET;
-const selfPingUrl = process.env.SELF_PING_URL
+// const selfPingUrl = process.env.SELF_PING_URL
 
 const corsOptions = { origin: true };
 app.use(cors(corsOptions));
@@ -250,12 +250,12 @@ app.post("/api/external/bling/refresh", async (req, res) => {
   }
 });
 
-app.get('/ping', (req, res) => res.send('pong'));
-setInterval(() => {
-  axios.get(selfPingUrl)
-    .then(() => console.log('Self-ping realizado com sucesso'))
-    .catch((err) => console.error('Erro no self-ping:', err));
-}, 10 * 60 * 1000)
+// app.get('/ping', (req, res) => res.send('pong'));
+// setInterval(() => {
+//   axios.get(selfPingUrl)
+//     .then(() => console.log('Self-ping realizado com sucesso'))
+//     .catch((err) => console.error('Erro no self-ping:', err));
+// }, 10 * 60 * 1000)
 
 app.get("/", (req, res) => res.send("API AUTH MELTT"));
 
