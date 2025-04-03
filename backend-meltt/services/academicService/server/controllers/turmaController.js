@@ -71,7 +71,7 @@ class TurmaController {
         nome,
         identificador,
         regras_adesao,
-        regras_renegociacao,
+        regras_renegociacao ?? null,
         regras_rescisao,
         arquivo_url,
         ano_formatura,
