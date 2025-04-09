@@ -19,6 +19,7 @@ import usuariosRoutes from "./usuariosRoutes.js";
 import pagamentosRoutes from "./pagamentosRoutes.js";
 import assinaturaEstatutoRoutes from "./assinaturaEstatuto.js"
 import agendaRoutes from './agendaRoutes.js';
+import propostasRoutes from './propostasRoutes.js';
 
 
 const router = express.Router();
@@ -42,6 +43,7 @@ router.use("/usuarios", usuariosRoutes);
 router.use("/pagamentos", pagamentosRoutes);
 router.use("/assinatura-estatuto", assinaturaEstatutoRoutes);
 router.use("/agenda", agendaRoutes);
+router.use("/propostas", propostasRoutes);
 
 
 export default router;
