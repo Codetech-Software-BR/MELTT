@@ -59,13 +59,13 @@ class UsuarioController {
 
   async createUsuario(req, res) {
     try {
-      const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id } = req.body;
+      const { email, senha, tipo, documento, nome, id_bling, ativo, telefone, faculdade, turma_id } = req.body;
       
       const [result] = await pool.query(
         `INSERT INTO usuarios 
-        (email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id) 
+        (email, senha, tipo, documento, nome, id_bling, ativo, telefone, faculdade, turma_id) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [email, senha, tipo, documento, nome, id_bling, ativo, telefone, turma_id]
+        [email, senha, tipo, documento, nome, id_bling, ativo, telefone, faculdade, turma_id]
       );
 
       res.status(201).json({ 
@@ -118,7 +118,7 @@ class UsuarioController {
       const updateQuery = `
         UPDATE usuarios
         SET email = ?, senha = ?, tipo = ?, documento = ?, 
-            nome = ?, id_bling = ?, ativo = ?, telefone = ?, turma_id = ?
+            nome = ?, id_bling = ?, ativo = ?, telefone = ?, faculdade = ?, turma_id = ?
         WHERE id = ?`;
 
       const params = [
@@ -130,6 +130,7 @@ class UsuarioController {
         fields.id_bling,
         fields.ativo,
         fields.telefone,
+        fields.faculdade,
         fields.turma_id,
         id
       ];
