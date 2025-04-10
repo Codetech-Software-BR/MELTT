@@ -64,7 +64,7 @@ class UsuarioController {
       const [result] = await pool.query(
         `INSERT INTO usuarios 
         (email, senha, tipo, documento, nome, id_bling, ativo, telefone, faculdade, turma_id) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [email, senha, tipo, documento, nome, id_bling, ativo, telefone, faculdade, turma_id]
       );
 
