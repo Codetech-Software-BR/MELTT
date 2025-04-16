@@ -14,6 +14,7 @@ class AdesaoController {
           SELECT 
             SUM(status = 'concluida') AS totalConcluidas,
             SUM(status = 'pendente') AS totalPendentes 
+            SUM(status = 'cancelado') AS totalCancelado 
           FROM adesoes
         `)
       ]);
@@ -31,6 +32,7 @@ class AdesaoController {
         itemsPerPage: limit,
         totalConcluidas: statusRows.length > 0 ? statusRows[0].totalConcluidas || 0 : 0,
         totalPendentes: statusRows.length > 0 ? statusRows[0].totalPendentes || 0 : 0,
+        totalCancelado: statusRows.length > 0 ? statusRows[0].totalCancelado || 0 : 0,
         data: dataRows
       });
   

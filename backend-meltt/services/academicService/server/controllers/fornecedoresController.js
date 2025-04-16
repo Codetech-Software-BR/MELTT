@@ -2,22 +2,27 @@ import pool from "../db.js";
 
 class FornecedoresController {
   async getAllFornecedores(req, res) {
-    const page = parseInt(req.query.page) || 1; // Página atual (default: 1)
-    const limit = parseInt(req.query.limit) || 10; // Itens por página (default: 10)
-    const offset = (page - 1) * limit; // Calcula o deslocamento
-
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+  
     try {
-      const [results] = await pool.query(
-        "SELECT * FROM fornecedores LIMIT ? OFFSET ?",
-        [limit, offset]
-      );
-
-      const [countResult] = await pool.query(
-        "SELECT COUNT(*) AS total FROM fornecedores"
-      );
+      const [results] = await pool.query(`
+        SELECT 
+          fornecedores.*,
+          turmas.nome AS turma_nome,
+          turmas.identificador AS turma_identificador
+          -- Adicione mais campos conforme necessário (sem vírgula no último campo!)
+        FROM fornecedores
+        LEFT JOIN turmas 
+          ON fornecedores.turma_id = turmas.id
+        LIMIT ? OFFSET ?
+      `, [limit, offset]);
+  
+      const [countResult] = await pool.query("SELECT COUNT(*) AS total FROM fornecedores");
       const total = countResult[0].total;
       const totalPages = Math.ceil(total / limit);
-
+  
       res.status(200).json({
         page,
         totalPages,
@@ -51,10 +56,11 @@ class FornecedoresController {
       telefone,
       valor_cotado,
       cnpj,
+      turma_id,
       responsavel,
     } = req.body;
     const query =
-      "INSERT INTO fornecedores (nome, tipo_servico, status, telefone, valor_cotado, cnpj, responsavel) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO fornecedores (nome, tipo_servico, status, telefone, valor_cotado, cnpj, turma_id, responsavel) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     try {
       const [result] = await pool.query(query, [
         nome,
@@ -63,6 +69,7 @@ class FornecedoresController {
         telefone,
         valor_cotado,
         cnpj,
+        turma_id,
         responsavel,
       ]);
       res.status(201).json({ id: result.insertId, ...req.body });
@@ -80,10 +87,11 @@ class FornecedoresController {
       telefone,
       valor_cotado,
       cnpj,
+      turma_id,
       responsavel,
     } = req.body;
     const query =
-      "UPDATE fornecedores SET nome = ?, tipo_servico = ?, status = ?, telefone = ?, valor_cotado = ?, cnpj = ?, responsavel = ? WHERE id = ?";
+      "UPDATE fornecedores SET nome = ?, tipo_servico = ?, status = ?, telefone = ?, valor_cotado = ?, cnpj = ?, turma_id = ?, responsavel = ? WHERE id = ?";
     try {
       await pool.query(query, [
         nome,
@@ -92,6 +100,7 @@ class FornecedoresController {
         telefone,
         valor_cotado,
         cnpj,
+        turma_id,
         responsavel,
         id,
       ]);
