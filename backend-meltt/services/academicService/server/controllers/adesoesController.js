@@ -13,7 +13,7 @@ class AdesaoController {
         db.query(`
           SELECT 
             SUM(status = 'concluida') AS totalConcluidas,
-            SUM(status = 'pendente') AS totalPendentes 
+            SUM(status = 'pendente') AS totalPendentes,
             SUM(status = 'cancelado') AS totalCancelado 
           FROM adesoes
         `)

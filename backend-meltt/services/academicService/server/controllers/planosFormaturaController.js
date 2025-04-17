@@ -90,7 +90,7 @@ class PlanosFormaturaController {
             WHERE tpf.turma_id = ?;
         `;
 
-    db.query(query, [id], (err, result) => {
+    pool.query(query, [id], (err, result) => {
       if (err) return res.status(500).json({ error: err.message });
       res.status(200).json(result);
     });
@@ -100,7 +100,7 @@ class PlanosFormaturaController {
     const { nome, incluso, valor } = req.body;
     const query =
       "INSERT INTO planos_formatura (nome, incluso, valor ) VALUES (?, ?, ?)";
-    db.query(
+    pool.query(
       query,
       [nome, incluso, valor],
       (err, result) => {
