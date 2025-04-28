@@ -5,6 +5,7 @@ import s3Controller from "../controllers/s3Controller.js";
 const router = express.Router();
 
 router.get("/turma/pressignedUrl", authMiddleware, s3Controller.getUploadTurmaContractUrl);
+router.get("/turma/contrato-meltt/pressignedUrl", authMiddleware, s3Controller.getUploadMelttContractUrl);
 router.get("/turmas/getAll", authMiddleware, s3Controller.getAllContratosTurma);
 router.get("/turmas/getByTurma", authMiddleware, s3Controller.getContratosByTurma);
 
