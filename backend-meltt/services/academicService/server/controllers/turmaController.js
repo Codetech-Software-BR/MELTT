@@ -64,9 +64,11 @@ class TurmaController {
       arquivo_url,
       meltt_contrato_url,
       ano_formatura,
+      estatuto_uuid,
+      meltt_contrato_uuid
     } = req.body;
     const query =
-      "INSERT INTO turmas (nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, arquivo_url, meltt_contrato_url, ano_formatura) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO turmas (nome, identificador, regras_adesao, regras_renegociacao, regras_rescisao, arquivo_url, meltt_contrato_url, ano_formatura, estatuto_uuid, meltt_contrato_uuid ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     try {
       const [result] = await pool.query(query, [
         nome,
@@ -77,6 +79,8 @@ class TurmaController {
         arquivo_url,
         meltt_contrato_url,
         ano_formatura,
+        estatuto_uuid,
+        meltt_contrato_uuid
       ]);
       res.status(201).json({ id: result.insertId, ...req.body });
     } catch (err) {

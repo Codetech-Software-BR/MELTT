@@ -24,7 +24,9 @@ app.use(cors(corsOptions));
 
 // Rotas - /api
 app.use("/api", routes);
-app.post("/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) => {
+
+// MOMENTÂNEO AQUI NA APP.JS
+app.post("/api/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) => {
   try {
     console.log('req.file', req.file)
     if (!req.file) {
@@ -38,13 +40,12 @@ app.post("/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) =
     });
 
     const response = await axios.post(
-      'https://secure.d4sign.com.br/api/v1/documents/upload',
+      `https://secure.d4sign.com.br/api/v1/documents/${process.env.D4SIGN_ESTATUTOS_SAFER}/upload`,
       formData,
       {
         params: {
-          token_api: process.env.D4SIGN_TOKEN_API,
-          crypt_key: process.env.D4SIGN_CRYPTKEY,
-          uuid_safe: process.env.D4SIGN_ESTATUTOS_SAFER
+          tokenAPI: process.env.D4SIGN_TOKEN_API,
+          cryptKey: process.env.D4SIGN_CRYPTKEY,
         },
         headers: {
           ...formData.getHeaders(),
@@ -59,7 +60,7 @@ app.post("/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) =
     res.status(500).json({ error: "Falha no upload de Estatuto" });
   }
 });
-app.post("/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) => {
+app.post("/api/d4sign/contrato-meltt", uploadMiddleware.single('file'), async (req, res) => {
   try {
     console.log('req.file', req.file)
     if (!req.file) {
@@ -73,13 +74,12 @@ app.post("/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) =
     });
 
     const response = await axios.post(
-      'https://secure.d4sign.com.br/api/v1/documents/upload',
+      `https://secure.d4sign.com.br/api/v1/documents/${process.env.D4SIGN_CONTRATO_MELTT_SAFER}/upload`,
       formData,
       {
         params: {
-          token_api: process.env.D4SIGN_TOKEN_API,
-          crypt_key: process.env.D4SIGN_CRYPTKEY,
-          uuid_safe: process.env.D4SIGN_CONTRATO_MELTT_SAFER
+          tokenAPI: process.env.D4SIGN_TOKEN_API,
+          cryptKey: process.env.D4SIGN_CRYPTKEY,
         },
         headers: {
           ...formData.getHeaders(),
