@@ -26,9 +26,9 @@ router.post("/estatuto", authMiddleware, async (req, res) => {
       }
     );
 
-    res.json({ uuid: response.data.uuid });
+    res.json({ uuid: response });
   } catch (error) {
-    res.status(500).json({ error: "Falha no upload" });
+    res.status(500).json({ error: "Falha no upload de Estatuto" });
   }
 });
 
@@ -54,7 +54,7 @@ router.post("/contrato-meltt", authMiddleware, async (req, res) => {
       }
     );
 
-    res.json({ uuid: response.data.uuid });
+    res.json({ uuid: response });
   } catch (error) {
     res.status(500).json({ error: "Falha no upload" });
   }
