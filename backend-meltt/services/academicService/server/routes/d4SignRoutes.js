@@ -4,7 +4,7 @@ import authMiddleware from "../middlewares/auth/index.js";
 
 const router = express.Router();
 
-router.get("/estatuto", authMiddleware, async (req, res) => {
+router.post("/estatuto", authMiddleware, async (req, res) => {
   try {
     const file = req.files.file;
 
@@ -32,7 +32,7 @@ router.get("/estatuto", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/contrato-meltt", authMiddleware, async (req, res) => {
+router.post("/contrato-meltt", authMiddleware, async (req, res) => {
   try {
     const file = req.files.file;
 
