@@ -22,7 +22,7 @@ import agendaRoutes from './agendaRoutes.js';
 import propostasRoutes from './propostasRoutes.js';
 import atasRoutes from './atasRoutes.js';
 import informativosRoutes from './informativosRoutes.js';
-import d4SignRoutes from './d4SignRoutes.js';
+// import d4SignRoutes from './d4SignRoutes.js';
 
 
 const router = express.Router();
@@ -49,7 +49,7 @@ router.use("/agenda", agendaRoutes);
 router.use("/propostas", propostasRoutes);
 router.use("/atas", atasRoutes);
 router.use("/informativos", informativosRoutes);
-router.use("/d4sign", d4SignRoutes);
+// router.use("/d4sign", d4SignRoutes);
 
 
 export default router;
