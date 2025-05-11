@@ -12,7 +12,7 @@ class D4SignController {
     try {
       const response = await axios.post(
         `https://secure.d4sign.com.br/api/v1/documents/${uuid_document}/createlist`,
-        signers,
+        {signers},
         {
           params: {
             tokenAPI: process.env.D4SIGN_TOKEN_API,
@@ -51,6 +51,7 @@ class D4SignController {
   }
 
   async documentDownload(req, res) {
+    const {uuid_document} = req.body
     try {
       const response = await axios.post(
         `https://secure.d4sign.com.br/api/v1/documents/${uuid_document}/download`,
