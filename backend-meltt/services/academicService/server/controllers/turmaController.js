@@ -35,7 +35,7 @@ class TurmaController {
       const [result] = await pool.query("SELECT * FROM turmas WHERE id = ?", [
         id,
       ]);
-      res.status(200).json(result);
+      res.status(200).json({ data: result });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
