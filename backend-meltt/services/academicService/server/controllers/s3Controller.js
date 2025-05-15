@@ -152,7 +152,9 @@ class s3Controller {
       if (!validTypes.includes(fileType)) {
         return res.status(400).json({ error: "Tipo de arquivo não suportado" });
       }
-      const filePath = `turmas/atas/${turmaId}`;
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const sanitizedFileName = fileName.replace(/\s+/g, '_');
+      const filePath = `turmas/atas/${turmaId}/${uniqueSuffix}_${sanitizedFileName}`;
 
       const signedUrl = await s3Service.s3Client.getSignedUrl("putObject", {
         Bucket: process.env.AWS_BUCKET_TURMAS,
@@ -183,7 +185,9 @@ class s3Controller {
       if (!validTypes.includes(fileType)) {
         return res.status(400).json({ error: "Tipo de arquivo não suportado" });
       }
-      const filePath = `turmas/informativos/${turmaId}`;
+     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const sanitizedFileName = fileName.replace(/\s+/g, '_');
+      const filePath = `turmas/informativos/${turmaId}/${uniqueSuffix}_${sanitizedFileName}`;
 
       const signedUrl = await s3Service.s3Client.getSignedUrl("putObject", {
         Bucket: process.env.AWS_BUCKET_TURMAS,
