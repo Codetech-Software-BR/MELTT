@@ -1,5 +1,6 @@
 import axios from "axios";
 import pool from "../db.js";
+import fs from 'fs';
 import { format, subMonths, addMonths } from "date-fns";
 
 class BlingController {
@@ -8,6 +9,7 @@ class BlingController {
       const { authorization } = req.headers;
       const { pagina = 1, situacoes, dataInicial, dataFinal } = req.query;
       const token = authorization.replace(/^Bearer\s+/i, "");
+       fs.writeFileSync('.temp_bling_token', token); 
 
       const params = new URLSearchParams();
       params.append("limite", "20");
