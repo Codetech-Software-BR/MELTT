@@ -16,8 +16,8 @@ class BlingController {
       params.append("pagina", String(pagina));
       params.append("tipoFiltroData", "V");
 
-      const dataInicialCalculada = subMonths(new Date(), 2);
-      const dataFinalCalculada = addMonths(new Date(), 3);
+      const dataInicialCalculada = subMonths(new Date(), 1);
+      const dataFinalCalculada = addMonths(new Date(), 1);
 
       params.append("dataInicial", format(dataInicialCalculada, 'yyyy-MM-dd'));
       params.append("dataFinal", format(dataFinalCalculada, 'yyyy-MM-dd'));
@@ -31,6 +31,8 @@ class BlingController {
         { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
       );
 
+      console.log('response', response)
+      console.log('response.data', response.data)
       const contasReceber = response.data.data;
       let insertedCount = 0;
       let duplicateCount = 0;
