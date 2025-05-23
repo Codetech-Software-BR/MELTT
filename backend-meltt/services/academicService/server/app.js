@@ -26,7 +26,7 @@ app.use(cors(corsOptions));
 app.use("/api", routes);
 
 // MOMENTÂNEO AQUI NA APP.JS
-app.post("/api/d4sign/estatuto", uploadMiddleware.single('file'), async (req, res) => {
+app.post("/api/d4sign/upload", uploadMiddleware.single('file'), async (req, res) => {
   try {
     console.log('req.file', req.file)
     if (!req.file) {
