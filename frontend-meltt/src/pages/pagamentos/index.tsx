@@ -63,6 +63,9 @@ const PagamentosPage = () => {
   const [payment, setPayment] = useState<Student | null>(null);
   const [turmas, setTurmas] = useState([]);
 
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
   const [turmaId, setTurmaId] = useState<number | null>(null);
 
   const [onLoad, setOnLoad] = useState(false);
@@ -82,9 +85,6 @@ const PagamentosPage = () => {
         if (filterSituation) {
           params.append("situacoes", filterSituation);
         }
-        // if (filterDate) {
-        //   params.append("dataInicial", filterDate);
-        // }
 
         const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
         setPayments(response.data);
@@ -113,7 +113,7 @@ const PagamentosPage = () => {
 
   const fetchTurmas = async () => {
     try {
-      let response = await apiGetData("academic", "/turmas");
+      const response = await apiGetData("academic", "/turmas");
       setTurmas(response.data);
     } catch (error) {
       toast.error("Erro ao buscar Turmas");
@@ -122,13 +122,22 @@ const PagamentosPage = () => {
 
   const fetchWithFilters = async () => {
     setLoading(true);
+    console.log("Data Inicial:", startDate);
+    console.log("Data Final:", endDate);
     try {
       const params = new URLSearchParams();
 
       if (filterSituation) {
         params.append("situacoes", filterSituation);
       }
-      // if (filterDate) params.append("dataInicial", filterDate);
+      if (startDate) {
+        params.append("dataInicial", startDate);
+      }
+      if (endDate) {
+        params.append("dataFinal", endDate);
+      }
+      
+      console.log("Params:", params.toString());
 
       const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
       setPayments(response.data);
@@ -151,7 +160,7 @@ const PagamentosPage = () => {
   const onSubmitNewUser = async (_: Student) => {
     setLoadingSaveNewUser(true);
 
-    let dataObj = {
+    const dataObj = {
       email: `${payment?.contato.numeroDocumento}@meltt.com.br`,
       senha: payment?.contato.id.toString(),
       tipo: "ALUNO",
@@ -328,6 +337,23 @@ const PagamentosPage = () => {
                   <MenuItem value={5}>Cancelado</MenuItem>
                 </Select>
               </FormControl>
+              <TextField
+                label="Data Inicial"
+                type="date"
+                size="small"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
+
+              <TextField
+                label="Data Final"
+                type="date"
+                size="small"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+              />
               <Button color="primary" size="small" startIcon={<BiSearch />} onClick={fetchWithFilters}>
                 Buscar
               </Button>
