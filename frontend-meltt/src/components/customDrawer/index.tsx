@@ -9,7 +9,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Avatar, Chip, Collapse, Stack, Popover } from "@mui/material";
+import { Avatar, Chip, Collapse, Stack, Popover, InputAdornment } from "@mui/material";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { FaRegBell } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -17,8 +17,13 @@ import { getToken, removeAllTokens } from "../../utils/token";
 import { menuListAdesoes, menuListAdmin, menuListAluno, menuListAssociacao, menuListComercial, menuListFinanceiro, menuListGestaoProducao } from "../../utils/arrays";
 import { DrawerMenuListType } from "../../types";
 import IconLogout from "../../assets/icons/logout";
-import { apiGetData } from "../../services/api";
+import { apiGetData, apiPostData } from "../../services/api";
 import { BiChevronLeft, BiMenu } from "react-icons/bi";
+import { FiSettings } from "react-icons/fi";
+import CustomModal from "../modal";
+import TextField from "@mui/material/TextField";
+import toast from "react-hot-toast";
+import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 
 export interface CustomJwtPayload extends JwtPayload {
   id?: number;
@@ -49,11 +54,10 @@ export default function CustomDrawer(props: Props) {
   const token = getToken();
   const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
 
-
+  // Notificações
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(true);
   const [anchorElNotifications, setAnchorElNotifications] = React.useState<HTMLButtonElement | null>(null);
   const [notificacoes, setNotificacoes] = React.useState<any[]>([]);
-
   const handleClickOpenPopoverNotifications = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElNotifications(event.currentTarget);
   };
@@ -64,6 +68,45 @@ export default function CustomDrawer(props: Props) {
 
   const openPopoverNotifications = Boolean(anchorElNotifications);
   const idPopoverNotifications = openPopoverNotifications ? "notifications-popover" : undefined;
+
+  // Configurações
+  const [anchorElSettings, setAnchorElSettings] = React.useState<HTMLButtonElement | null>(null);
+  const handleClickOpenPopoverSettings = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElSettings(event.currentTarget);
+  };
+  const handleClosePopoverSettings = () => {
+    setAnchorElSettings(null);
+  };
+  const openPopoverSettings = Boolean(anchorElSettings);
+  const idPopoverSettings = openPopoverSettings ? "settings-popover" : undefined;
+
+  // Alterar senha
+  const [openModalChangePassword, setOpenModalChangePassword] = React.useState(false);
+  const [newPassword, setNewPassword] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false);
+  const onSubmitChangePassword = async () => {
+    if (!newPassword) {
+      toast.error("Por favor, preencha a nova senha.");
+      return;
+    }
+
+    const payload = {
+      email: decoded?.email,
+      senha: newPassword
+    };
+
+    console.log(payload);
+    try {
+      const response = await apiPostData("authentication", `/users/reset-password/`, payload);
+      console.log(response);
+      toast.success("Evento salvo com sucesso");
+    } catch (error) {
+      toast.error("Erro ao salvar evento");
+    } finally {
+      setOpenModalChangePassword(false);
+      setNewPassword("");
+    }
+  }
 
   const menuList =
     decoded?.tipo === "ADMIN"
@@ -350,6 +393,48 @@ export default function CustomDrawer(props: Props) {
               )}
             </IconButton>
 
+            <IconButton
+              onClick={handleClickOpenPopoverSettings}
+              sx={{
+                bgcolor: 'rgba(45,28,99,0.1)',
+                '&:hover': { bgcolor: 'rgba(45,28,99,0.2)' },
+              }}
+            >
+              <FiSettings style={{ color: '#2D1C63', fontSize: '1.2rem' }} />
+            </IconButton>
+
+            <Popover
+              id={idPopoverSettings}
+              open={openPopoverSettings}
+              anchorEl={anchorElSettings}
+              onClose={handleClosePopoverSettings}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right',
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              sx={{
+                mt: 1.5,
+                '& .MuiPaper-root': {
+                  width: 200,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  borderRadius: '12px'
+                }
+              }}
+            >
+              <List sx={{ p: 1 }}>
+                <ListItemButton onClick={() => {
+                  handleClosePopoverSettings();
+                  setOpenModalChangePassword(true);
+                }}>
+                  <Typography variant="body2">Alterar senha</Typography>
+                </ListItemButton>
+              </List>
+            </Popover>
+
             <Popover
               id={idPopoverNotifications}
               open={openPopoverNotifications}
@@ -508,6 +593,43 @@ export default function CustomDrawer(props: Props) {
           {props.children}
         </Box>
       </Stack>
+      <CustomModal
+        title="Alterar Senha"
+        subHeader="preencha o campo com sua nova senha"
+        openModal={openModalChangePassword}
+        handleCloseModal={() => {
+          setOpenModalChangePassword(false);
+          setNewPassword("");
+          setShowPassword(false);
+        }}
+        onSubmit={() => {
+          onSubmitChangePassword();
+        }}
+      >
+        <Box display={'flex'} flexDirection={'column'} component={'form'} sx={{ width: '100%' }}>
+          <Stack width={'100%'} direction={'column'} gap={2}>
+            <TextField
+              size="small"
+              label="Nova Senha"
+              type={showPassword ? 'text' : 'password'}
+              variant="outlined"
+              fullWidth
+              required
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                      {showPassword ? <MdVisibilityOff /> : <MdVisibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+          </Stack>
+        </Box>
+      </CustomModal>
     </Stack>
   )
 }
