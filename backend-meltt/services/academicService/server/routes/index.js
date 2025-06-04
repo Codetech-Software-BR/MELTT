@@ -21,6 +21,7 @@ import assinaturaEstatutoRoutes from "./assinaturaEstatuto.js"
 import agendaRoutes from './agendaRoutes.js';
 import propostasRoutes from './propostasRoutes.js';
 import atasRoutes from './atasRoutes.js';
+import musicasRoutes from './musicasRoutes.js';
 import informativosRoutes from './informativosRoutes.js';
 import d4SignRoutes from './d4SignRoutes.js';
 
@@ -48,6 +49,7 @@ router.use("/assinatura-estatuto", assinaturaEstatutoRoutes);
 router.use("/agenda", agendaRoutes);
 router.use("/propostas", propostasRoutes);
 router.use("/atas", atasRoutes);
+router.use("/musicas", musicasRoutes);
 router.use("/informativos", informativosRoutes);
 router.use("/d4sign", d4SignRoutes);
 
