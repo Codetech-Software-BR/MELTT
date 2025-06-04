@@ -71,10 +71,14 @@ const UsuariosPageEdit = () => {
     setLoadingTurmas(false);
   };
 
-  const onSubmitAluno = async (values: any) => {
-    const { senha, confirmar_senha, ativo, ...rest } = values;
-    console.log('values', values)
-    if(!id) {
+  const onSubmitUser = async (values: any) => {
+    let { senha, confirmar_senha, ativo, ...rest } = values;
+
+    if (!id) {
+      if(values.tipo === "ALUNO") {
+        senha = "senha123";
+        confirmar_senha = "senha123";
+      }
       if (senha !== confirmar_senha) {
         toast.error("As senhas não conferem");
         return;
@@ -82,7 +86,11 @@ const UsuariosPageEdit = () => {
     }
 
     delete values.confirmar_senha;
-    values = { ...rest, senha, ativo: ativo ? 1 : 0 };
+    values = {
+      ...rest,
+      senha,
+      ativo: ativo ? 1 : 0
+    };
     setLoadingAluno(true);
     try {
       if (id) {
@@ -150,7 +158,7 @@ const UsuariosPageEdit = () => {
           <Formik
             initialValues={{ ...getAlunosInitialValue }}
             validationSchema={validateStudentEditSchema}
-            onSubmit={(values: any) => onSubmitAluno(values)}
+            onSubmit={(values: any) => onSubmitUser(values)}
           >
             {({ values, errors, handleChange, handleSubmit }) => (
               <form onSubmit={handleSubmit} onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}>
@@ -230,25 +238,27 @@ const UsuariosPageEdit = () => {
                     </Grid>
 
                     {/* Seção de Segurança */}
-                    <Grid item xs={12} md={6}>
-                      <TextField
-                        fullWidth
-                        disabled={id ? true : false}
-                        variant="filled"
-                        label="Senha"
-                        name="senha"
-                        type="password"
-                        value={values.senha}
-                        onChange={handleChange}
-                        InputProps={{
-                          sx: {
-                            borderRadius: 2,
-                            '&:hover': { bgcolor: 'grey.50' }
-                          }
-                        }}
-                      />
-                    </Grid>
-
+                    {values.tipo !== "ALUNO" && (
+                      <Grid item xs={12} md={6}>
+                        <TextField
+                          fullWidth
+                          disabled={id ? true : false}
+                          variant="filled"
+                          label="Senha"
+                          name="senha"
+                          type="password"
+                          value={values.senha}
+                          onChange={handleChange}
+                          InputProps={{
+                            sx: {
+                              borderRadius: 2,
+                              '&:hover': { bgcolor: 'grey.50' }
+                            }
+                          }}
+                        />
+                      </Grid>
+                    )}
+                    {values.tipo !== "ALUNO" && (
                     <Grid item xs={12} md={6}>
                       <TextField
                         fullWidth
@@ -267,6 +277,7 @@ const UsuariosPageEdit = () => {
                         }}
                       />
                     </Grid>
+                    )}
 
                     {/* Seção de Vinculação */}
                     <Grid item xs={12} md={6}>

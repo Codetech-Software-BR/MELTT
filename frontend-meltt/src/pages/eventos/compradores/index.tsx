@@ -1,5 +1,5 @@
 import {
-  Box,
+  // Box,
   Chip,
   IconButton,
   Link,
@@ -9,7 +9,7 @@ import {
   Tab,
   TableCell,
   TableRow,
-  Tabs,
+  // Tabs,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -19,8 +19,8 @@ import LoadingTable from "../../../components/loadingTable";
 import { apiGetData } from "../../../services/api";
 import { eventBuyersColumns } from "../table/columns/buyers";
 import { BiArrowBack } from "react-icons/bi";
-import { TbPigMoney } from "react-icons/tb";
-import { formatCurrency } from "../../../utils/functions";
+// import { TbPigMoney } from "react-icons/tb";
+// import { formatCurrency } from "../../../utils/functions";
 import { MdOutlineMotionPhotosOn } from "react-icons/md";
 import EventDetails from "../../../components/eventDetails";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -33,9 +33,9 @@ const EventosCompradoresPage = () => {
 
   const [loading, setLoading] = useState(false);
   const [eventBuyers, setEventBuyers] = useState([]);
-  const [totalAmount, setTotalAmount] = useState("");
-  const [totalPaidAmount, setTotalPaidAmount] = useState("");
-  const [uniticketFee, setUniticketFee] = useState("");
+  // const [totalAmount, setTotalAmount] = useState("");
+  // const [totalPaidAmount, setTotalPaidAmount] = useState("");
+  // const [uniticketFee, setUniticketFee] = useState("");
 
   const [onLoad, setOnLoad] = useState(false);
 
@@ -47,46 +47,46 @@ const EventosCompradoresPage = () => {
     try {
       const response = await apiGetData("academic", `/uniticket/buyers?access_token=${id}`);
       if (response && response.data && Array.isArray(response.data)) {
-        const totalAmount = response.data.reduce((sum: number, item: any) => {
-          if (item.order && item.order.total_amount) {
-            const amount = parseFloat(item.order.total_amount);
-            if (!isNaN(amount)) {
-              return sum + amount;
-            }
-          }
-          return sum;
-        }, 0);
+        // const totalAmount = response.data.reduce((sum: number, item: any) => {
+        //   if (item.order && item.order.total_amount) {
+        //     const amount = parseFloat(item.order.total_amount);
+        //     if (!isNaN(amount)) {
+        //       return sum + amount;
+        //     }
+        //   }
+        //   return sum;
+        // }, 0);
 
-        const totalPaidAmount = response.data.reduce((sum: number, item: any) => {
-          if (item.order && item.order.total_amount && item.order.status === 'finalizado') {
-            const amount = parseFloat(item.order.total_amount);
-            if (!isNaN(amount)) {
-              return sum + amount;
-            }
-          }
-          return sum;
-        }, 0);
-        const uniticketFee = totalPaidAmount * 0.05;
+        // const totalPaidAmount = response.data.reduce((sum: number, item: any) => {
+        //   if (item.order && item.order.total_amount && item.order.status === 'finalizado') {
+        //     const amount = parseFloat(item.order.total_amount);
+        //     if (!isNaN(amount)) {
+        //       return sum + amount;
+        //     }
+        //   }
+        //   return sum;
+        // }, 0);
+        // const uniticketFee = totalPaidAmount * 0.05;
 
-        const formattedTotalAmount = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(totalAmount);
+        // const formattedTotalAmount = new Intl.NumberFormat('pt-BR', {
+        //   style: 'currency',
+        //   currency: 'BRL',
+        // }).format(totalAmount);
 
-        const formattedTotalPaidAmount = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(totalPaidAmount);
+        // const formattedTotalPaidAmount = new Intl.NumberFormat('pt-BR', {
+        //   style: 'currency',
+        //   currency: 'BRL',
+        // }).format(totalPaidAmount);
 
-        const formattedUniticketFee = formatCurrency(uniticketFee)
+        // const formattedUniticketFee = formatCurrency(uniticketFee)
 
-        console.log('Total adquirido com vendas de ingressos:', formattedTotalAmount);
-        console.log('Valor pago com status finalizado:', formattedTotalPaidAmount);
+        // console.log('Total adquirido com vendas de ingressos:', formattedTotalAmount);
+        // console.log('Valor pago com status finalizado:', formattedTotalPaidAmount);
 
         setEventBuyers(response.data);
-        setTotalAmount(formattedTotalAmount);
-        setTotalPaidAmount(formattedTotalPaidAmount);
-        setUniticketFee(formattedUniticketFee);
+        // setTotalAmount(formattedTotalAmount);
+        // setTotalPaidAmount(formattedTotalPaidAmount);
+        // setUniticketFee(formattedUniticketFee);
       } else {
         toast.error("Estrutura inesperada em response.data");
       }
@@ -176,7 +176,7 @@ const EventosCompradoresPage = () => {
         </IconButton>
       </Stack>
       <TabContext value={tabValue}>
-        <TabList onChange={(e, newValue) => setTabValue(newValue)}>
+        <TabList onChange={(_, newValue) => setTabValue(newValue)}>
           <Tab label="Dashboard" value={"1"} />
           <Tab label="Registros" value={"2"} />
         </TabList>
