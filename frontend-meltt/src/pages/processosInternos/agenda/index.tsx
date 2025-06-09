@@ -36,7 +36,7 @@ const AgendaPage = () => {
 
   const fetchEvents = async () => {
     try {
-      const response = await apiGetData("academic", "/agenda");
+      const response = await apiGetData("academic", "/agenda?limit=150");
       console.log(response.data);
       const eventosFormatados = response.data.map((evento: any) => {
         const dataEvento = evento.data ? new Date(evento.data) : null;

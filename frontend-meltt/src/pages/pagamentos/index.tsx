@@ -122,8 +122,7 @@ const PagamentosPage = () => {
 
   const fetchWithFilters = async () => {
     setLoading(true);
-    console.log("Data Inicial:", startDate);
-    console.log("Data Final:", endDate);
+
     try {
       const params = new URLSearchParams();
 
@@ -136,8 +135,6 @@ const PagamentosPage = () => {
       if (endDate) {
         params.append("dataFinal", endDate);
       }
-      
-      console.log("Params:", params.toString());
 
       const response = await apiGetData("academic", `/bling/contas/receber?${params.toString()}`);
       setPayments(response.data);
@@ -303,14 +300,6 @@ const PagamentosPage = () => {
 
   return (
     <Stack width={"calc(100% - 28px)"}>
-      <Stack
-        direction={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        my={2}
-      >
-        <h2 className="text-2xl text-default font-extrabold"></h2>
-      </Stack>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
           elevation={0}
