@@ -77,7 +77,7 @@ const PagamentosPage = () => {
 
   const fetchPagamentos = async (page: number) => {
     setLoading(true);
-    if (decoded?.tipo === 'ADMIN') {
+    if (decoded?.tipo === 'ADMIN' || decoded?.tipo === 'FINANCEIRO') {
       try {
         const params = new URLSearchParams();
 
@@ -122,7 +122,6 @@ const PagamentosPage = () => {
 
   const fetchWithFilters = async () => {
     setLoading(true);
-
     try {
       const params = new URLSearchParams();
 
@@ -299,7 +298,7 @@ const PagamentosPage = () => {
   }, []);
 
   return (
-    <Stack width={"calc(100% - 28px)"}>
+    <Stack width={"calc(100% - 64px)"}>
       <Slide direction="right" in={onLoad} mountOnEnter>
         <Paper
           elevation={0}
@@ -373,7 +372,7 @@ const PagamentosPage = () => {
                 columns={decoded?.tipo === 'ADMIN' ? pagamentosColumns : pagamentosStudentColumns}
                 rows={payments}
                 loading={loading}
-                dataRow={decoded?.tipo === 'ADMIN' ? dataRow : dataRowStudent}
+                dataRow={decoded?.tipo === 'ALUNO' ? dataRowStudent : dataRow}
                 page={page}
                 totalPages={payments?.length}
                 handleChangePagination={handleChangePagination}

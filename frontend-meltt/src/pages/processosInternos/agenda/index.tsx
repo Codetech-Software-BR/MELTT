@@ -10,15 +10,6 @@ import { apiGetData, apiPostData } from '../../../services/api';
 import toast from 'react-hot-toast';
 import { LoadingButton } from '@mui/lab';
 
-// interface Evento {
-//   id: number;
-//   title: string;
-//   start: Date;
-//   end?: Date;
-//   descricao: string;
-//   nome_turma: string;
-//   turma_id: number;
-// }
 
 interface NewEventProps {
   open: boolean;
@@ -31,10 +22,10 @@ const AgendaPage = () => {
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    fetchEvents();
+    fetchAgenda();
   }, []);
 
-  const fetchEvents = async () => {
+  const fetchAgenda = async () => {
     try {
       const response = await apiGetData("academic", "/agenda?limit=150");
       console.log(response.data);
@@ -115,7 +106,7 @@ const AgendaPage = () => {
       <NewEventModal
         open={openModal}
         onClose={() => setOpenModal(false)}
-        onRefresh={fetchEvents}
+        onRefresh={fetchAgenda}
       />
     </Stack>
   );

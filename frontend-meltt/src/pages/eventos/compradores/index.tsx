@@ -162,7 +162,7 @@ const EventosCompradoresPage = () => {
   }, []);
 
   return (
-    <Stack width={"calc(100% - 28px)"}
+    <Stack width={"calc(100% - 64px)"}
       sx={{
         overflow: "auto",
         flexDirection: "column",

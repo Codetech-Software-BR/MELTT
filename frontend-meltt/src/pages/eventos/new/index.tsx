@@ -49,7 +49,7 @@ const EventosNewPage = () => {
 
   return (
     <Stack width={"100%"} height={"100%"} gap={10}>
-      <Stack width={"calc(100% - 28px)"} direction={"column"}>
+      <Stack width={"calc(100% - 64px)"} direction={"column"}>
         <Typography
           color="primary"
           variant="h5"

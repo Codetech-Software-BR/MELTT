@@ -212,6 +212,29 @@ export const menuListAdesoes = [
 
 export const menuListFinanceiro = [
   {
+    title: "Gestão de Contratos",
+    route: "/processos-internos",
+    icon: <MdOutlineWorkOutline size={22} className="text-white" />,
+    subRoutes: [
+      {
+        title: "Adesões",
+        route: "/processos-internos/adesoes",
+        icon: <MdBookmarkAdded size={14} color={'white'} />,
+      },
+      {
+        title: "Tarefas da Equipe",
+        route: "/processos-internos/tarefas",
+        icon: <LuNetwork size={14} color={'white'} />,
+      },
+      {
+        title: "Agenda Interna",
+        route: "/processos-internos/agenda",
+        icon: <LuPartyPopper size={
+          14} color="white" />,
+      }
+    ]
+  },
+  {
     title: "Turmas",
     route: "/turmas",
     icon: <LiaSchoolSolid size={22} />,

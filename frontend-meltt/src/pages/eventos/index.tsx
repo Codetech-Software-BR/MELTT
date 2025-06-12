@@ -136,7 +136,7 @@ const EventosPage = () => {
   }, []);
 
   return (
-    <Stack width={"calc(100% - 28px)"}>
+    <Stack width={"calc(100% - 64px)"}>
       <Stack
         direction={"row"}
         alignItems={"center"}
@@ -144,7 +144,7 @@ const EventosPage = () => {
         my={2}
       >
         <h2 className="text-2xl text-default font-extrabold"></h2>
-        {(decoded?.tipo === 'ADMIN' || decoded?.tipo === 'GESTAO_PRODUCAO') && (
+        {(decoded?.tipo === 'ADMIN' || decoded?.tipo === 'GESTAO_PRODUCAO' || decoded?.tipo === 'FINANCEIRO') && (
           <Button
             variant="contained"
             color="secondary"

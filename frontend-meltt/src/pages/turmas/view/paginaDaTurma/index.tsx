@@ -414,7 +414,7 @@ const PaginaDaTurmaPage = () => {
 
   return (
     <Stack width={"100%"} height={"100%"} gap={8}>
-      <Stack width={"calc(100% - 28px)"} direction={"column"}>
+      <Stack width={"calc(100% - 64px)"} direction={"column"}>
         <Box padding={2}>
           <Stack direction={"row"} alignItems={"center"} gap={1}>
             <IconButton onClick={() => navigate(-1)} size="small">

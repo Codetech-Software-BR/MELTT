@@ -211,7 +211,7 @@ const PreContratoPage = () => {
   };
 
   return (
-    <Stack width={"calc(100% - 28px)"}>
+    <Stack width={"calc(100% - 64px)"}>
       <Stack direction={"row"} alignItems={"center"} justifyContent={"space-between"} my={2}>
         <h2 className="text-xl text-default font-extrabold">Status dos Pré-Contratos</h2>
         <Button
