@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   IconButton,
   Paper,
@@ -12,8 +13,8 @@ import BasicTable from "../../components/table";
 import { useEffect, useState } from "react";
 import { Tarefa } from "../../providers/tarefaContext";
 import { useNavigate } from "react-router-dom";
-import { apiGetData } from "../../services/api";
-import { IoMdAdd } from "react-icons/io";
+import { apiDeleteData, apiGetData } from "../../services/api";
+import { IoMdAdd, IoMdTrash } from "react-icons/io";
 import toast from "react-hot-toast";
 import NoTableData from "../../components/noData";
 import LoadingTable from "../../components/loadingTable";
@@ -22,6 +23,9 @@ import { format, parseISO } from 'date-fns';
 import { MdModeEdit } from "react-icons/md";
 import { tarefasColumns } from "./table/columns";
 import { useTarefaContext } from "../../providers/tarefaContext";
+import { getToken } from "../../utils/token";
+import { jwtDecode } from "jwt-decode";
+import { CustomJwtPayload } from "../../components/customDrawer";
 
 const TarefasPage = () => {
   const navigate = useNavigate();
@@ -31,6 +35,8 @@ const TarefasPage = () => {
   const [loading, setLoading] = useState(false);
   const [tarefas, setTarefas] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const token = getToken();
+  const decoded = token ? jwtDecode<CustomJwtPayload>(token) : null;
   // const [responsaveis, setResponsaveis] = useState<{ tarefa_id: number; usuario_nome: string }[]>([]);
   // const [usuarios, setUsuarios] = useState([]);
 
@@ -84,6 +90,20 @@ const TarefasPage = () => {
     setPage(value);
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await apiDeleteData("academic", `/tarefas/desvincular-responsavel`, {
+        tarefa_id: id,
+        usuario_id: decoded?.id
+      });
+      await apiDeleteData("academic", `/tarefas/${id}`, {});
+      await fetchTarefas(page);
+      toast.success("Tarefa excluída com sucesso");
+    } catch (error) {
+      console.error("Erro ao excluir tarefa:", error);
+      toast.error("Erro ao excluir tarefa");
+    }
+  };
 
   const dataRow = (row: Tarefa) => {
     return (
@@ -110,14 +130,21 @@ const TarefasPage = () => {
         </TableCell>
         <TableCell align="left">
           <Stack direction={"row"}>
-            <Tooltip title="Editar Tarefa" arrow>
-              <IconButton onClick={() => {
-                dispatchTarefa({ type: "SET_TAREFA_SELECIONADA", payload: row });
-                navigate(`/processos-internos/tarefas/edit/${row.id}`)
-              }}>
-                <MdModeEdit color="#2d1c63" size={22} />
-              </IconButton>
-            </Tooltip>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <Tooltip title="Editar Tarefa" arrow>
+                <IconButton onClick={() => {
+                  dispatchTarefa({ type: "SET_TAREFA_SELECIONADA", payload: row });
+                  navigate(`/processos-internos/tarefas/edit/${row.id}`)
+                }}>
+                  <MdModeEdit color="#2d1c63" size={22} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Excluir Tarefa" arrow>
+                <IconButton onClick={() => handleDelete(row.id)}>
+                  <IoMdTrash color="#2d1c63" size={22} />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Stack>
         </TableCell>
       </TableRow>
