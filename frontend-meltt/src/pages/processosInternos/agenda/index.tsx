@@ -3,12 +3,13 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import { Stack, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import { Stack, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Box, FormControl, InputLabel, Select, MenuItem, IconButton } from '@mui/material';
 import ptBrLocale from '@fullcalendar/core/locales/pt-br';
 import '../../../../fullCalendar.css'
-import { apiGetData, apiPostData } from '../../../services/api';
+import { apiDeleteData, apiGetData, apiPostData } from '../../../services/api';
 import toast from 'react-hot-toast';
 import { LoadingButton } from '@mui/lab';
+import { IoMdTrash } from 'react-icons/io';
 
 // interface Evento {
 //   id: number;
@@ -29,6 +30,7 @@ interface NewEventProps {
 const AgendaPage = () => {
   const [eventos, setEventos] = useState<any[]>([]);
   const [openModal, setOpenModal] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -53,6 +55,17 @@ const AgendaPage = () => {
       setEventos(eventosFormatados);
     } catch (error) {
       console.error('Erro ao carregar eventos:', error);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await apiDeleteData("academic", `/agenda/${id}`, {});
+      await fetchEvents();
+      toast.success('Evento excluído com sucesso');
+    } catch (error) {
+      console.error('Erro ao excluir evento:', error);
+      toast.error('Erro ao excluir evento');
     }
   };
 
@@ -102,12 +115,50 @@ const AgendaPage = () => {
             }
           }}
           eventContent={(eventInfo: any) => (
-            <div style={{ fontWeight: 500 }}>
-              <div>{eventInfo.event.title}</div>
-              <div style={{ fontSize: '0.8em', opacity: 0.9 }}>
+            <Box
+              sx={{
+                position: 'relative',
+                padding: '4px',
+                fontWeight: 500,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                textAlign: 'left',
+                width: '100%',
+                maxWidth: '100%',
+                overflowWrap: 'break-word',
+                wordBreak: 'break-word',
+                whiteSpace: 'normal',
+                '&:hover .delete-button': {
+                  display: 'flex',
+                },
+              }}
+            >
+              <Box sx={{ zIndex: 1 }}>{eventInfo.event.title}</Box>
+              <Box sx={{ fontSize: '0.8em', opacity: 0.9, zIndex: 1 }}>
                 {eventInfo.event.extendedProps.nome_turma}
-              </div>
-            </div>
+              </Box>
+
+              <IconButton
+                size="small"
+                onClick={() => handleDelete(eventInfo.event.id)}
+                className="delete-button"
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  zIndex: 2,
+                  backgroundColor: 'rgba(255,255,255,0.8)',
+                  display: 'none',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255,255,255,1)',
+                  },
+                }}
+              >
+                <IoMdTrash fontSize="small" color='red' />
+              </IconButton>
+            </Box>
           )}
         />
       </Box>
@@ -120,9 +171,6 @@ const AgendaPage = () => {
     </Stack>
   );
 };
-
-
-
 
 const NewEventModal = ({ open, onClose, onRefresh }: NewEventProps) => {
   const [formData, setFormData] = useState({
