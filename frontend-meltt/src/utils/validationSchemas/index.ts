@@ -42,8 +42,6 @@ export const validateAdesaoSchema = Yup.object({
 
 export const validateTarefaSchema = Yup.object({
   nome: Yup.string().required("o campo nome é obrigatório."),
-  responsaveis: Yup.array().required("o campo responsáveis é obrigatório."),
-  enviado_por: Yup.string().required("o campo atribuído por é obrigatório."),
 })
 
 export const validatePropostaSchema = Yup.object({

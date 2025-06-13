@@ -35,17 +35,16 @@ const TarefasNewPage = () => {
     toast.loading("Salvando Tarefa...");
     try {
       const response = await apiPostData("academic", "/tarefas", tarefaValues)
-      console.log("response", response);
       if (response.id) {
-        const requests = responsaveis.map((usuario: any) => {
-          return apiPostData("academic", `/tarefas/vincular-responsavel`, {
-            usuario_id: usuario.id,
+        // const requests = responsaveis.map((usuario: any) => {
+          await apiPostData("academic", `/tarefas/vincular-responsavel`, {
+            usuario_id: 1,
             tarefa_id: response.id,
           });
-        });
+        // });
 
         // Aguarda todas as requisições serem concluídas
-        await Promise.all(requests);
+        // await Promise.all(requests);
 
         toast.dismiss();
         toast.success("Tarefa salva com sucesso");
